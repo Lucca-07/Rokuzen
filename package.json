@@ -1,0 +1,23 @@
+{
+  "name": "rokuzen",
+  "version": "1.0.0",
+  "description": "repositorio rokuzen",
+  "homepage": "https://github.com/Lucca-07/Rokuzen#readme",
+  "bugs": {
+    "url": "https://github.com/Lucca-07/Rokuzen/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lucca-07/Rokuzen.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
