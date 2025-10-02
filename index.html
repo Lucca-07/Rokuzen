@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciar Sessão</title>
+
+  <!-- Bootstrap  -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+  integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT"
+  crossorigin="anonymous">
+
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-light">
+
+  <!-- Botões superiores -->
+   <!-- dentro de container pra nao dar erro -->
+<div class="d-flex flex-wrap justify-content-between p-3">
+  <button class="SelecionarTerapeuta mx-auto">Selecionar Terapeuta</button>
+  <button class="ProximosAgendamentos mx-auto">Próximos Agendamentos</button>
+</div>
+
+
+  <!-- Círculo do timer -->
+  <div id="bola">
+    <h2>10:00</h2>
+    <div class="botoes">
+      <button id="Adicionarmin">+1:00</button>
+      <button id="Adicionarmin2">+5:00</button>
+      <button id="Adicionarmin3">+10:00</button>
+    </div>
+  </div>
+
+  <!-- Botão iniciar fora do círculo -->
+  <button class="Iniciar">Iniciar</button>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+crossorigin="anonymous"></script>
+</body>
+</html>
