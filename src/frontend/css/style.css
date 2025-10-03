@@ -8,6 +8,7 @@
     justify-content: center;
     align-items: center;
     flex-flow: column;
+    overflow-y: hidden;
 }
 
 .card {
@@ -20,7 +21,7 @@
     background-color: whitesmoke;
     border: 1px solid black;
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.342);
-    transition: all 0.7s ease-in ;
+    animation: aparecer 0.3s ease-in forwards;
 }
 
 .card input {
@@ -39,7 +40,6 @@
 }
 .senha {
     height: auto;
-    transform: all 0.7s ease-in ;
 }
 
 .imglogo {
@@ -47,5 +47,20 @@
     align-self: center;
     justify-self: center;
     /* border: 1px solid red; */
-    width: 25%;
+    min-height: 5%;
+    height: 10%;
+    max-height: 13%;
+    animation: aparecer 0.3s ease-in forwards;
+}
+
+/* Animação para o card aparecer */
+@keyframes aparecer {
+    0% {
+        opacity: 0;
+        transform: translateY(300px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
