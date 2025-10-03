@@ -6,6 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gerenciar Sessão</title>
 
+  <!-- Link do MATERIAL DESIGN ICONS  -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
@@ -14,59 +17,94 @@
   <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;600&display=swap" rel="stylesheet">
 
   <!-- CSS -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="frontend/style.css">
 </head>
 
 <body class="bg-light">
+
+  <!-- NAVBAR -->
+  <div>
+    <nav class="navbar container-fluid josefin-sans" style="background: #FFF;">
+      <div class="row m-0 w-100 justify-content-center justify-content-lg-start">
+        <div class="logo col-sm-12 col-lg-3 mb-1 mb-lg-0 text-center align-self-center"> <!-- ! LOGO-->
+          <a href="index.html"><img src="../frontend/img/logo.png" alt="" height="80px"></a>
+        </div>
+        <div class="menu col-sm-12 col-lg-9 text-center d-flex align-items-center"> <!-- ! MENU DA NAVBAR-->
+          <ul class="list-unstyled d-none d-lg-flex w-100 m-0 justify-content-around align-items-center flex-wrap">
+            <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="">Visualizar escala</a></li>
+            <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="">Postos de atendimento</a>
+            </li>
+            <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="">Gerenciar sessão</a></li>
+            <li><button class="sair px-4 fs my-2 align-self-center">Sair</button></li>
+          </ul>
+        </div>
+        <div id="menubtn" role="button" class="sidebar col-1 d-lg-none text-center">
+          <!-- ! BOTAO PARA ABRIR MENU EM TELAS PEQUENAS-->
+          <i onclick="abrirMenu()" class="mdi mdi-menu fs-1"></i>
+        </div>
+      </div>
+    </nav>
+    <div id="dropcnt" class="dropcnt container-fluid p-0 d-none w-100 d-lg-none">
+      <!-- ! CONTEÚDO DO BOTAO DE ABRIR MENU-->
+      <div class="dropopt container-fluid d-flex align-items-center justify-content-center">
+        <a class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
+          href="" style="height: 100%;">Visualizar escala</a>
+      </div>
+      <div class="dropopt container-fluid d-flex align-items-center justify-content-center">
+        <a class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
+          href="" style="height: 100%;">Postos de atendimento</a>
+      </div>
+      <div class="dropopt container-fluid d-flex align-items-center justify-content-center">
+        <a class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
+          href="" style="height: 100%;">Gerenciar sessão</a>
+      </div>
+    </div>
+  </div>
 
   <!-- Botões superiores -->
   <div class="container my-4">
     <div class="row">
       <div class="col-12 col-md-6 text-md-start text-center mb-2 mb-md-0">
         <!-- Botão abre modal Selecionar Terapeuta -->
-        <button class="btn btn-light border rounded-3 px-4 py-3 fs-5"
-          style="background-color: #F6F6F6;"
-          data-bs-toggle="modal" 
-          data-bs-target="#popupTerapeuta">
+        <button class="btn btn-light border rounded-3 px-4 py-3 fs-5" style="background-color: #F6F6F6;"
+          data-bs-toggle="modal" data-bs-target="#popupTerapeuta">
           Selecionar Terapeuta
         </button>
       </div>
       <div class="col-12 col-md-6 text-md-end text-center">
         <!-- Botão abre modal Próximos Agendamentos -->
-        <button class="btn btn-light border rounded-3 px-4 py-3 fs-5"
-          style="background-color: #F6F6F6;"
-          data-bs-toggle="modal" 
-          data-bs-target="#popupAgendamentos">
+        <button class="btn btn-light border rounded-3 px-4 py-3 fs-5" style="background-color: #F6F6F6;"
+          data-bs-toggle="modal" data-bs-target="#popupAgendamentos">
           Próximos Agendamentos
         </button>
       </div>
     </div>
   </div>
 
- <!-- Círculo com timer -->
-<div class="d-flex flex-column justify-content-center align-items-center">
+  <!-- Círculo com timer -->
+  <div class="d-flex flex-column justify-content-center align-items-center">
 
-  <!-- Círculo -->
-  <div class="timer-circle d-flex flex-column justify-content-center align-items-center text-center mb-4">
-    <h2 class="timer-title display-1 fw-bold">10:00</h2>
+    <!-- Círculo -->
+    <div class="timer-circle d-flex flex-column justify-content-center align-items-center text-center mb-4">
+      <h2 class="timer-title display-1 fw-bold">10:00</h2>
 
-    <!-- Botões de adicionar tempo -->
-    <div class="d-flex flex-wrap justify-content-center w-75 mt-3">
-      <div class="d-flex gap-2 justify-content-center w-100">
-        <button id="Adicionarmin" class="btn btn-outline-success rounded-pill px-3 fw-bold">+1:00</button>
-        <button id="Adicionarmin2" class="btn btn-outline-success rounded-pill px-3 fw-bold">+5:00</button>
-      </div>
-      <div class="d-flex justify-content-center w-100 mt-2">
-        <button id="Adicionarmin3" class="btn btn-outline-success rounded-pill px-3 fw-bold">+10:00</button>
+      <!-- Botões de adicionar tempo -->
+      <div class="d-flex flex-wrap justify-content-center w-75 mt-3">
+        <div class="d-flex gap-2 justify-content-center w-100">
+          <button id="Adicionarmin" class="btn btn-outline-success rounded-pill px-3 fw-bold">+1:00</button>
+          <button id="Adicionarmin2" class="btn btn-outline-success rounded-pill px-3 fw-bold">+5:00</button>
+        </div>
+        <div class="d-flex justify-content-center w-100 mt-2">
+          <button id="Adicionarmin3" class="btn btn-outline-success rounded-pill px-3 fw-bold">+10:00</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Botão iniciar (fora do círculo) -->
-  <div class="text-center">
-    <button class="btn btn-success btn-lg rounded-pill px-5 py-3 fw-bold">Iniciar</button>
+    <!-- Botão iniciar (fora do círculo) -->
+    <div class="text-center">
+      <button class="btn btn-success btn-lg rounded-pill px-5 py-3 fw-bold">Iniciar</button>
+    </div>
   </div>
-</div>
 
   <!-- Modal Selecionar Terapeuta -->
   <div class="modal fade" id="popupTerapeuta" tabindex="-1" aria-hidden="true">
@@ -75,17 +113,20 @@
         <div class="modal-body p-3">
           <h3 class="fs-5 fw-semibold text-dark mb-4">Selecionar Terapeuta</h3>
 
-          <div class="card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2 mb-3">
+          <div
+            class="card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2 mb-3">
             <img src="image.png" alt="Foto Terapeuta" class="avatar">
             <span class="fw-medium small">Terapeuta 1</span>
           </div>
 
-          <div class="card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2 mb-3">
+          <div
+            class="card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2 mb-3">
             <img src="image.png" alt="Foto Terapeuta" class="avatar">
             <span class="fw-medium small">Terapeuta 2</span>
           </div>
 
-          <div class="card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2 mb-3">
+          <div
+            class="card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2 mb-3">
             <img src="image.png" alt="Foto Terapeuta" class="avatar">
             <span class="fw-medium small">Terapeuta 3</span>
           </div>
@@ -129,6 +170,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
     crossorigin="anonymous"></script>
+    <script src="../frontend/script.js"></script>
 </body>
 
 </html>
