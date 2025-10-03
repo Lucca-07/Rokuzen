@@ -1,34 +1,51 @@
-@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap");
 
 .back {
     height: 100vh;
     background-image: url("/frontend/img/fundoImagem.jpg");
     background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-flow: column;
 }
 
 .card {
     max-height: 300px;
     min-height: 200px;
-    height:40vh;
+    height: 40vh;
     width: 25%;
     min-width: 300px;
     border-radius: 20px;
-    background-color: rgb(240, 240, 240);
+    background-color: whitesmoke;
     border: 1px solid black;
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.342);
+    transition: all 0.7s ease-in ;
 }
 
-.card input{
+.card input {
     border: 1px solid black;
 }
 
 .acessar {
     border-radius: 10px;
-    background-color: #C7ED79;
+    background-color: #c7ed79;
 }
 
 .josefin-sans {
-  font-family: "Josefin Sans", sans-serif;
-  font-optical-sizing: auto;
-  font-style: normal;
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+.senha {
+    height: auto;
+    transform: all 0.7s ease-in ;
+}
+
+.imglogo {
+    display: flex;
+    align-self: center;
+    justify-self: center;
+    /* border: 1px solid red; */
+    width: 25%;
 }

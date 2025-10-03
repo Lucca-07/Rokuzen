@@ -11,11 +11,18 @@
 
 <body class="josefin-sans">
     <div class="back container-fluid">
-        <div class="row h-100 d-flex align-items-center justify-content-center">
-            <div class="card d-flex justify-content-center gap-3 ">
-                <input id="user" class="p-2 px-3" type="text" placeholder="Usuário">
+        <img class="imglogo mb-3" src="/frontend/img/logo.png" alt="">
+        <div class="row d-flex align-items-center justify-content-center">
+            <div id="cardLogin" class="card d-flex justify-content-center gap-3 ">
+                <input id="email" class="p-2 px-3" type="text" placeholder="Email">
                 <input id="pass" class="p-2 px-3" type="text" placeholder="Senha">
                 <button id="acessar" class="acessar align-self-center p-2 px-3 border-1">ACESSAR</button>
+                <a id="esqueci" class="fs-6 fst-italic d-flex align-self-center p-0 mb-0" style="cursor: pointer;">Esqueci a senha</a>
+            </div>
+            <div id="cardSenha" class="card senha d-flex justify-content-center gap-3 d-none">
+                <input id="emailRecuperacao" class="p-2 px-3" type="text" placeholder="Email">
+                <button id="recuperarButton" class="acessar align-self-center p-2 px-3 border-1">Recuperar senha</button>
+                <a id="voltarLogin" class="fs-6 fst-italic d-flex align-self-center p-0 mb-0" style="cursor: pointer;">Voltar</a>
             </div>
         </div>
     </div>
