@@ -211,7 +211,7 @@ function abrirModalEdicao(evento) {
     // Preenche o formulário com os dados existentes
     document.getElementById('funcionario').value = evento.funcionario;
     document.getElementById('tipo-trabalho').value = evento.tipoTrabalho;
-    document.getElementById('equipamentos').value = evento.equipamentos || '';
+    // document.getElementById('equipamentos').value = evento.equipamentos || '';
     document.getElementById('equipamentoss').value = evento.equipamentoss
     
     // Configura o modal para edição
@@ -233,8 +233,8 @@ formAgendamento.addEventListener('submit', function(e) {
         dataHora: celulaSelecionada.dataset.time,
         funcionario: document.getElementById('funcionario').value,
         tipoTrabalho: document.getElementById('tipo-trabalho').value,
-        equipamentos: document.getElementById('equipamentos').value || null,
-        equipamentoss: document.getElementsById('equipamentoss').values
+        // equipamentos: document.getElementById('equipamentos').value || null,
+        equipamentoss: document.getElementById('equipamentoss').value || null
     };
 
     if (eventoEmEdicao) {
