@@ -13,7 +13,7 @@ const INTERVALO_MINUTOS = 30;
 
 // Elementos do DOM
 const tabelaCalendario = document.getElementById('tabela-calendario');
-const semanaAtualElement = document.getElementById('semana-atual');
+// const semanaAtualElement = document.getElementById('semana-atual');
 const modal = document.getElementById('modal-agendamento');
 const fecharBtn = document.querySelector('.fechar-btn');
 const formAgendamento = document.getElementById('form-agendamento');
@@ -71,9 +71,9 @@ function renderizarCalendario() {
     }
 
     // 3.2. Atualizar o Título da Semana
-    const dataInicialFormatada = formatarData(datas[0]);
-    const dataFinalFormatada = formatarData(datas[6]);
-    semanaAtualElement.textContent = `${dataInicialFormatada} - ${dataFinalFormatada}`;
+    // const dataInicialFormatada = formatarData(datas[0]);
+    // const dataFinalFormatada = formatarData(datas[6]);
+    // semanaAtualElement.textContent = `${dataInicialFormatada} - ${dataFinalFormatada}`;
 
     // 3.3. Gerar o Cabeçalho (Thead)
     let theadHTML = '<tr><th>Horário</th>';
@@ -133,7 +133,7 @@ function exibirEventos() {
             divEvento.classList.add('evento');
             // Adiciona o ID/Index do evento para facilitar a edição/exclusão
             divEvento.dataset.eventoIndex = index; 
-            divEvento.title = `${evento.funcionario} - ${evento.tipoTrabalho}\nEquipamentos: ${evento.equipamentos || 'Nenhum'}`;
+            divEvento.title = `${evento.funcionario} - ${evento.tipoTrabalho}\nEquipamentos: ${evento.equipamentoss || 'Nenhum'}`;
             
             divEvento.textContent = `${evento.funcionario.split(' ')[0]} / ${evento.tipoTrabalho.split(' ')[0]}`;
             
