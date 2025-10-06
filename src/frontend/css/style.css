@@ -1,4 +1,3 @@
-
 @import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap");
 
 .back {
@@ -54,19 +53,6 @@
     animation: aparecer 0.3s ease-in forwards;
 }
 
-/* Animação para o card aparecer */
-@keyframes aparecer {
-    0% {
-        opacity: 0;
-        transform: translateY(300px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-
 .sair {
     background-color: #c7ed79;
     height: 40px;
@@ -106,14 +92,34 @@
     color: #9db668 !important;
 }
 
-.campos{
+.campos {
     font-size: 1.5rem;
 }
 
-.enviar{
+.enviar {
     border: 1px solid black;
     border-radius: 10px;
 }
-#containerfundo{
+#containerfundo {
     box-shadow: 10px 10px 10px #a8a8a879;
+}
+
+#usuarioselect {
+    background-color: #c7ed79;
+}
+
+#containerUserInterno, #containerUserExterno {
+    animation: aparecer 0.3s ease-in forwards;
+}
+
+/* Animação para o card aparecer */
+@keyframes aparecer {
+    0% {
+        opacity: 0;
+        transform: translateY(300px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

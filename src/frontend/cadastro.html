@@ -56,7 +56,17 @@
     </div>
 
     <main class="josefin-sans">
-        <div id="containerfundo" class="container-lg mt-4 bg-light d-flex p-4 border d-flex flex-column mb-5" style="border-radius: 30px;">
+        <div id="selectUsuario" class="container-lg w-100 mt-2 d-flex align-items-center" style="height: 75px;">
+            <div class="row">
+                <div class="col-12">
+                    <select name="usuarioselect" id="usuarioselect" class="p-2 fs-4" style="cursor: pointer;">
+                        <option value="interno">Interno</option>
+                        <option value="externo">Externo</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div id="containerUserInterno" class="container-lg mt-2 bg-light d-flex p-4 border d-flex flex-column mb-5 " style="border-radius: 30px;">
             <form action="">
                 <div class="row align-content-start">
                     <div id="foto"
@@ -67,26 +77,60 @@
                     </div>
                     <div id="nome"
                         class="col-12 col-md-6 col-lg-8 d-flex align-self-center justify-content-center mt-3 mt-md-0">
-                        <h2 style="font-size: 3rem; text-align: center;">&lt;NOME DA PESSOA&gt;</h2>
+                        <label for="nomeinput" class="h-100 align-content-center" style="font-size: 2rem;">Nome: </h3>
+                            <input type="text" id="nomeinput" style="font-size: 1.75rem;">
                     </div>
 
                 </div>
                 <div class="row bg-light p-4 mt-3 d-flex align-content-start ">
-                    <div id="email" class="col-sm-12 col-md-6 d-flex justify-content-center justify-content-lg-start">
-                        <h3 class="campos h-100 align-content-center">Email: </h3>
-                        <input class="h-75 mx-2 align-self-center" type="text">
+                    <div id="email" class="col-sm-12 col-md-6 d-flex justify-content-start">
+                        <label for="emailinput" class="campos h-100 align-content-center">Email: </label>
+                        <input class="h-75 mx-2 align-self-center w-50" id="emailinput" type="text">
                     </div>
-                    <div id="cargo" class="col-sm-12 col-md-6 d-flex justify-content-center justify-content-lg-start">
-                        <h3 class="campos h-100 align-content-center">Cargo: </h3>
-                        <input class="h-75 mx-2 align-self-center" type="text">
+                    <div id="senha" class="col-sm-12 col-md-6 d-flex justify-content-start">
+                        <label for="senhainput" class="campos h-100 align-content-center">Senha: </label>
+                        <input class="h-75 mx-2 align-self-center w-50" id="senhainput" type="text">
                     </div>
-                    <div id="email" class="col-sm-12 col-md-6 d-flex justify-content-center justify-content-lg-start">
-                        <h3 class="campos h-100 align-content-center">Telefone: </h3>
-                        <input class="h-75 mx-2 align-self-center" type="text">
+                    <div id="cargo" class="col-sm-12 col-md-6 d-flex justify-content-start mt-md-3 mt-0">
+                        <label for="cargoinput" class="campos h-100 align-content-center">Cargo: </label>
+                        <select class="h-75 mx-2 align-self-center w-auto" id="cargoselect"
+                            style="border-radius: 5px; cursor: pointer;">
+                            <option value="" disabled selected>Selecionar:</option>
+                            <option value="master">Master</option>
+                            <option value="gerente">Gerente</option>
+                            <option value="recep">Recepção</option>
+                            <option value="terapeuta">Terapeuta</option>
+                        </select>
                     </div>
-                    <div id="cargo" class="col-sm-12 col-md-6 d-flex justify-content-center justify-content-lg-start">
-                        <h3 class="campos h-100 align-content-center">Data Nascimento: </h3>
-                        <input class="h-75 mx-2 align-self-center" type="text">
+                    <div id="tel" class="col-sm-12 col-md-6 d-flexjustify-content-start mt-md-3 mt-0">
+                        <label for="telinput" class="campos h-100 align-content-center">Telefone: </label>
+                        <input class="h-75 mx-2 align-self-center w-50" id="telinput" type="text">
+                    </div>
+                    <div class="col-12 text-center">
+                        <button type="submit" class="enviar mt-4 px-4 py-2 fs-3">Salvar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div id="containerUserExterno" class="container-lg mt-2 bg-light d-flex p-4 border d-flex flex-column mb-5 d-none"style="border-radius: 30px;">
+            <form action="">
+                <div class="row align-content-start">
+                    <div id="logo" class="col-12 d-flex justify-content-center mb-0 mb-md-3">
+                        <img src="/frontend/img/logo.png" alt="" width="40%">
+                    </div>
+                </div>
+                <div class="row bg-light p-4 mt-3 d-flex align-content-start justify-content-between ">
+                    <div id="nome" class="col-sm-12 col-md-6 d-flex justify-content-start">
+                        <label for="nomeinput2" class="campos h-100 align-items-center">Nome:</label>
+                        <input class="h-75 mx-2 align-self-center w-50" type="text" id="nomeinput2">
+                    </div>
+                    <div id="email" class="col-sm-12 col-md-6 d-flex justify-content-start">
+                        <label for="emailinput2" class="campos h-100 align-content-center">Email: </label>
+                        <input class="h-75 mx-2 align-self-center w-50" id="emailinput2" type="text">
+                    </div>
+                    <div id="tel" class="col-sm-12 col-md-6 d-flex justify-content-start mt-0 mt-md-4">
+                        <label for="telinput2" class="campos h-100 align-content-center">Telefone: </label>
+                        <input class="h-75 mx-2 align-self-center w-50" id="telinput2" type="text">
                     </div>
                     <div class="col-12 text-center">
                         <button type="submit" class="enviar mt-4 px-4 py-2 fs-3">Salvar</button>
@@ -104,6 +148,7 @@
             dropcnt.classList.toggle("d-none");
         }
     </script>
+    <script src="/frontend/js/cadastro.js"></script>
 
     <script src="/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 </body>
