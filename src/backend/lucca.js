@@ -3,7 +3,8 @@ const app = express();
 const port = 8080;
 
 import mongoose from "mongoose";
-import LoginUsuario from "./LoginUsuario.js";
+
+// import mysql2 from "mysql2";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -13,11 +14,26 @@ import { fileURLToPath } from "node:url";
 const dirname = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 
 import recuperarSenha from "./recuperarSenha.js";
+import UsuarioInterno from "./UsuarioInterno.js";
+import UsuarioExterno from "./UsuarioExterno.js";
+// import { error } from "node:console";
 
 app.use(express.json());
 
+// async function connectMySQL(){
+
+//     const connection = mysql2.createConnection({
+//         host: process.env.HOST_DB,
+//         port: process.env.PORT_DB,
+//         password: process.env.PASS_DB,
+//         database: process.env.NAME_DB,
+//     });
+//     return connection;
+// }
+
 // Conecta ao banco de dados
-const connectDB = async () => {
+
+const connectMongoDB = async () => {
     try {
         await mongoose.connect(process.env.MONGO_URI);
         console.log("Conectado ao mongodb");
@@ -25,7 +41,8 @@ const connectDB = async () => {
         console.log("Erro ao conectar ao mongodb: ", error);
     }
 };
-connectDB();
+connectMongoDB()
+
 
 // Verifique a rota '/vendor' primeiro
 app.use("/vendor", express.static(path.join(dirname, "../node_modules")));
@@ -36,16 +53,20 @@ app.use(express.static(path.join(dirname)));
 app.get("/", (req, res) => {
     res.sendFile(dirname + "/frontend/index.html");
 });
-
+// Rota da Página de Recuperação de senha
 app.get("/recuperar", (req, res) => {
     res.sendFile(dirname + "/frontend/recuperarSenha.html");
 });
+
+app.get("/cadastrar", (req,res) => {
+    res.sendFile(dirname + "/frontend/cadastro.html")
+})
 
 // Verifica o Login
 app.post("/login", async (req, res) => {
     const { email, pass } = req.body;
     try {
-        const loginUsuario = await LoginUsuario.findOne({
+        const loginUsuario = await UsuarioInterno.findOne({
             email: email,
             pass: pass,
         });
@@ -62,11 +83,11 @@ app.post("/login", async (req, res) => {
         res.status(500).json({ validado: false, mensagem: "Erro no servidor" });
     }
 });
-
+// Verifica se o email a ser recuperado está no banco de dados
 app.post("/recuperar", async (req, res) => {
     const { emailRecuperacao } = req.body;
     try {
-        const emailUsuario = await LoginUsuario.findOne({
+        const emailUsuario = await UsuarioInterno.findOne({
             email: emailRecuperacao,
         });
         if (emailUsuario) {
@@ -86,15 +107,15 @@ app.post("/recuperar", async (req, res) => {
         res.status(500).json({ mensagem: "Erro no servidor" });
     }
 });
-
+// Pega os dados e atualiza a senha
 app.post("/atualizarSenha", async (req, res) => {
     const { email, newpass } = req.body;
     try {
         // Sintaxe correta: findOneAndUpdate(filtro, atualização, opções)
-        const emailUsuario = await LoginUsuario.findOneAndUpdate(
+        const emailUsuario = await UsuarioInterno.findOneAndUpdate(
             { email: email }, // Filtro: encontrar o usuário por email
-            { $set: { pass: newpass } }, // Atualização: usar $set para modificar o campo 'pass'
-            { new: true } // Opções: retornar o documento atualizado
+            { $set: { pass: newpass } },
+            { new: true }
         );
 
         if (emailUsuario) {
