@@ -31,7 +31,6 @@
             border: 5px solid #E9EAEE;
             border-top: none;
             height: 305px;
-            position: fixed;
             top: 150px;
             z-index: 999 !important;
         }
@@ -44,4 +43,31 @@
 
         .dropopt a:hover {
             color: #9DB668 !important;
+        }
+          .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+          }
+      
+          .card img {
+            /* width: 100%; */
+            height: 100%;
+            /* object-fit: cover; */
+          }     
+          .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+          }
+          
+          .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+          }
+          
+          .card img {
+            height: 380px;
+            object-fit: cover;
+          }
+        
+        .titulo{
+            font-size: 999px;
         }
