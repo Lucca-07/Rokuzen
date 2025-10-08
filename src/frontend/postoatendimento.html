@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="postoatendimento.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css"
+  />
+    <title>Postos de Atendimento</title>
+  </head>
+  <body>
+    <div>
+      <nav class="navbar container-fluid josefin-sans" style="background: #fff">
+        <div
+          class="row m-0 w-100 justify-content-center justify-content-lg-start"
+        >
+          <div
+            class="logo col-sm-12 col-lg-3 mb-1 mb-lg-0 text-center align-self-center"
+          >
+            <!-- ! LOGO-->
+            <a href="index.html"
+              ><img src="./img/logo.png" alt="" height="80px"
+            /></a>
+          </div>
+          <div
+            class="menu col-sm-12 col-lg-9 text-center d-flex align-items-center"
+          >
+            <!-- ! MENU DA NAVBAR-->
+            <ul
+              class="list-unstyled d-none d-lg-flex w-100 m-0 justify-content-around align-items-center flex-wrap"
+            >
+              <li class="my-2">
+                <a class="text-secondary text-decoration-none p-2 fs-5" href=""
+                  >Visualizar escala</a
+                >
+              </li>
+              <li class="my-2">
+                <a class="text-secondary text-decoration-none p-2 fs-5" href=""
+                  >Postos de atendimento</a
+                >
+              </li>
+              <li class="my-2">
+                <a class="text-secondary text-decoration-none p-2 fs-5" href=""
+                  >Gerenciar sessão</a
+                >
+              </li>
+              <li>
+                <button class="sair px-4 fs my-2 align-self-center">
+                  Sair
+                </button>
+              </li>
+            </ul>
+          </div>
+          <div
+            id="menubtn"
+            role="button"
+            class="sidebar col-1 d-lg-none text-center"
+          >
+            <!-- ! BOTAO PARA ABRIR MENU EM TELAS PEQUENAS-->
+            <i onclick="abrirMenu()" class="mdi mdi-menu fs-1"></i>
+          </div>
+        </div>
+      </nav>
+      <div
+        id="dropcnt"
+        class="dropcnt container-fluid p-0 d-none w-100 d-lg-none"
+      >
+        <!-- ! CONTEÚDO DO BOTAO DE ABRIR MENU-->
+        <div
+          class="dropopt container-fluid d-flex align-items-center justify-content-center"
+        >
+          <a
+            class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
+            href=""
+            style="height: 100%"
+            >Visualizar escala</a
+          >
+        </div>
+        <div
+          class="dropopt container-fluid d-flex align-items-center justify-content-center"
+        >
+          <a
+            class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
+            href=""
+            style="height: 100%"
+            >Postos de atendimento</a
+          >
+        </div>
+        <div
+          class="dropopt container-fluid d-flex align-items-center justify-content-center"
+        >
+          <a
+            class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
+            href=""
+            style="height: 100%"
+            >Gerenciar sessão</a
+          >
+        </div>
+      </div>
+    </div>
+    <main>
+</head>
+<body style="height: 100vh;">
+
+
+<!-- CONTEÚDO PRINCIPAL -->
+<main class="container-fluid bg-white py-5 h-100">
+  <div class="text-center mb-5">
+    <h1 class="display-5 fw-semibold" style="font-size: 70px;">Postos de Atendimento</h1>
+  </div>
+
+  <div class="w-75 shadow-lg p-5" style="margin: auto; background-color: #E9EAEE;">
+    <div class="row justify-content-center g-5 text-center">
+
+      <!-- Card 1 - Cadeira -->
+      <div class="col-12 col-md-4">
+        <div
+          class="card border-0 shadow-sm rounded-4 overflow-hidden"
+          role="button"
+          onclick="abrirPopup('cadeira')"
+        >
+          <img src="./img/pd ser.png" class="card-img-top" alt="Cadeira Quick" />
+        </div>
+      </div>
+
+      <!-- Card 2 - Maca -->
+      <div class="col-12 col-md-4">
+        <div
+          class="card border-0 shadow-sm rounded-4 overflow-hidden"
+          role="button"
+          onclick="abrirPopup('maca')"
+        >
+          <img
+            src="img/Maca.jpeg"
+            class="card-img-top"
+            alt="Maca"
+          />
+        </div>
+      </div>
+
+      <!-- Card 3 - Poltrona -->
+      <div class="col-12 col-md-4">
+        <div
+          class="card border-0 shadow-sm rounded-4 overflow-hidden"
+          role="button"
+          onclick="abrirPopup('poltrona')"
+        >
+          <img
+            src="img/Poltrona.jpeg"
+            alt="Poltrona Reflexologia"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- POPUPS -->
+<div class="popup-bg" id="popup-cadeira" style="display: none;">
+  <div class="popup">
+    <button class="fechar" onclick="fecharPopup('cadeira')">✖</button>
+    <div class="frame">
+      <h3>Cadeira Quick</h3>
+      <div class="item verde">Cadeira 1</div>
+      <div class="item amarelo">Cadeira 2</div>
+      <div class="item vermelho">Cadeira 3</div>
+      <div class="item laranja">Cadeira 4</div>
+      <button class="btncustom">Remover</button>
+      <button class="btncustom">Adicionar</button>
+      <button class="btncustom">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="popup-bg" id="popup-maca" style="display: none;">
+  <div class="popup">
+    <button class="fechar" onclick="fecharPopup('maca')">✖</button>
+    <div class="frame">
+      <h3>Maca</h3>
+      <div class="item amarelo">Maca 1</div>
+      <div class="item amarelo">Maca 2</div>
+      <div class="item verde">Maca 3</div>
+      <div class="item laranja">Maca 4</div>
+      <button class="btncustom">Remover</button>
+      <button class="btncustom">Adicionar</button>
+      <button class="btncustom">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="popup-bg" id="popup-poltrona" style="display: none;">
+  <div class="popup">
+    <button class="fechar" onclick="fecharPopup('poltrona')">✖</button>
+    <div class="frame">
+      <h3>Poltrona Reflexologia</h3>
+      <div class="item verde">Poltrona 1</div>
+      <div class="item laranja">Poltrona 2</div>
+      <div class="item verde">Poltrona 3</div>
+      <button class="btncustom">Remover</button>
+      <button class="btncustom">Adicionar</button>
+      <button class="btncustom">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="postoatendimento.js"></script>
+</body>
+</html>
