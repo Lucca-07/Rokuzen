@@ -1,0 +1,125 @@
+@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap");
+
+.back {
+    height: 100vh;
+    background-image: url("/frontend/img/fundoImagem.jpg");
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-flow: column;
+    overflow-y: hidden;
+}
+
+.card {
+    max-height: 300px;
+    min-height: 200px;
+    height: 40vh;
+    width: 25%;
+    min-width: 300px;
+    border-radius: 20px;
+    background-color: whitesmoke;
+    border: 1px solid black;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.342);
+    animation: aparecer 0.3s ease-in forwards;
+}
+
+.card input {
+    border: 1px solid black;
+}
+
+.acessar {
+    border-radius: 10px;
+    background-color: #c7ed79;
+}
+
+.josefin-sans {
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+.senha {
+    height: auto;
+}
+
+.imglogo {
+    display: flex;
+    align-self: center;
+    justify-self: center;
+    /* border: 1px solid red; */
+    min-height: 5%;
+    height: 10%;
+    max-height: 13%;
+    animation: aparecer 0.3s ease-in forwards;
+}
+
+.sair {
+    background-color: #c7ed79;
+    height: 40px;
+    border-radius: 10px;
+}
+
+.sair:hover {
+    background: #cbff63;
+}
+
+.navbar {
+    border-top: 5px solid #9db668;
+    border-bottom: 5px solid #e9eaee;
+    height: 150px;
+}
+
+.menu a:hover {
+    color: #9db668 !important;
+}
+
+.dropcnt {
+    border: 5px solid #e9eaee;
+    border-top: none;
+    height: 305px;
+    /* position: fixed; */
+    top: 150px;
+    z-index: 999 !important;
+}
+
+.dropopt {
+    height: 100px;
+    border: 1px solid #e9eaee;
+    background-color: white;
+}
+
+.dropopt a:hover {
+    color: #9db668 !important;
+}
+
+.campos {
+    font-size: 1.5rem;
+}
+
+.enviar {
+    border: 1px solid black;
+    border-radius: 10px;
+}
+#containerfundo {
+    box-shadow: 10px 10px 10px #a8a8a879;
+}
+
+#usuarioselect {
+    background-color: #c7ed79;
+}
+
+#containerUserInterno, #containerUserExterno {
+    animation: aparecer 0.3s ease-in forwards;
+}
+
+/* Animação para o card aparecer */
+@keyframes aparecer {
+    0% {
+        opacity: 0;
+        transform: translateY(300px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

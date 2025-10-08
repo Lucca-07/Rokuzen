@@ -1,0 +1,84 @@
+body {
+  font-family: "Josefin Sans", sans-serif;
+}
+
+/* Circulo timer */
+.timer-circle {
+  width: 500px;
+  height: 500px;
+  background-color: rgb(225, 239, 197);
+  border-radius: 50%;
+  border: 2px solid black;
+}
+
+.timer-title {
+  font-size: 80px;
+  text-shadow: 1px 1px 5px black;
+  border-bottom: 3px solid black;
+}
+
+/* Popup */
+.popup-frame {
+  border: 2px solid #9db668;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.card-terapeuta:hover {
+  background-color: #f0f0f0 !important;
+  transform: scale(1.02);
+  cursor: pointer;
+}
+
+
+/* navbar */
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap');
+
+.sair {
+  background-color: #C7ED79;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.sair:hover {
+  background: #cbff63;
+}
+
+.navbar {
+  border-top: 5px solid #9DB668;
+  border-bottom: 5px solid #E9EAEE;
+  height: 150px;
+}
+
+.menu a:hover {
+  color: #9DB668 !important;
+}
+
+.josefin-sans {
+  font-family: "Josefin Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.dropcnt {
+  border: 5px solid #E9EAEE;
+  border-top: none;
+  height: 305px;
+  top: 150px;
+  z-index: 999 !important;
+}
+
+.dropopt {
+  height: 100px;
+  border: 1px solid #E9EAEE;
+  background-color: white;
+}
+
+.dropopt a:hover {
+  color: #9DB668 !important;
+}
