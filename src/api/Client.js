@@ -1,30 +1,34 @@
-import UsuarioExterno from "../modules/UsuarioExterno.js";
-import mongoose from "mongoose";
+import Clientes from "../models/Clientes.js";
 
 export default async function get_all_clients() {
     try {
-        const clientArray = await UsuarioExterno.find({});
+        const clientArray = await Clientes.find({});
 
         return {
             data: clientArray,
             getNames: function () {
-                return this.data.map((user) => user.name);
+                return this.data.map((user) => user.nome_cliente);
             },
             getTel: function () {
-                return this.data.map((user) => user.tel);
+                return this.data.map((user) => user.telefone_cliente);
             },
             getEmails: function () {
-                return this.data.map((user) => user.email);
+                return this.data.map((user) => user.email_cliente);
             },
             getNascto: function () {
-                return this.data.map((user) => user.dt_nascto);
+                return this.data.map((user) => user.data_nascimento);
             },
-            getDiaNascto: function () {
-                return this.data.map((user) => user.dt_nascto.getUTCDate());
+            getObservacoes: function () {
+                return this.data.map((user) => user.observacoes);
             },
-            getMesNascto: function () {
-                return this.data.map((user) => user.dt_nascto.getUTCMonth());
+            getPrimeiroAtendimento: function () {
+                return this.data.map((user) => user.primeiro_atendimento);
             },
+            getRespostasSaude: function () {
+                return this.data.map((user) => user.respostas_saude);
+            },
+            // As funções getDiaNascto e getMesNascto foram removidas, pois a função principal
+            // agora usa o aggregation para otimização.
         };
     } catch (error) {
         console.error("Erro ao buscar usuários:", error);
@@ -34,32 +38,10 @@ export default async function get_all_clients() {
             getTel: () => [],
             getEmails: () => [],
             getNascto: () => [],
+            getObservacoes: () => [],
+            getPrimeiroAtendimento: () => [],
+            getRespostasSaude: () => [],
         };
-    }
-}
-
-export async function get_client_birth(id) {
-    try {
-        // Use findOne para retornar um único objeto, não um array
-        const client = await UsuarioExterno.findOne({ _id: id });
-
-        if (!client) {
-            console.log("Nenhum cliente encontrado com o id:", id);
-            return null;
-        }
-
-        // Agora 'client' é o objeto do documento, então a propriedade existe
-        const diaNascto = client.dt_nascto.getUTCDate();
-        const mesNascto = client.dt_nascto.getUTCMonth() + 1;
-
-        return {
-            data: client,
-            diaNascto: diaNascto,
-            mesNascto: mesNascto,
-        };
-    } catch (error) {
-        console.error("Erro ao buscar cliente por ID:", error);
-        throw new Error("Erro ao processar a data de nascimento do cliente.");
     }
 }
 
@@ -69,31 +51,32 @@ export async function get_todays_birthdays() {
         const day = today.getDate();
         const month = today.getMonth() + 1; // Mês é base 0, então +1
 
-        // Busca todos os clientes
-        const allClients = await UsuarioExterno.find({});
-
-        // Filtra para encontrar apenas os aniversariantes de hoje
-        const birthdayClients = allClients.filter((client) => {
-            if (!client.dt_nascto) return false; // Ignora clientes sem data de nascimento
-            const clientDay = client.dt_nascto.getUTCDate();
-            const clientMonth = client.dt_nascto.getUTCMonth() + 1;
-            return clientDay === day && clientMonth === month;
-        });
+        const birthdayClients = await Clientes.aggregate([
+            {
+                $match: {
+                    // $expr permite que a lógica de comparação seja aplicada no banco de dados
+                    $expr: {
+                        $and: [
+                            // Compara o dia do campo data_nascimento com o dia de hoje
+                            { $eq: [{ $dayOfMonth: "$data_nascimento" }, day] },
+                            // Compara o mês do campo dt_nascto com o mês de hoje
+                            { $eq: [{ $month: "$data_nascimento" }, month] },
+                        ],
+                    },
+                },
+            },
+        ]);
 
         return birthdayClients;
     } catch (error) {
-        console.error("Erro ao buscar aniversariantes:", error);
-        return []; // Retorna um array vazio em caso de erro
+        console.error("Erro ao buscar aniversariantes (Agregação):", error);
+        return [];
     }
 }
 
 export async function set_client_name(id, reqbody) {
-    const updClient = await UsuarioExterno.findOneAndUpdate(
-        { _id: id },
-        reqbody,
-        {
-            new: true,
-        }
-    );
+    const updClient = await Clientes.findOneAndUpdate({ _id: id }, reqbody, {
+        new: true,
+    });
     return updClient;
 }
