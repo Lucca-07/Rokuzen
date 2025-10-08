@@ -1,61 +1,51 @@
-@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap");
 
-        .sair {
-            background-color: #C7ED79;
-            height: 40px;
-            border-radius: 10px;
-        }
-
-        .sair:hover {
-            background: #cbff63;
-        }
-
-        .navbar {
-            border-top: 5px solid #9DB668;
-            border-bottom: 5px solid #E9EAEE;
-            height: 150px;
-        }
-
-        .menu a:hover {
-            color: #9DB668 !important;
-        }
-
-        .josefin-sans {
-            font-family: "Josefin Sans", sans-serif;
-            font-optical-sizing: auto;
-            font-weight: 400;
-            font-style: normal;
-        }
-
-        .dropcnt {
-            border: 5px solid #E9EAEE;
-            border-top: none;
-            height: 305px;
-            top: 150px;
-            z-index: 999 !important;
-        }
-
-        .dropopt {
-            height: 100px;
-            border: 1px solid #E9EAEE;
-            background-color: white;
-        }
-
-        .dropopt a:hover {
-            color: #9DB668 !important;
-        }
-
-        /* codigo estilo calendário */
-        /* Definições globais e de corpo */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 20px;
-    background-color: #f4f7f6; /* Fundo suave */
-    color: #333;
+.sair {
+    background-color: #c7ed79;
+    height: 40px;
+    border-radius: 10px;
 }
 
-header {
+.sair:hover {
+    background: #cbff63;
+}
+
+.navbar {
+    border-top: 5px solid #9db668;
+    border-bottom: 5px solid #e9eaee;
+    height: 150px;
+}
+
+.menu a:hover {
+    color: #9db668 !important;
+}
+
+.josefin-sans {
+    font-family: "Josefin Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.dropcnt {
+    border: 5px solid #e9eaee;
+    border-top: none;
+    height: 305px;
+    top: 150px;
+    z-index: 999 !important;
+}
+
+.dropopt {
+    height: 100px;
+    border: 1px solid #e9eaee;
+    background-color: white;
+}
+
+.dropopt a:hover {
+    color: #9db668 !important;
+}
+
+.header-escala {
     text-align: center;
     margin-bottom: 25px;
 }
@@ -68,17 +58,19 @@ header {
     margin-top: 15px;
 }
 
-#btn-anterior, #btn-proximo {
+#btn-anterior,
+#btn-proximo {
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
-    background-color: #9DB668; /* Azul primário */
+    background-color: #9db668; /* Azul primário */
     color: white;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
-#btn-anterior:hover, #btn-proximo:hover {
+#btn-anterior:hover,
+#btn-proximo:hover {
     background-color: #0056b3;
 }
 
@@ -98,7 +90,8 @@ header {
     min-width: 900px; /* Garante que a tabela tenha um tamanho mínimo */
 }
 
-#tabela-calendario th, #tabela-calendario td {
+#tabela-calendario th,
+#tabela-calendario td {
     border: 1px solid #ddd;
     padding: 10px;
     text-align: center;
@@ -145,7 +138,7 @@ header {
 }
 
 /* Estilos do Modal de Agendamento */
-.modal {
+.modalescala {
     display: none; /* Escondido por padrão */
     position: fixed;
     z-index: 100; /* Fica acima de tudo */
@@ -157,7 +150,7 @@ header {
     background-color: rgba(0, 0, 0, 0.4); /* Fundo escuro transparente */
 }
 
-.modal-conteudo {
+.modalescala-conteudo {
     background-color: #fff;
     margin: 10% auto; /* 10% do topo e centralizado */
     padding: 25px;
@@ -248,4 +241,3 @@ header {
 .btn-excluir:hover {
     background-color: #c82333;
 }
-

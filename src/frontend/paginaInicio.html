@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<link rel="stylesheet" href="paginaInicio.css">
 
 <head>
   <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -9,23 +8,23 @@
     integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
-  <link rel="stylesheet" href="navbar.css">
+  <link rel="stylesheet" href="/frontend/css/style.css">
 </head>
 
 <body>
   <nav class=" navbar container-fluid josefin-sans" style="background: #FFF;">
     <div class="row m-0 w-100 justify-content-center justify-content-lg-start">
       <div class="logo col-sm-12 col-lg-3 mb-1 mb-lg-0 text-center align-self-center"> <!-- ! LOGO-->
-        <a href="index.html"><img src="https://rokuzen.com.br/wp-content/uploads/2021/09/cropped-logomarca_pequena2.png"
+        <a href="/inicio"><img src="https://rokuzen.com.br/wp-content/uploads/2021/09/cropped-logomarca_pequena2.png"
             alt="" height="80px"></a>
       </div>
       <div class="menu col-sm-12 col-lg-9 text-center d-flex align-items-center"> <!-- ! MENU DA NAVBAR-->
         <ul class="list-unstyled d-none d-lg-flex w-100 m-0 justify-content-around align-items-center flex-wrap">
-          <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="">Visualizar escala</a>
+          <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="/escala">Visualizar escala</a>
           </li>
-          <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="">Postos de
+          <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="/postosatendimento">Postos de
               atendimento</a></li>
-          <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="">Gerenciar sessão</a>
+          <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="/sessao">Gerenciar sessão</a>
           </li>
           <li><button class="sair px-4 fs my-2 align-self-center">Sair</button></li>
         </ul>
@@ -57,11 +56,11 @@
 
       <div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center">
         <a href="#" class="text-decoration-none">
-          <div class="card text-center shadow border-0 p-3" style="width: 270px; height: 360px;">
-            <div class="card-image"
-              style="background-image: url('Imagem Escala Horario.jpg'); background-size: cover; background-position: center;">
+          <div class="cardinicio text-center shadow border-0 p-3" style="width: 270px; height: 360px;">
+            <div class="cardinicio-image"
+              style="background-image: url('/frontend/img/escalaHorario.jpg'); background-size: cover; background-position: center;">
             </div>
-            <div class="card-body">
+            <div class="cardinicio-body">
               <h3 class="fs-5 text-dark">Visualizar Escala</h3>
             </div>
           </div>
@@ -70,11 +69,11 @@
 
       <div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center">
         <a href="#" class="text-decoration-none">
-          <div class="card text-center shadow border-0 p-3" style="width: 270px; height: 360px;">
-            <div class="card-image"
-              style="background-image: url('Imagem Postos Atendimento.jpg'); background-size: cover; background-position: center;">
+          <div class="cardinicio text-center shadow border-0 p-3" style="width: 270px; height: 360px;">
+            <div class="cardinicio-image"
+              style="background-image: url('/frontend/img/imagemPostosAtendimento.jpg'); background-size: cover; background-position: center;">
             </div>
-            <div class="card-body">
+            <div class="cardinicio-body">
               <h3 class="fs-5 text-dark">Postos de Atendimento</h3>
             </div>
           </div>
@@ -83,11 +82,10 @@
 
       <div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center">
         <a href="#" class="text-decoration-none">
-          <div class="card text-center shadow border-0 p-3" style="width: 270px; height: 360px;">
-            <div class="card-image"
-              style="background-image: url('Imagem Sessoes.jpg'); background-size: cover;">
+          <div class="cardinicio text-center shadow border-0 p-3" style="width: 270px; height: 360px;">
+            <div class="cardinicio-image" style="background-image: url('/frontend/img/imagemSessoes.jpg'); background-size: cover;">
             </div>
-            <div class="card-body">
+            <div class="cardinicio-body">
               <h3 class="fs-5 text-dark">Gerenciar Sessão</h3>
             </div>
           </div>
@@ -99,7 +97,7 @@
 
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="paginaInicio.js"></script>
+  <script src="/frontend/js/paginaInicio.js"></script>
 </body>
 
 </html>

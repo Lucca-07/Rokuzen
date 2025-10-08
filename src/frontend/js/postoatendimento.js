@@ -24,9 +24,9 @@ function fecharTodosPopups() {
 /* === Funções de Interação === */
 document.addEventListener("DOMContentLoaded", () => {
   // Adiciona eventos a todos os botões de cada popup
-  document.querySelectorAll(".popup").forEach((popup) => {
+  document.querySelectorAll(".popupposto").forEach((popup) => {
     const tipo = popup.parentElement.id.replace("popup-", "");
-    const frame = popup.querySelector(".frame");
+    const frame = popup.querySelector(".frameposto");
     const btns = popup.querySelectorAll(".btncustom");
 
     const btnRemover = btns[0];
@@ -35,11 +35,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Ao clicar em "Adicionar"
     btnAdicionar.addEventListener("click", () => {
-      const itens = frame.querySelectorAll(".item");
+      const itens = frame.querySelectorAll(".itemposto");
       const novoNumero = itens.length + 1;
 
       const novoItem = document.createElement("div");
-      novoItem.classList.add("item", "verde");
+      novoItem.classList.add("itemposto", "verde");
       novoItem.textContent =
         tipo.charAt(0).toUpperCase() + tipo.slice(1) + " " + novoNumero;
 
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Ao clicar em "Remover"
     btnRemover.addEventListener("click", () => {
-      const itens = frame.querySelectorAll(".item");
+      const itens = frame.querySelectorAll(".itemposto");
       if (itens.length > 0) {
         const ultimo = itens[itens.length - 1];
         ultimo.remove();
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Adiciona alternância de cor nos itens existentes
-    frame.querySelectorAll(".item").forEach((item) => {
+    frame.querySelectorAll(".itemposto").forEach((item) => {
       item.addEventListener("click", alternarCor);
     });
   });

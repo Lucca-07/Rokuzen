@@ -2,10 +2,6 @@ import express from "express";
 const app = express();
 const port = 8080;
 
-import mongoose from "mongoose";
-
-// import mysql2 from "mysql2";
-
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -13,62 +9,40 @@ import path from "path";
 import { fileURLToPath } from "node:url";
 const dirname = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 
-import recuperarSenha from "./recuperarSenha.js";
-import UsuarioInterno from "./UsuarioInterno.js";
-import UsuarioExterno from "./UsuarioExterno.js";
-// import { error } from "node:console";
+import connectDB from "./modules/connect.js";
+connectDB();
+
+import recuperarSenha from "./modules/recuperarSenha.js";
+import Clientes from "../src/models/Clientes.js";
+import Colaboradores from "../src/models/Colaboradores.js";
 
 app.use(express.json());
-
-// async function connectMySQL(){
-
-//     const connection = mysql2.createConnection({
-//         host: process.env.HOST_DB,
-//         port: process.env.PORT_DB,
-//         password: process.env.PASS_DB,
-//         database: process.env.NAME_DB,
-//     });
-//     return connection;
-// }
-
-// Conecta ao banco de dados
-
-const connectMongoDB = async () => {
-    try {
-        await mongoose.connect(process.env.MONGO_URI);
-        console.log("Conectado ao mongodb");
-    } catch (error) {
-        console.log("Erro ao conectar ao mongodb: ", error);
-    }
-};
-connectMongoDB()
-
 
 // Verifique a rota '/vendor' primeiro
 app.use("/vendor", express.static(path.join(dirname, "../node_modules")));
 // Depois, sirva os outros arquivos estáticos
-app.use(express.static(path.join(dirname)));
+app.use(express.static(path.join(dirname, "src")));
 
 // Rota da Página de Login
 app.get("/", (req, res) => {
-    res.sendFile(dirname + "/frontend/index.html");
-});
-// Rota da Página de Recuperação de senha
-app.get("/recuperar", (req, res) => {
-    res.sendFile(dirname + "/frontend/recuperarSenha.html");
+    res.sendFile(path.join(dirname, "src", "frontend", "index.html"));
 });
 
-app.get("/cadastrar", (req,res) => {
-    res.sendFile(dirname + "/frontend/cadastro.html")
-})
+// Rota da Página de Recuperação de senha
+app.get("/recuperar", (req, res) => {
+    res.sendFile(path.join(dirname, "src", "frontend", "recuperarSenha.html"));
+});
+
+app.get("/cadastrar", (req, res) => {
+    res.sendFile(path.join(dirname, "src", "frontend", "cadastro.html"));
+});
 
 // Verifica o Login
 app.post("/login", async (req, res) => {
     const { email, pass } = req.body;
     try {
-        const loginUsuario = await UsuarioInterno.findOne({
-            email: email,
-            pass: pass,
+        const loginUsuario = await Colaboradores.findOne({
+            login: { email: email, pass: pass },
         });
         if (loginUsuario) {
             res.json({ validado: true, mensagem: "Login efetuado!" });
@@ -87,9 +61,11 @@ app.post("/login", async (req, res) => {
 app.post("/recuperar", async (req, res) => {
     const { emailRecuperacao } = req.body;
     try {
-        const emailUsuario = await UsuarioInterno.findOne({
-            email: emailRecuperacao,
+        const emailUsuario = await Colaboradores.findOne({
+            "login.email": emailRecuperacao,
         });
+        console.table(emailUsuario);
+        // console.log(emailRecuperacao);
         if (emailUsuario) {
             recuperarSenha(emailRecuperacao);
             res.json({ mensagem: "Email enviado" });
@@ -112,9 +88,9 @@ app.post("/atualizarSenha", async (req, res) => {
     const { email, newpass } = req.body;
     try {
         // Sintaxe correta: findOneAndUpdate(filtro, atualização, opções)
-        const emailUsuario = await UsuarioInterno.findOneAndUpdate(
-            { email: email }, // Filtro: encontrar o usuário por email
-            { $set: { pass: newpass } },
+        const emailUsuario = await Colaboradores.findOneAndUpdate(
+            { "login.email": email }, // Filtro: encontrar o usuário por email
+            { $set: { "login.pass": newpass } },
             { new: true }
         );
 
@@ -129,6 +105,23 @@ app.post("/atualizarSenha", async (req, res) => {
         console.error("Erro ao atualizar senha:", error);
         res.status(500).json({ mensagem: "Erro no servidor" });
     }
+});
+
+// Rota da página de inicio
+app.get("/inicio", (req, res) => {
+    res.sendFile(path.join(dirname, "src", "frontend", "paginaInicio.html"));
+});
+
+app.get("/postosatendimento", (req, res) => {
+    res.sendFile(path.join(dirname, "src", "frontend", "postoatendimento.html"));
+});
+
+app.get("/escala", (req, res) => {
+    res.sendFile(path.join(dirname, "src", "frontend", "escala.html"));
+});
+
+app.get("/sessao", (req, res) => {
+    res.sendFile(path.join(dirname, "src", "frontend", "sessao.html"));
 });
 
 app.listen(8080, () => {
