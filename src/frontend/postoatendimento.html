@@ -113,66 +113,110 @@
     <main>
 </head>
 <body style="height: 100vh;">
-     <!-- Conteúdo principal -->
-  <main class="container-fluid bg-white py-5 h-100">
-    <div class="text-center mb-5">
-      <h1 class="display-5 fw-semibold" style="font-size: 70px;">Postos de Atendimento</h1>
-    </div>
 
-    <div class="w-75 shadow-lg p-5" style="margin: auto; background-color: #E9EAEE;" >
-      <div class="row justify-content-center g-5 text-center">
-        <!-- Card 1 -->
-        <div class="col-12 col-md-4">
-          <div
-            class="card border-0 shadow-sm rounded-4 overflow-hidden"
-            role="button"
-            onclick="abrirLink('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR44Wg_3YicJriqQgBmUxDId90vFHGJCjg2Fg&s')"
-          >
-            <img
-              src="./img/pd ser.png"
-              class="card-img-top"
-              alt="Cadeira de Massagem"
-            />
-          </div>
+
+<!-- CONTEÚDO PRINCIPAL -->
+<main class="container-fluid bg-white py-5 h-100">
+  <div class="text-center mb-5">
+    <h1 class="display-5 fw-semibold" style="font-size: 70px;">Postos de Atendimento</h1>
+  </div>
+
+  <div class="w-75 shadow-lg p-5" style="margin: auto; background-color: #E9EAEE;">
+    <div class="row justify-content-center g-5 text-center">
+
+      <!-- Card 1 - Cadeira -->
+      <div class="col-12 col-md-4">
+        <div
+          class="card border-0 shadow-sm rounded-4 overflow-hidden"
+          role="button"
+          onclick="abrirPopup('cadeira')"
+        >
+          <img src="./img/pd ser.png" class="card-img-top" alt="Cadeira Quick" />
         </div>
+      </div>
 
-        <!-- Card 2 -->
-        <div class="col-12 col-md-4">
-          <div
-            class="card border-0 shadow-sm rounded-4 overflow-hidden"
-            role="button"
-            onclick="abrirLink('https://www.casadaestetica.com.br/media/catalog/product/cache/1/image/530x530/9df78eab33525d08d6e5fb8d27136e95/m/u/multifuncional1080x1080.jpg')"
-          >
-            <img
-              src="https://eastus1-mediap.svc.ms/transform/thumbnail?provider=spo&farmid=201627&inputFormat=jpg&cs=fFNQTw&docid=https%3A%2F%2Fmy.microsoftpersonalcontent.com%2F_api%2Fv2.0%2Fdrives%2Fb!jmvIB0c3KkW2DdKtRlYupk387Df-x5FGosB1KBYeLapF-jOQy_6CQKhPnEAgAVAf%2Fitems%2F01FVPDFAZ4FMORSQQAENBIGN72P4YBTGY4%3Ftempauth%3Dv1e.eyJzaXRlaWQiOiIwN2M4NmI4ZS0zNzQ3LTQ1MmEtYjYwZC1kMmFkNDY1NjJlYTYiLCJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvbXkubWljcm9zb2Z0cGVyc29uYWxjb250ZW50LmNvbUA5MTg4MDQwZC02YzY3LTRjNWItYjExMi0zNmEzMDRiNjZkYWQiLCJleHAiOiIxNzU5NzczNjAwIn0.-ZnJ7IFQPm1xxm8qM22RyS1VL0ZuZr-0vhkcvoTwODu3pmnHa0JePuT9NETd48poB4HCRUYkrlToBOQxzTP-lvNNoxWvnW-GfjvdVSdYScX90LUjwJLv7-CfUJYd0UG2hZpvTGGSaLJS4eIkSKD6BvBuYpGxFiTiDRKgEY915jDZQ5thqax7TM3MBpKpNJKBFbwguRMnWe3PQrfF2uO3PjadCsLpU86dmq1zO9sHmi8LP5LcDs1BxXCz8xI3uh6sZu9ykPCOiJ3_jYlpusXBVNnloIOTAwdJRdfGqho68aQW1y9m7hMyJ3nd0tUSMcrGTGBtzs8pZhRVIF5XnrTS7hZ2OUPWK4MZVJo_WYAKxQo1KMe_ulAcS1_kGM1-EneBO-HPfrUiAp7JrMzVLBNS-vLvnZWqPvniTzi5evoKs7LGZDTNGjg70jLo8w08dQr1Jdn408fdLRRzvK6HqK26kuZ4PLyCpnvTImxSXAABQBw.QZ0GHgSxhAyub-PHgyDnHt25qgmC-ug1fXZ9yVlsY2g%26version%3DPublished&cb=63893298019&encodeFailures=1&width=1038&height=1558g"
-              class="card-img-top"
-              alt="Maca de Massagem"
-            />
-          </div>
+      <!-- Card 2 - Maca -->
+      <div class="col-12 col-md-4">
+        <div
+          class="card border-0 shadow-sm rounded-4 overflow-hidden"
+          role="button"
+          onclick="abrirPopup('maca')"
+        >
+          <img
+            src="img/Maca.jpeg"
+            class="card-img-top"
+            alt="Maca"
+          />
         </div>
+      </div>
 
-        <!-- Card 3 -->
-        <div class="col-12 col-md-4">
-          <div
-            class="card border-0 shadow-sm rounded-4 overflow-hidden"
-            role="button"
-            onclick="abrirLink('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzHuyelIrwQjuJghHzBGOZKFwqDLEemYPOTA&s')"
-          >
-            <img
-              src="https://eastus1-mediap.svc.ms/transform/thumbnail?provider=spo&farmid=201627&inputFormat=jpg&cs=fFNQTw&docid=https%3A%2F%2Fmy.microsoftpersonalcontent.com%2F_api%2Fv2.0%2Fdrives%2Fb!jmvIB0c3KkW2DdKtRlYupk387Df-x5FGosB1KBYeLapF-jOQy_6CQKhPnEAgAVAf%2Fitems%2F01FVPDFA3DWTU2IKJ5KNDLI24BSFEVILVG%3Ftempauth%3Dv1e.eyJzaXRlaWQiOiIwN2M4NmI4ZS0zNzQ3LTQ1MmEtYjYwZC1kMmFkNDY1NjJlYTYiLCJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvbXkubWljcm9zb2Z0cGVyc29uYWxjb250ZW50LmNvbUA5MTg4MDQwZC02YzY3LTRjNWItYjExMi0zNmEzMDRiNjZkYWQiLCJleHAiOiIxNzU5NzczNjAwIn0.n_eQsA2QVJiezGq7BlQ5ld5jv5EkEBgoHHTBY5M6xX9cNgNbi6DmUbb37H62vvBcWZD2Xzu_1X9giA-qsxYkmpogLWdZ5O--O6VV_dpqiV2OVTOb31SAydDSECYGk0QPdgZubvbZJ5dcoHay0o0QK5v72NSmZusFHZsXVQPqBO7fkNSjyD8VHwHQ2y0DGNbC3M8UtkJ9mbV6mLlyeW1SPTNuQmXF6_6E0P2BDDV_JK2yknNxTFY2qEE6Z0MjubqwNhiotpIAt3B_4ehRtDL-nYxTGi0-Yh044b9L0YGAccIboLbM7GPcmtqZmgnBR5jxfnUzpr59m8mWgds9sltpLi3fG8hO3M8QaMfKQXMs13kRr69md6zdU6kOXOeAMjxl9r3aQa5svAQulD-iDh8culmlsWOw9G1-ks19sM3H4JCBCDiwoI_PP_9oic5wS7OuFTvZs0UlBbSDrYt9VZkJVYAO641vSq_t0Z5nfdURXKU.cF-5z361I_EdvAooiABwlXulTcmAyZk2ggeK50T6Lf8%26version%3DPublished&cb=63893298019&encodeFailures=1&width=259&height=389"
-              class="card-img-top"
-              alt="Poltrona Reclinável"
-            />
-          </div>
+      <!-- Card 3 - Poltrona -->
+      <div class="col-12 col-md-4">
+        <div
+          class="card border-0 shadow-sm rounded-4 overflow-hidden"
+          role="button"
+          onclick="abrirPopup('poltrona')"
+        >
+          <img
+            src="img/Poltrona.jpeg"
+            alt="Poltrona Reflexologia"
+          />
         </div>
       </div>
     </div>
-  </main>
+  </div>
+</main>
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<!-- POPUPS -->
+<div class="popup-bg" id="popup-cadeira" style="display: none;">
+  <div class="popup">
+    <button class="fechar" onclick="fecharPopup('cadeira')">✖</button>
+    <div class="frame">
+      <h3>Cadeira Quick</h3>
+      <div class="item verde">Cadeira 1</div>
+      <div class="item amarelo">Cadeira 2</div>
+      <div class="item vermelho">Cadeira 3</div>
+      <div class="item laranja">Cadeira 4</div>
+      <button class="btncustom">Remover</button>
+      <button class="btncustom">Adicionar</button>
+      <button class="btncustom">Confirmar</button>
+    </div>
+  </div>
+</div>
 
-  <!-- Script personalizado -->
-  <script src="postoatendimento.js"></script>
+<div class="popup-bg" id="popup-maca" style="display: none;">
+  <div class="popup">
+    <button class="fechar" onclick="fecharPopup('maca')">✖</button>
+    <div class="frame">
+      <h3>Maca</h3>
+      <div class="item amarelo">Maca 1</div>
+      <div class="item amarelo">Maca 2</div>
+      <div class="item verde">Maca 3</div>
+      <div class="item laranja">Maca 4</div>
+      <button class="btncustom">Remover</button>
+      <button class="btncustom">Adicionar</button>
+      <button class="btncustom">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="popup-bg" id="popup-poltrona" style="display: none;">
+  <div class="popup">
+    <button class="fechar" onclick="fecharPopup('poltrona')">✖</button>
+    <div class="frame">
+      <h3>Poltrona Reflexologia</h3>
+      <div class="item verde">Poltrona 1</div>
+      <div class="item laranja">Poltrona 2</div>
+      <div class="item verde">Poltrona 3</div>
+      <button class="btncustom">Remover</button>
+      <button class="btncustom">Adicionar</button>
+      <button class="btncustom">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="postoatendimento.js"></script>
 </body>
 </html>
