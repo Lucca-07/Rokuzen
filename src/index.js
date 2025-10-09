@@ -1,62 +1,210 @@
+// IMPORTS
 import express from "express";
-const app = express();
-const port = 8080;
-
 import dotenv from "dotenv";
 dotenv.config();
-
 import path from "path";
 import { fileURLToPath } from "node:url";
-const dirname = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-
 import connectDB from "./modules/connect.js";
 connectDB();
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 import recuperarSenha from "./modules/recuperarSenha.js";
 import Clientes from "../src/models/Clientes.js";
 import Colaboradores from "../src/models/Colaboradores.js";
 
+const dirname = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+const app = express();
+const port = 8080;
+
+// Middleware para o express entender JSON
 app.use(express.json());
 
-// Verifique a rota '/vendor' primeiro
+// Servir os arquivos estáticos do projeto (CSS, IMG ...)
 app.use("/vendor", express.static(path.join(dirname, "../node_modules")));
-// Depois, sirva os outros arquivos estáticos
 app.use(express.static(path.join(dirname, "src")));
 
+// GETS
 // Rota da Página de Login
 app.get("/", (req, res) => {
     res.sendFile(path.join(dirname, "src", "frontend", "index.html"));
 });
-
 // Rota da Página de Recuperação de senha
 app.get("/recuperar", (req, res) => {
     res.sendFile(path.join(dirname, "src", "frontend", "recuperarSenha.html"));
 });
-
-app.get("/cadastrar", (req, res) => {
+// Rota para a Página de Cadastro
+app.get("/cadastrar/:id", async (req, res) => {
+    const id = req.params.id;
+    if (!id) return res.redirect("/");
     res.sendFile(path.join(dirname, "src", "frontend", "cadastro.html"));
 });
+// Rota da página de inicio
+app.get("/inicio/:id", async (req, res) => {
+    const id = req.params.id;
+    if (!id) return res.redirect("/");
+    res.sendFile(path.join(dirname, "src", "frontend", "paginaInicio.html"));
+});
+//Rota da página de postoatendimento
+app.get("/postosatendimento/:id", async (req, res) => {
+    const id = req.params.id;
+    if (!id) return res.redirect("/");
+    res.sendFile(
+        path.join(dirname, "src", "frontend", "postoatendimento.html")
+    );
+});
+//Rota da página de escala
+app.get("/escala/:id", async (req, res) => {
+    const id = req.params.id;
+    if (!id) return res.redirect("/");
+    res.sendFile(path.join(dirname, "src", "frontend", "escala.html"));
+});
+//Rota da página de sessoes
+app.get("/sessao/:id", async (req, res) => {
+    const id = req.params.id;
+    if (!id) return res.redirect("/");
+    res.sendFile(path.join(dirname, "src", "frontend", "sessao.html"));
+});
 
-// Verifica o Login
-app.post("/login", async (req, res) => {
-    const { email, pass } = req.body;
+// Rota de API
+app.get("/api/colaboradores/:id", checkToken, async (req, res) => {
+    const id = req.params.id;
     try {
-        const loginUsuario = await Colaboradores.findOne({
-            login: { email: email, pass: pass },
-        });
-        if (loginUsuario) {
-            res.json({ validado: true, mensagem: "Login efetuado!" });
-            // console.log(loginUsuario.role);
-        } else {
-            res.status(401).json({
-                validado: false,
-                mensagem: "Usuário ou senha inválidos",
-            });
+        // Opcional: garantir que o id do token bate com o id pedido (ou tratar roles/admin)
+        if (req.userId !== id) {
+            return res.status(403).json({ msg: "Acesso proibido." });
         }
-    } catch (error) {
-        res.status(500).json({ validado: false, mensagem: "Erro no servidor" });
+
+        const user = await Colaboradores.findById(id, "-login.pass");
+        if (!user)
+            return res.status(404).json({ msg: "Usuário não encontrado." });
+
+        res.json({ user });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ msg: "Erro no servidor." });
     }
 });
+
+// POSTS
+// Registrar Usuário
+app.post("/auth/register", async (req, res) => {
+    const {
+        nome_colaborador,
+        ativo,
+        tipo_colaborador,
+        unidades_trabalha,
+        perfis_usuario,
+    } = req.body;
+    const { email, pass, confirmpass } = req.body.login;
+    if (!nome_colaborador) {
+        return res.status(422).json({ msg: "O nome é obrigatório" });
+    }
+    if (!email) {
+        return res.status(422).json({ msg: "O email é obrigatório" });
+    }
+    if (!pass) {
+        return res.status(422).json({ msg: "A senha é obrigatório" });
+    }
+    if (pass !== confirmpass) {
+        return res.status(422).json({ msg: "As senhas não conferem" });
+    }
+    if (!perfis_usuario) {
+        return res
+            .status(422)
+            .json({ msg: "O usuário deve ter pelo menos 1 perfil" });
+    }
+    // Checa se ja existe um user com o email
+    const userExist = await Colaboradores.findOne({ email: email });
+    if (userExist) {
+        return res.status(422).json({ msg: "Por favor utilize outro email" });
+    }
+    // Cria a senha hash
+    const salt = await bcrypt.genSalt(12);
+    const passHash = await bcrypt.hash(pass, salt);
+    const user = new Colaboradores({
+        nome_colaborador,
+        ativo,
+        tipo_colaborador,
+        unidades_trabalha,
+        perfis_usuario,
+        login: { email, pass: passHash },
+    });
+    try {
+        const novoUser = await Colaboradores.create(user);
+        res.status(201).json({ msg: "Usuário criado com sucesso!" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: "Aconteceu um erro na aplicação!",
+        });
+    }
+});
+// Verifica o Login
+app.post("/auth/login", async (req, res) => {
+    const { email, pass } = req.body;
+    if (!email) {
+        console.log(email);
+        return res.status(422).json({ msg: "O email é obrigatório" });
+    }
+    if (!pass) {
+        return res.status(422).json({ msg: "A senha é obrigatório" });
+    }
+    // Chegar se o colaborador existe
+    const user = await Colaboradores.findOne({ "login.email": email });
+    if (!user) {
+        return res.status(404).json({ msg: "Email não encontrado" });
+    }
+    // Chega a senha do user
+    const checkPass = await bcrypt.compare(pass, user.login.pass);
+    if (!checkPass) {
+        return res.status(422).json({ msg: "Senha inválida" });
+    }
+
+    try {
+        const secret = process.env.SECRET;
+
+        const token = jwt.sign(
+            {
+                id: user._id,
+            },
+            secret
+        );
+
+        res.status(200).json({
+            msg: "Autenticação realizada com sucesso",
+            token: token,
+            validado: true,
+            redirect: `/inicio/${user._id}`,
+            id: user._id,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json("Aconteceu um erro na aplicação!");
+    }
+});
+
+function checkToken(req, res, next) {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+
+    if (!token) {
+        return res
+            .status(401)
+            .json({ msg: "Acesso negado. Token não fornecido." });
+    }
+
+    try {
+        const secret = process.env.SECRET;
+        const decoded = jwt.verify(token, secret);
+        req.userId = decoded.id; // anexa id do token
+        next();
+    } catch (error) {
+        console.log("JWT error:", error);
+        return res.status(401).json({ msg: "Token inválido." });
+    }
+}
+
 // Verifica se o email a ser recuperado está no banco de dados
 app.post("/recuperar", async (req, res) => {
     const { emailRecuperacao } = req.body;
@@ -67,12 +215,12 @@ app.post("/recuperar", async (req, res) => {
         console.table(emailUsuario);
         // console.log(emailRecuperacao);
         if (emailUsuario) {
-            recuperarSenha(emailRecuperacao);
-            res.json({ mensagem: "Email enviado" });
             console.log(emailRecuperacao);
+            recuperarSenha(emailRecuperacao);
+            res.json({ msg: "Email enviado" });
         } else {
             res.status(401).json({
-                mensagem: "Email não existente",
+                msg: "Email não existente",
             });
             console.log(
                 "Tentativa de recuperação com email não existente:",
@@ -80,7 +228,7 @@ app.post("/recuperar", async (req, res) => {
             );
         }
     } catch (error) {
-        res.status(500).json({ mensagem: "Erro no servidor" });
+        res.status(500).json({ msg: "Erro no servidor" });
     }
 });
 // Pega os dados e atualiza a senha
@@ -96,34 +244,19 @@ app.post("/atualizarSenha", async (req, res) => {
 
         if (emailUsuario) {
             // Envia a resposta de sucesso APENAS UMA VEZ
-            res.json({ mensagem: "Senha atualizada com sucesso!" });
+            res.json({ msg: "Senha atualizada com sucesso!" });
         } else {
             // Envia a resposta de erro APENAS UMA VEZ
-            res.status(404).json({ mensagem: "Usuário não encontrado." });
+            res.status(404).json({ msg: "Usuário não encontrado." });
         }
     } catch (error) {
         console.error("Erro ao atualizar senha:", error);
-        res.status(500).json({ mensagem: "Erro no servidor" });
+        res.status(500).json({ msg: "Erro no servidor" });
     }
 });
 
-// Rota da página de inicio
-app.get("/inicio", (req, res) => {
-    res.sendFile(path.join(dirname, "src", "frontend", "paginaInicio.html"));
-});
-
-app.get("/postosatendimento", (req, res) => {
-    res.sendFile(path.join(dirname, "src", "frontend", "postoatendimento.html"));
-});
-
-app.get("/escala", (req, res) => {
-    res.sendFile(path.join(dirname, "src", "frontend", "escala.html"));
-});
-
-app.get("/sessao", (req, res) => {
-    res.sendFile(path.join(dirname, "src", "frontend", "sessao.html"));
-});
-
-app.listen(8080, () => {
+// SERVER
+// Faz o servidor rodar
+app.listen(port, () => {
     console.log(`Servidor rodando na porta: ${port}`);
 });

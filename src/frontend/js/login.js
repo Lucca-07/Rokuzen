@@ -18,7 +18,7 @@ async function validarUsuario() {
     const email = document.getElementById("email").value;
     const pass = document.getElementById("pass").value;
     try {
-        const response = await fetch("/login", {
+        const response = await fetch("/auth/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -26,17 +26,18 @@ async function validarUsuario() {
             body: JSON.stringify({ email: email, pass: pass }),
         });
 
-        const result = await response.json();
+        const data = await response.json();
 
-        if (response.ok) {
-            console.log(result.message);
-            console.log("Login bem sucedido!");
+        if (data.validado && data.redirect) {
+            localStorage.setItem("token", data.token); // salva o token
+            localStorage.setItem("userId", data.id); // Salva o id
+            window.location.href = data.redirect; 
         } else {
-            console.error(result.message);
-            console.log("Email ou senha inválidos");
+            console.error("Falha no login:", data.msg);
+            alert(data.msg || "Email ou senha inválidos");
         }
     } catch (error) {
-        console.log({ error: error });
+        console.error("Erro:", error);
         alert("Erro ao tentar fazer login.");
     }
 }

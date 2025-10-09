@@ -1,4 +1,6 @@
 import express from "express";
+import dotenv from "dotenv";
+dotenv.config();
 import get_all_users from "./User.js"; // Importa a função de busca
 
 // Importa o módulo de conexão com o DB
@@ -9,7 +11,6 @@ import userRoutes from "./routes/user.routes.js"; // Novo arquivo
 import clientRoutes from "./routes/client.routes.js"; // Novo arquivo
 
 const app = express();
-
 
 let users = {
     data: [],
@@ -33,10 +34,13 @@ app.use(express.json());
 // --- Rotas de Usuários Internos ---
 // O roteador 'userRoutes' será responsável por todas as rotas que começam com '/' (no contexto da API)
 // Mantendo a rota base ('/') para usuários internos, como estava.
-app.use("/",(req, res, next) => {
+app.use(
+    "/users",
+    (req, res, next) => {
         req.app.locals.users = users;
         next();
-    }, userRoutes
+    },
+    userRoutes
 );
 
 // --- Rotas de Clientes ---
