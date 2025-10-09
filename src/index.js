@@ -1,167 +1,198 @@
 import express from "express";
-const app = express();
-// Use PORT from environment if provided, otherwise default to 8000
-const port = process.env.PORT || 8000;
-
 import dotenv from "dotenv";
-dotenv.config();
-
 import path from "path";
 import { fileURLToPath } from "node:url";
 import fs from "fs";
-const dirname = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 
 import connectDB from "./modules/connect.js";
+import recuperarSenha from "./modules/recuperarSenha.js";
+import Colaboradores from "./models/Colaboradores.js";
+import Timer from "./models/Timers.js";
+
+dotenv.config();
 connectDB();
 
-import recuperarSenha from "./modules/recuperarSenha.js";
-import Clientes from "../src/models/Clientes.js";
-import Colaboradores from "../src/models/Colaboradores.js";
+const app = express();
+const port = process.env.PORT || 8000;
+
+// Caminhos: projectRoot = repositório root, srcDir = <project>/src, frontendDir = <project>/src/frontend
+const __filename = fileURLToPath(import.meta.url);
+const srcDir = path.dirname(__filename); // .../src
+const projectRoot = path.dirname(srcDir);
+const frontendDir = path.join(srcDir, "frontend");
 
 app.use(express.json());
 
-// Verifique a rota '/vendor' primeiro
-app.use("/vendor", express.static(path.join(dirname, "../node_modules")));
-// Depois, sirva os outros arquivos estáticos
-app.use(express.static(path.join(dirname, "src")));
+// Loga todas as requisições para diagnóstico
+app.use((req, res, next) => {
+  console.log(new Date().toISOString(), req.method, req.originalUrl);
+  next();
+});
 
-// Rota da Página de Login
+app.use("/vendor", express.static(path.join(projectRoot, "node_modules")));
+// Serve arquivos estáticos do frontend no caminho /frontend (ex: /frontend/js/sessao.js)
+app.use("/frontend", express.static(frontendDir));
+
+// --- FUNÇÃO PARA SERVIR HTML ---
 function sendHtmlFile(res, filePath) {
-    try {
-        const stat = fs.statSync(filePath);
-        console.log("stat:", { size: stat.size, isFile: stat.isFile() });
-    } catch (e) {
-        console.error("stat error:", e);
-    }
-    res.sendFile(filePath, (err) => {
-        if (!err) return;
-        console.error("sendFile error for", filePath, "->", err);
+  try {
+    const stat = fs.statSync(filePath);
+    console.log("stat:", { size: stat.size, isFile: stat.isFile() });
+  } catch (e) {
+    console.error("stat error:", e);
+  }
+  res.sendFile(filePath, (err) => {
+    if (!err) return;
+    console.error("sendFile error for", filePath, "->", err);
 
-        try {
-            const data = fs.readFileSync(filePath, { encoding: "utf8" });
-            res.type("html").send(data);
-            console.log("Fallback: sent file contents for", filePath);
-        } catch (readErr) {
-            console.error("Fallback read error for", filePath, readErr);
-            if (!res.headersSent) res.status(readErr.code === 'ENOENT' ? 404 : 500).send("Error serving file");
-        }
-    });
+    try {
+      const data = fs.readFileSync(filePath, { encoding: "utf8" });
+      res.type("html").send(data);
+      console.log("Fallback: sent file contents for", filePath);
+    } catch (readErr) {
+      console.error("Fallback read error for", filePath, readErr);
+      if (!res.headersSent)
+        res.status(readErr.code === "ENOENT" ? 404 : 500).send("Error serving file");
+    }
+  });
+}
+// --- ROTAS DE FRONTEND ---
+
+const rotasHTML = {
+  "/": "index.html",
+  "/recuperar": "recuperarSenha.html",
+  "/cadastrar": "cadastro.html",
+  "/inicio": "paginaInicio.html",
+  "/postosatendimento": "postoatendimento.html",
+  "/escala": "escala.html",
+  "/sessao": "sessao.html",
+};
+
+for (const [rota, arquivo] of Object.entries(rotasHTML)) {
+  app.get(rota, (req, res) => {
+    const filePath = path.join(frontendDir, arquivo);
+    console.log(`GET ${rota} ->`, filePath, "exists:", fs.existsSync(filePath));
+    sendHtmlFile(res, filePath);
+  });
 }
 
-app.get("/", (req, res) => {
-    const filePath = path.join(dirname, "src", "frontend", "index.html");
-    console.log("GET / ->", filePath, "exists:", fs.existsSync(filePath));
-    sendHtmlFile(res, filePath);
-});
-
-// Rota da Página de Recuperação de senha
-app.get("/recuperar", (req, res) => {
-    const filePath = path.join(dirname, "src", "frontend", "recuperarSenha.html");
-    console.log("GET /recuperar ->", filePath, "exists:", fs.existsSync(filePath));
-    sendHtmlFile(res, filePath);
-});
-
-app.get("/cadastrar", (req, res) => {
-    const filePath = path.join(dirname, "src", "frontend", "cadastro.html");
-    console.log("GET /cadastrar ->", filePath, "exists:", fs.existsSync(filePath));
-    sendHtmlFile(res, filePath);
-});
-
-// Verifica o Login
+// --- LOGIN E RECUPERAÇÃO ---
 app.post("/login", async (req, res) => {
-    const { email, pass } = req.body;
-    try {
-        const loginUsuario = await Colaboradores.findOne({
-            login: { email: email, pass: pass },
-        });
-        if (loginUsuario) {
-            res.json({ validado: true, mensagem: "Login efetuado!" });
-            // console.log(loginUsuario.role);
-        } else {
-            res.status(401).json({
-                validado: false,
-                mensagem: "Usuário ou senha inválidos",
-            });
-        }
-    } catch (error) {
-        res.status(500).json({ validado: false, mensagem: "Erro no servidor" });
-    }
+  const { email, pass } = req.body;
+  try {
+    const usuario = await Colaboradores.findOne({ "login.email": email, "login.pass": pass });
+    if (usuario) res.json({ validado: true, mensagem: "Login efetuado!" });
+    else res.status(401).json({ validado: false, mensagem: "Usuário ou senha inválidos" });
+  } catch {
+    res.status(500).json({ validado: false, mensagem: "Erro no servidor" });
+  }
 });
-// Verifica se o email a ser recuperado está no banco de dados
+
 app.post("/recuperar", async (req, res) => {
-    const { emailRecuperacao } = req.body;
-    try {
-        const emailUsuario = await Colaboradores.findOne({
-            "login.email": emailRecuperacao,
-        });
-        console.table(emailUsuario);
-        // console.log(emailRecuperacao);
-        if (emailUsuario) {
-            recuperarSenha(emailRecuperacao);
-            res.json({ mensagem: "Email enviado" });
-            console.log(emailRecuperacao);
-        } else {
-            res.status(401).json({
-                mensagem: "Email não existente",
-            });
-            console.log(
-                "Tentativa de recuperação com email não existente:",
-                emailRecuperacao
-            );
-        }
-    } catch (error) {
-        res.status(500).json({ mensagem: "Erro no servidor" });
+  const { emailRecuperacao } = req.body;
+  try {
+    const usuario = await Colaboradores.findOne({ "login.email": emailRecuperacao });
+    if (usuario) {
+      recuperarSenha(emailRecuperacao);
+      res.json({ mensagem: "Email enviado" });
+    } else {
+      res.status(401).json({ mensagem: "Email não existente" });
     }
+  } catch {
+    res.status(500).json({ mensagem: "Erro no servidor" });
+  }
 });
-// Pega os dados e atualiza a senha
+
 app.post("/atualizarSenha", async (req, res) => {
-    const { email, newpass } = req.body;
+  const { email, newpass } = req.body;
+  try {
+    const usuario = await Colaboradores.findOneAndUpdate(
+      { "login.email": email },
+      { $set: { "login.pass": newpass } },
+      { new: true }
+    );
+    if (usuario) res.json({ mensagem: "Senha atualizada com sucesso!" });
+    else res.status(404).json({ mensagem: "Usuário não encontrado." });
+  } catch {
+    res.status(500).json({ mensagem: "Erro no servidor" });
+  }
+});
+
+// --- ROTAS DA API ---
+
+// Todos os terapeutas ativos
+app.get("/api/terapeutas", async (req, res) => {
+  try {
+    const terapeutas = await Colaboradores.find(
+      {
+        $and: [
+          {
+            $or: [
+              { tipo_colaborador: { $regex: /terapeuta/i } },
+              { perfis_usuario: { $in: [/terapeuta/i] } },
+            ],
+          },
+          { $or: [{ ativo: true }, { ativo: { $exists: false } }] },
+        ],
+      },
+      { nome_colaborador: 1, tipo_colaborador: 1, ativo: 1, perfis_usuario: 1 }
+    ).lean();
+
+
+    // Buscar timers correspondentes (por nome_colaborador) e anexar tempoRestante
     try {
-        // Sintaxe correta: findOneAndUpdate(filtro, atualização, opções)
-        const emailUsuario = await Colaboradores.findOneAndUpdate(
-            { "login.email": email }, // Filtro: encontrar o usuário por email
-            { $set: { "login.pass": newpass } },
-            { new: true }
-        );
+      // Primeiro tenta localizar timers por colaborador_id (se o Timer tiver esse campo)
+      const ids = terapeutas.map(t => t._id).filter(Boolean);
+      const timersById = await Timer.find({ colaborador_id: { $in: ids } }, { colaborador_id: 1, tempoRestante: 1 }).lean();
+      const mapaTimersById = new Map(timersById.map(t => [String(t.colaborador_id), t.tempoRestante]));
 
-        if (emailUsuario) {
-            // Envia a resposta de sucesso APENAS UMA VEZ
-            res.json({ mensagem: "Senha atualizada com sucesso!" });
-        } else {
-            // Envia a resposta de erro APENAS UMA VEZ
-            res.status(404).json({ mensagem: "Usuário não encontrado." });
-        }
-    } catch (error) {
-        console.error("Erro ao atualizar senha:", error);
-        res.status(500).json({ mensagem: "Erro no servidor" });
+      // Também busque por nome_colaborador
+      const nomes = terapeutas.map(t => t.nome_colaborador).filter(Boolean);
+      const timersByName = await Timer.find({ nome_colaborador: { $in: nomes } }, { nome_colaborador: 1, tempoRestante: 1 }).lean();
+      const mapaTimersByName = new Map(timersByName.map(t => [t.nome_colaborador, t.tempoRestante]));
+
+      const terapeutasComTimer = terapeutas.map(t => {
+        const byId = mapaTimersById.get(String(t._id));
+        const byName = mapaTimersByName.get(t.nome_colaborador);
+        return { ...t, tempoRestante: byId ?? byName ?? null };
+      });
+
+      res.json(terapeutasComTimer);
+    } catch (timerErr) {
+      // Se houve erro ao buscar timers, retorna terapeutas sem tempo 
+      res.json(terapeutas.map(t => ({ ...t, tempoRestante: null })));
     }
+  } catch (err) {
+    // Em caso de erro, retorna mensagem padrão sem detalhes sensíveis
+    res.status(500).json({ error: "Erro ao buscar terapeutas" });
+  }
 });
 
-// Rota da página de inicio
-app.get("/inicio", (req, res) => {
-    const filePath = path.join(dirname, "src", "frontend", "paginaInicio.html");
-    console.log("GET /inicio ->", filePath, "exists:", fs.existsSync(filePath));
-    sendHtmlFile(res, filePath);
+// Todos os timers
+app.get("/api/timers", async (req, res) => {
+  try {
+    const timers = await Timer.find();
+    res.json(timers);
+  } catch (err) {
+    console.error("Erro ao buscar timers:", err);
+    res.status(500).json({ error: "Erro ao buscar timers" });
+  }
 });
 
-app.get("/postosatendimento", (req, res) => {
-    const filePath = path.join(dirname, "src", "frontend", "postoatendimento.html");
-    console.log("GET /postosatendimento ->", filePath, "exists:", fs.existsSync(filePath));
-    sendHtmlFile(res, filePath);
+// Handler para rotas /api não encontradas,retorna JSON claro em vez de Not Found 
+app.use('/api', (req, res) => {
+  console.warn('Rota API não encontrada:', req.method, req.originalUrl);
+  res.status(404).json({ error: 'Rota API não encontrada', path: req.originalUrl });
 });
 
-app.get("/escala", (req, res) => {
-    const filePath = path.join(dirname, "src", "frontend", "escala.html");
-    console.log("GET /escala ->", filePath, "exists:", fs.existsSync(filePath));
-    sendHtmlFile(res, filePath);
+// Erro 404 para outras rotas, retorna HTML simples
+app.use((req, res) => {
+  console.warn('Rota não encontrada:', req.method, req.originalUrl);
+  if (req.originalUrl.startsWith('/api')) return res.status(404).json({ error: 'Rota API não encontrada' });
+  res.status(404).send('Página não encontrada');
 });
 
-app.get("/sessao", (req, res) => {
-    const filePath = path.join(dirname, "src", "frontend", "sessao.html");
-    console.log("GET /sessao ->", filePath, "exists:", fs.existsSync(filePath));
-    sendHtmlFile(res, filePath);
-});
-
+// --- INICIA SERVIDOR ---
 app.listen(port, () => {
-    console.log(`Servidor rodando na porta: ${port}`);
+  console.log(`Servidor rodando na porta: ${port}`);
 });
