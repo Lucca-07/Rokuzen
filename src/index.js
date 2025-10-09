@@ -179,6 +179,56 @@ app.get("/api/timers", async (req, res) => {
   }
 });
 
+// Cria ou atualiza um timer para um colaborador
+app.post('/api/timers', async (req, res) => {
+  try {
+    const { colaborador_id, nome_colaborador, tempoRestante, emAndamento } = req.body;
+    if (!colaborador_id && !nome_colaborador) return res.status(400).json({ error: 'colaborador_id ou nome_colaborador é necessário' });
+
+    // tenta upsert por colaborador_id primeiro, senão por nome
+    const query = colaborador_id ? { colaborador_id } : { nome_colaborador };
+    const update = { colaborador_id, nome_colaborador, tempoRestante, emAndamento };
+    const opts = { upsert: true, new: true, setDefaultsOnInsert: true };
+
+    const timer = await Timer.findOneAndUpdate(query, update, opts);
+    res.json(timer);
+  } catch (err) {
+    console.error('Erro ao criar/atualizar timer:', err);
+    res.status(500).json({ error: 'Erro ao criar/atualizar timer' });
+  }
+});
+
+// Atualiza um timer (tempo restante / estado)
+app.put('/api/timers/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { tempoRestante, emAndamento } = req.body;
+    const update = {};
+    if (typeof tempoRestante !== 'undefined') update.tempoRestante = tempoRestante;
+    if (typeof emAndamento !== 'undefined') update.emAndamento = emAndamento;
+
+    const timer = await Timer.findByIdAndUpdate(id, { $set: update }, { new: true });
+    if (!timer) return res.status(404).json({ error: 'Timer não encontrado' });
+    res.json(timer);
+  } catch (err) {
+    console.error('Erro ao atualizar timer:', err);
+    res.status(500).json({ error: 'Erro ao atualizar timer' });
+  }
+});
+
+// Deleta um timer
+app.delete('/api/timers/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const timer = await Timer.findByIdAndDelete(id);
+    if (!timer) return res.status(404).json({ error: 'Timer não encontrado' });
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Erro ao deletar timer:', err);
+    res.status(500).json({ error: 'Erro ao deletar timer' });
+  }
+});
+
 // Handler para rotas /api não encontradas,retorna JSON claro em vez de Not Found 
 app.use('/api', (req, res) => {
   console.warn('Rota API não encontrada:', req.method, req.originalUrl);
