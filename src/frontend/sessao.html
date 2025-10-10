@@ -68,67 +68,69 @@
 		</div>
 	</div>
 
-	<!-- Botões superiores -->
+	<!-- Conteudo da pagina divido em 2 partes -->
 	<div class="container my-4">
-		<div class="row">
-			<div class="col-12 col-md-6 text-md-start text-center mb-2 mb-md-0">
-				<!-- Botão abre modal Selecionar Terapeuta -->
-				<button class="btn btn-light border rounded-3 px-4 py-3 fs-5" style="background-color: #F6F6F6;"
-					data-bs-toggle="modal" data-bs-target="#popupTerapeuta">
-					Selecionar Terapeuta
-				</button>
-			</div>
-			<div class="col-12 col-md-6 text-md-end text-center">
-				<!-- Botão abre modal Próximos Agendamentos -->
-				<button class="btn btn-light border rounded-3 px-4 py-3 fs-5" style="background-color: #F6F6F6;"
-					data-bs-toggle="modal" data-bs-target="#popupAgendamentos">
-					Próximos Agendamentos
-				</button>
+	<div class="row align-items-start">
+
+		<!-- LADO ESQUERDO: Terapeuta e Timer -->
+		<div class="col-12 col-md-6 d-flex flex-column align-items-center text-center text-md-start">
+
+			<!-- Botão Selecionar Terapeuta -->
+			<button class="btn btn-light border rounded-3 px-4 py-3 fs-5 mb-4" style="background-color: #F6F6F6;"
+				data-bs-toggle="modal" data-bs-target="#popupTerapeuta">
+				Selecionar Terapeuta
+			</button>
+
+			<!-- Círculo com timer -->
+			<div class="d-flex flex-column justify-content-center align-items-center">
+
+				<!-- Círculo -->
+				<div class="timer-circle d-flex flex-column justify-content-center align-items-center text-center mb-4">
+					<h2 id="timer" class="timer-title display-1 fw-bold">10:00</h2>
+
+					<!-- Botões de adicionar tempo -->
+					<div class="d-flex flex-wrap justify-content-center w-75 mt-3">
+						<div class="d-flex gap-2 justify-content-center w-100">
+							<button id="Adicionar1min" class="btn btn-outline-success rounded-pill px-3 fw-bold">+1:00</button>
+							<button id="Adicionar5min" class="btn btn-outline-success rounded-pill px-3 fw-bold">+5:00</button>
+						</div>
+						<div class="d-flex justify-content-center w-100 mt-2">
+							<button id="Adicionar10min" class="btn btn-outline-success rounded-pill px-3 fw-bold">+10:00</button>
+						</div>
+					</div>
+				</div>
+
+				<!-- Botões de controle -->
+				<div class="text-center">
+					<button id="btnIniciar" onclick="iniciarTimer()"
+						class="btn btn-success btn-lg rounded-pill px-5 py-3 fw-bold">
+						Iniciar
+					</button>
+					<button id="btnPausar" onclick="pausarOuContinuar()"
+						class="btn btn-lg rounded-pill px-5 py-3 fw-bold d-none"
+						style="background-color:#8ABB00; border-color:#8ABB00; color:white;">
+						Pausar
+					</button>
+					<button id="btnReiniciar" onclick="reiniciarTimer()"
+						class="btn btn-lg rounded-pill px-5 py-3 fw-bold d-none"
+						style="background-color:#8ABB00; border-color:#8ABB00; color:white;">
+						Reiniciar
+					</button>
+				</div>
+
 			</div>
 		</div>
+
+		<!-- Lado direito: Agendamentos do dia -->
+		<div class="col-12 col-md-6 d-flex justify-content-center justify-content-md-end align-items-start text-center text-md-end mt-4 mt-md-0">
+			<button class="btn btn-light border rounded-3 px-4 py-3 fs-5" style="background-color: #F6F6F6;"
+				data-bs-toggle="modal" data-bs-target="#popupAgendamentos">
+				Próximos Agendamentos
+			</button>
+		</div>
+
 	</div>
-	<!-- Círculo com timer -->
-	<div class="d-flex flex-column justify-content-center align-items-center">
-
-		<!-- Círculo -->
-		<div class="timer-circle d-flex flex-column justify-content-center align-items-center text-center mb-4">
-			<h2 id="timer" class="timer-title display-1 fw-bold">10:00</h2>
-
-			<!-- Botões de adicionar tempo -->
-			<div class="d-flex flex-wrap justify-content-center w-75 mt-3">
-				<div class="d-flex gap-2 justify-content-center w-100">
-					<button id="Adicionar1min" class="btn btn-outline-success rounded-pill px-3 fw-bold">+1:00</button>
-					<button id="Adicionar5min" class="btn btn-outline-success rounded-pill px-3 fw-bold">+5:00</button>
-				</div>
-				<div class="d-flex justify-content-center w-100 mt-2">
-					<button id="Adicionar10min"
-						class="btn btn-outline-success rounded-pill px-3 fw-bold">+10:00</button>
-				</div>
-			</div>
-		</div>
-
-		<!-- Botão iniciar (fora do círculo) -->
-		<div class="text-center">
-			<!-- Botão Iniciar -->
-			<button id="btnIniciar" onclick="iniciarTimer()"
-				class="btn btn-success btn-lg rounded-pill px-5 py-3 fw-bold">
-				Iniciar
-			</button>
-			<!-- Botão Pausar/Continuar (começa escondido) -->
-			<button id="btnPausar" onclick="pausarOuContinuar()"
-				class="btn btn-lg rounded-pill px-5 py-3 fw-bold d-none"
-				style="background-color:#8ABB00; border-color:#8ABB00; color:white;">
-				Pausar
-			</button>
-
-			<!-- Botão Reiniciar (começa escondido) -->
-			<button id="btnReiniciar" onclick="reiniciarTimer()"
-				class="btn btn-lg rounded-pill px-5 py-3 fw-bold d-none"
-				style="background-color:#8ABB00; border-color:#8ABB00; color:white;">
-				Reiniciar
-			</button>
-
-		</div>
+</div>
 
 
 		<!-- Modal Selecionar Terapeuta  -->
@@ -149,7 +151,7 @@
 			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
 					<div class="modal-body p-3 text-center">
-						<h3 class="fs-5 fw-semibold text-dark mb-4">Próximos Agendamentos</h3>
+						<h3 class="fs-5 fw-semibold text-dark mb-4">Próximos Agendamentos do Dia</h3>
 
 						<div class="border border-2 rounded-3 bg-light-subtle p-2 mb-3">
 							<span class="d-block small mb-1">⏰ 10:50</span>
