@@ -66,6 +66,11 @@ app.get("/sessao/:id", async (req, res) => {
     if (!id) return res.redirect("/");
     res.sendFile(path.join(dirname, "src", "frontend", "sessao.html"));
 });
+//Rota da página de listar Terapeutas
+app.get("/listarterapeutas", async (req, res) => {
+    res.sendFile(path.join(dirname, "src", "frontend", "listarTerapeutas.html"));
+});
+
 // Rota de API
 app.get("/api/colaboradores/:id", checkToken, async (req, res) => {
     const id = req.params.id;
