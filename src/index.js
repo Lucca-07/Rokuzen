@@ -211,7 +211,6 @@ app.post("/recuperar", async (req, res) => {
         const emailUsuario = await Colaboradores.findOne({
             "login.email": emailRecuperacao,
         });
-        console.table(emailUsuario);
         // console.log(emailRecuperacao);
         if (emailUsuario) {
             console.log(emailRecuperacao);

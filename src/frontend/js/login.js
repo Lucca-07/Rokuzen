@@ -57,9 +57,9 @@ async function recuperarSenha() {
         const data = await response.json();
 
         if (response.ok) {
-            alert(data.mensagem); // Ex: "Email enviado"
+            alert(data.msg); // Ex: "Email enviado"
         } else {
-            alert(data.mensagem); // Ex: "Email não existente"
+            alert(data.msg); // Ex: "Email não existente"
         }
     } catch (error) {
         console.error("Erro ao tentar recuperar senha:", error);
