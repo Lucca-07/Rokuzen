@@ -13,6 +13,7 @@ import recuperarSenha from "./modules/recuperarSenha.js";
 import Clientes from "../src/models/Clientes.js";
 import Colaboradores from "../src/models/Colaboradores.js";
 
+// CONSTANTS IMPORTANTES
 const dirname = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const app = express();
 const port = 8080;
@@ -65,7 +66,6 @@ app.get("/sessao/:id", async (req, res) => {
     if (!id) return res.redirect("/");
     res.sendFile(path.join(dirname, "src", "frontend", "sessao.html"));
 });
-
 // Rota de API
 app.get("/api/colaboradores/:id", checkToken, async (req, res) => {
     const id = req.params.id;
@@ -85,6 +85,26 @@ app.get("/api/colaboradores/:id", checkToken, async (req, res) => {
         res.status(500).json({ msg: "Erro no servidor." });
     }
 });
+function checkToken(req, res, next) {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+
+    if (!token) {
+        return res
+            .status(401)
+            .json({ msg: "Acesso negado. Token não fornecido." });
+    }
+
+    try {
+        const secret = process.env.SECRET;
+        const decoded = jwt.verify(token, secret);
+        req.userId = decoded.id; // anexa id do token
+        next();
+    } catch (error) {
+        console.log("JWT error:", error);
+        return res.status(401).json({ msg: "Token inválido." });
+    }
+}
 
 // POSTS
 // Registrar Usuário
@@ -115,7 +135,7 @@ app.post("/auth/register", async (req, res) => {
             .json({ msg: "O usuário deve ter pelo menos 1 perfil" });
     }
     // Checa se ja existe um user com o email
-    const userExist = await Colaboradores.findOne({ email: email });
+    const userExist = await Colaboradores.findOne({ "login.email": email });
     if (userExist) {
         return res.status(422).json({ msg: "Por favor utilize outro email" });
     }
@@ -184,27 +204,6 @@ app.post("/auth/login", async (req, res) => {
     }
 });
 
-function checkToken(req, res, next) {
-    const authHeader = req.headers["authorization"];
-    const token = authHeader && authHeader.split(" ")[1];
-
-    if (!token) {
-        return res
-            .status(401)
-            .json({ msg: "Acesso negado. Token não fornecido." });
-    }
-
-    try {
-        const secret = process.env.SECRET;
-        const decoded = jwt.verify(token, secret);
-        req.userId = decoded.id; // anexa id do token
-        next();
-    } catch (error) {
-        console.log("JWT error:", error);
-        return res.status(401).json({ msg: "Token inválido." });
-    }
-}
-
 // Verifica se o email a ser recuperado está no banco de dados
 app.post("/recuperar", async (req, res) => {
     const { emailRecuperacao } = req.body;
@@ -234,19 +233,24 @@ app.post("/recuperar", async (req, res) => {
 // Pega os dados e atualiza a senha
 app.post("/atualizarSenha", async (req, res) => {
     const { email, newpass } = req.body;
+
+    const salt = await bcrypt.genSalt(12);
+    const passHash = await bcrypt.hash(newpass, salt);
     try {
         // Sintaxe correta: findOneAndUpdate(filtro, atualização, opções)
         const emailUsuario = await Colaboradores.findOneAndUpdate(
             { "login.email": email }, // Filtro: encontrar o usuário por email
-            { $set: { "login.pass": newpass } },
+            {
+                $set: {
+                    "login.pass": passHash,
+                },
+            },
             { new: true }
         );
 
         if (emailUsuario) {
-            // Envia a resposta de sucesso APENAS UMA VEZ
             res.json({ msg: "Senha atualizada com sucesso!" });
         } else {
-            // Envia a resposta de erro APENAS UMA VEZ
             res.status(404).json({ msg: "Usuário não encontrado." });
         }
     } catch (error) {

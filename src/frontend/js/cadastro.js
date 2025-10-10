@@ -1,11 +1,22 @@
-const userInterno = document.getElementById("containerUserInterno");
-const userExterno = document.getElementById("containerUserExterno");
+const userInterno = document.getElementById("containerColaborador");
+const userExterno = document.getElementById("containerCliente");
 
 const selectUser = document.getElementById("usuarioselect");
+
+const setorcargo = document.getElementById("setorcargo");
+const cargoselect = document.getElementById("cargoselect");
 
 selectUser.addEventListener("change", () => {
     userExterno.classList.toggle("d-none");
     userInterno.classList.toggle("d-none");
+});
+
+cargoselect.addEventListener("change", () => {
+    if (cargoselect.options[cargoselect.selectedIndex].text === "Gerente") {
+        setorcargo.classList.toggle("d-none");
+    } else {
+        setorcargo.classList.add("d-none");
+    }
 });
 
 document.addEventListener("DOMContentLoaded", async () => {

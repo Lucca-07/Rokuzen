@@ -454,3 +454,8 @@ a.text-decoration-none:hover h3 {
 .btn-excluir:hover {
     background-color: #c82333;
 }
+
+
+.card-cadastro {
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.76);
+}
