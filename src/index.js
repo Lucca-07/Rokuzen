@@ -11,6 +11,7 @@ import jwt from "jsonwebtoken";
 
 import recuperarSenha from "./modules/recuperarSenha.js";
 import Clientes from "../src/models/Clientes.js";
+import Atendimentos from "./models/Atendimentos.js";
 import Colaboradores from "../src/models/Colaboradores.js";
 
 // CONSTANTS IMPORTANTES
@@ -66,9 +67,88 @@ app.get("/sessao/:id", async (req, res) => {
     if (!id) return res.redirect("/");
     res.sendFile(path.join(dirname, "src", "frontend", "sessao.html"));
 });
-//Rota da página de listar Terapeutas
 app.get("/listarterapeutas", async (req, res) => {
-    res.sendFile(path.join(dirname, "src", "frontend", "listarTerapeutas.html"));
+    res.sendFile(
+        path.join(dirname, "src", "frontend", "listarTerapeutas.html")
+    );
+});
+
+//Rota da api de listar Terapeutas
+app.get("/api/listarterapeutas", async (req, res) => {
+    try {
+        const terapeutas = await Colaboradores.find({
+            perfis_usuario: "terapeuta",
+        });
+
+        const result = [];
+
+        for (const t of terapeutas) {
+            const atendimentos = await Atendimentos.find({
+                colaborador_id: t._id,
+                fim_atendimento: { $gte: new Date() },
+            }).sort({ inicio_atendimento: 1 }); // ordena do mais próximo
+
+            // Se não tiver atendimentos futuros
+            if (atendimentos.length === 0) {
+                result.push({
+                    nome: t.nome_colaborador || "Nome não definido",
+                    inicio_atendimento: null,
+                    inicio_atendimento_data: null,
+                    inicio_atendimento_horas: null,
+                    fim_atendimento: null,
+                    fim_atendimento_horas: null,
+                    fim_atendimento_data: null,
+                    status_sessao: "Disponível",
+                    colaborador_id: t._id,
+                    intervalo: t.intervalo || false,
+                });
+            } else {
+                const a = atendimentos[0];
+                const inicio = new Date(a.inicio_atendimento);
+                const fim = new Date(a.fim_atendimento);
+
+                let status = "Disponível";
+                if (inicio <= new Date() && fim >= new Date())
+                    status = "Em sessão";
+                else if (inicio > new Date()) status = "Disponível";
+                else status = "Intervalo";
+
+                result.push({
+                    nome: t.nome_colaborador || "Nome não definido",
+                    inicio_atendimento: inicio.toISOString(),
+                    inicio_atendimento_data: inicio.toLocaleDateString([], {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                    }),
+                    inicio_atendimento_horas: inicio.toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    }),
+                    fim_atendimento: fim.toISOString(),
+                    fim_atendimento_horas: fim.toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    }),
+                    fim_atendimento_data: fim.toLocaleDateString([], {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                    }),
+                    status_sessao: status,
+                    colaborador_id: t._id,
+                    intervalo: t.intervalo || false,
+                });
+            }
+        }
+
+        res.json({ terapeutas: result });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            error: "Erro ao listar terapeutas e atendimentos",
+        });
+    }
 });
 
 // Rota de API

@@ -5,8 +5,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="/frontend/css/style.css">
+    <style>
+        @keyframes aparecer {
+            0% {
+                opacity: 0;
+                transform: translateY(300px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
     <title>Cadastro</title>
 </head>
 
@@ -56,26 +70,15 @@
             </div>
         </div>
     </div>
-    <main style="height: 100vh;">
-        <div class="container bg- mt-3 h-100 p-4 d-flex justify-content-center">
-            <div class="cardtera row w-100 bg-light border h-25 d-flex align-content-center">
-                <div id="foto" class="col-12 col-md-6 col-lg-3 d-flex align-self-start align-items-center justify-content-center h-50">
-                    <img class="" src="/frontend/img/account-outline.svg" alt="" style="border-radius: 25px; border: 1px solid black; height: 100px; width: 100px;">
-                </div>
-                <div id="informacoes" class="col d-flex align-self-start align-items-center justify-content-center border border-info h-50">
-                    <div class="w-50">
-                        <p id="nome" class="fs-2">Lucca Rodrigues</p>
-                        <p id="statussessao" class="fs-3">Disponível</p>
-                    </div>
-                    <div class="w-50">
-                        <p id="sessao" class="fs-3">Próxima Sessão:</p>
-                    </div>
-                </div>
+    <main id="main">
+        <div id="container" class="container h-100 p-4 d-flex justify-content-center flex-column align-iten">
 
-            </div>
-        </div>
         </div>
     </main>
+    <script src="/frontend/js/listarTerapeutas.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+        crossorigin="anonymous"></script>
 </body>
 
 </html>

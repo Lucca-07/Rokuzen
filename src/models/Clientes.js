@@ -10,4 +10,4 @@ const ClientesSchema = new mongoose.Schema({
     observacoes: { type: String, default: "" },
 })
 
-export default mongoose.model("Cliente", ClientesSchema);
+export default mongoose.model("Clientes", ClientesSchema);
