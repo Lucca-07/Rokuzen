@@ -72,3 +72,84 @@ document.getElementById("sairbutton").addEventListener("click", () => {
     localStorage.removeItem("token");
     window.location.href = "/";
 });
+
+async function salvarColaborador(event) {
+    event.preventDefault();
+
+    const nome = document.getElementById("nomeinput").value;
+    const email = document.getElementById("emailinput").value;
+    const senha = document.getElementById("senhainput").value;
+    const cargo = document.getElementById("cargoselect");
+
+    let tipo_colaborador = "user";
+    let setor = null;
+
+    const cargoSelecionado = cargo.options[cargo.selectedIndex].text;
+
+    if (cargoSelecionado === "Gerente") {
+        tipo_colaborador = "admin";
+        const setorSelect = document.getElementById("setorgerente");
+        setor = setorSelect.options[setorSelect.selectedIndex].text;
+    }
+
+    const checkboxes = document.querySelectorAll(
+        "input[name='unidades']:checked"
+    );
+    const unidadesTrabalha = Array.from(checkboxes).map((cb) => cb.value);
+
+    try {
+        const response = await fetch("/auth/user/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                nome_colaborador: nome,
+                ativo: true,
+                tipo_colaborador,
+                unidades_trabalha: unidadesTrabalha,
+                perfis_usuario: [cargoSelecionado, setor ?? null],
+                login: { email, pass: senha },
+            }),
+        });
+
+        const data = await response.json();
+        alert(data.msg);
+    } catch (error) {
+        console.error("Erro:", error);
+        alert("Erro ao tentar salvar colaborador.");
+    }
+}
+async function salvarCliente(event) {
+    event.preventDefault();
+
+    const nome = document.getElementById("nomeinput2").value;
+    const email = document.getElementById("emailinput2").value;
+    const tel = document.getElementById("telinput2").value;
+    const nascto = document.getElementById("nasctoinput").value;
+    const respostasSaude = [
+        document.getElementById("pressao").checked,
+        document.getElementById("gravida").checked,
+        document.getElementById("dores").value,
+    ];
+    const observacoes = document.getElementById("textobservacoes").value;
+    console.log(respostasSaude);
+    try {
+        const response = await fetch("/auth/client/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                nome_cliente: nome,
+                email_cliente: email,
+                telefone_cliente: tel,
+                data_nascimento: nascto,
+                respostas_saude: respostasSaude,
+                observacoes: observacoes,
+            }),
+        });
+
+        const data = await response.json();
+        alert(data.msg);
+    } catch (error) {
+        console.error("Erro:", error);
+        alert("Erro ao tentar salvar cliente.");
+    }
+}

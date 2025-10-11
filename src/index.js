@@ -108,7 +108,7 @@ function checkToken(req, res, next) {
 
 // POSTS
 // Registrar Usuário
-app.post("/auth/register", async (req, res) => {
+app.post("/auth/user/register", async (req, res) => {
     const {
         nome_colaborador,
         ativo,
@@ -116,28 +116,34 @@ app.post("/auth/register", async (req, res) => {
         unidades_trabalha,
         perfis_usuario,
     } = req.body;
-    const { email, pass, confirmpass } = req.body.login;
+    const { email, pass } = req.body.login;
     if (!nome_colaborador) {
-        return res.status(422).json({ msg: "O nome é obrigatório" });
-    }
-    if (!email) {
-        return res.status(422).json({ msg: "O email é obrigatório" });
-    }
-    if (!pass) {
-        return res.status(422).json({ msg: "A senha é obrigatório" });
-    }
-    if (pass !== confirmpass) {
-        return res.status(422).json({ msg: "As senhas não conferem" });
-    }
-    if (!perfis_usuario) {
         return res
             .status(422)
-            .json({ msg: "O usuário deve ter pelo menos 1 perfil" });
+            .json({ criado: false, msg: "O nome é obrigatório" });
+    }
+    if (!email) {
+        return res
+            .status(422)
+            .json({ criado: false, msg: "O email é obrigatório" });
+    }
+    if (!pass) {
+        return res
+            .status(422)
+            .json({ criado: false, msg: "A senha é obrigatório" });
+    }
+    if (!perfis_usuario) {
+        return res.status(422).json({
+            criado: false,
+            msg: "O usuário deve ter pelo menos 1 perfil",
+        });
     }
     // Checa se ja existe um user com o email
     const userExist = await Colaboradores.findOne({ "login.email": email });
     if (userExist) {
-        return res.status(422).json({ msg: "Por favor utilize outro email" });
+        return res
+            .status(422)
+            .json({ criado: false, msg: "Por favor utilize outro email" });
     }
     // Cria a senha hash
     const salt = await bcrypt.genSalt(12);
@@ -152,14 +158,88 @@ app.post("/auth/register", async (req, res) => {
     });
     try {
         const novoUser = await Colaboradores.create(user);
-        res.status(201).json({ msg: "Usuário criado com sucesso!" });
+        res.status(201).json({
+            criado: true,
+            msg: "Usuário criado com sucesso!",
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json({
+            criado: false,
             msg: "Aconteceu um erro na aplicação!",
         });
     }
 });
+// Registrar Cliente
+app.post("/auth/client/register", async (req, res) => {
+    const {
+        nome_cliente,
+        email_cliente,
+        telefone_cliente,
+        data_nascimento,
+        respostas_saude,
+        observacoes,
+    } = req.body;
+    if (!nome_cliente) {
+        return res
+            .status(422)
+            .json({ criado: false, msg: "O nome é obrigatório" });
+    }
+    if (!email_cliente) {
+        return res
+            .status(422)
+            .json({ criado: false, msg: "O email é obrigatório" });
+    }
+    if (!telefone_cliente) {
+        return res
+            .status(422)
+            .json({ criado: false, msg: "O telefone é obrigatório" });
+    }
+    if (!data_nascimento) {
+        return res.status(422).json({
+            criado: false,
+            msg: "A data de nascimento é obrigatória",
+        });
+    }
+    if (!respostas_saude) {
+        return res.status(422).json({
+            criado: false,
+            msg: "As respostas de saúde são obrigatórias",
+        });
+    }
+    // Checa se ja existe um user com o email
+    const userExist = await Clientes.findOne({
+        email_cliente: email_cliente,
+    });
+    if (userExist) {
+        return res
+            .status(422)
+            .json({ criado: false, msg: "Email ja está em uso" });
+    }
+
+    const cliente = new Clientes({
+        nome_cliente,
+        email_cliente,
+        telefone_cliente,
+        data_nascimento,
+        respostas_saude,
+        observacoes,
+    });
+    try {
+        const novoCliente = await Clientes.create(cliente);
+        res.status(201).json({
+            criado: true,
+            msg: "Cliente criado com sucesso!",
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            criado: false,
+            msg: "Aconteceu um erro na aplicação!",
+        });
+    }
+});
+
 // Verifica o Login
 app.post("/auth/login", async (req, res) => {
     const { email, pass } = req.body;

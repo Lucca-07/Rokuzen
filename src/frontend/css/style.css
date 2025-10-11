@@ -108,8 +108,8 @@
     background-color: #c7ed79;
 }
 
-#containerUserInterno,
-#containerUserExterno {
+#containerColaborador,
+#containerCliente {
     animation: aparecer 0.3s ease-in forwards;
 }
 

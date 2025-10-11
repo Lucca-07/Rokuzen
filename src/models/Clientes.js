@@ -6,8 +6,8 @@ const ClientesSchema = new mongoose.Schema({
     telefone_cliente: { type: String, required: true },
     data_nascimento: { type: Date, required: true },
     respostas_saude: { type: Object, required: true },
-    primeiro_atendimento: { type: Date, required: true },
+    primeiro_atendimento: { type: Date, default: "" },
     observacoes: { type: String, default: "" },
-})
+});
 
 export default mongoose.model("Cliente", ClientesSchema);
