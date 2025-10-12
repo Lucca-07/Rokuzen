@@ -10,11 +10,11 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 import recuperarSenha from "./modules/recuperarSenha.js";
-import Clientes from "../src/models/Clientes.js";
-import Colaboradores from "../src/models/Colaboradores.js";
+import Clientes from "./models/Clientes.js";
+import Colaboradores from "./models/Colaboradores.js";
 
 // CONSTANTS IMPORTANTES
-const dirname = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = 8080;
 
@@ -22,50 +22,49 @@ const port = 8080;
 app.use(express.json());
 
 // Servir os arquivos estáticos do projeto (CSS, IMG ...)
-app.use("/vendor", express.static(path.join(dirname, "../node_modules")));
-app.use(express.static(path.join(dirname, "src")));
+app.use(express.static(dirname));
 
 // GETS
 // Rota da Página de Login
 app.get("/", (req, res) => {
-    res.sendFile(path.join(dirname, "src", "frontend", "index.html"));
+    res.sendFile(path.join(dirname, "frontend", "index.html"));
 });
 // Rota da Página de Recuperação de senha
 app.get("/recuperar", (req, res) => {
-    res.sendFile(path.join(dirname, "src", "frontend", "recuperarSenha.html"));
+    res.sendFile(path.join(dirname, "frontend", "recuperarSenha.html"));
 });
 // Rota para a Página de Cadastro
 app.get("/cadastrar/:id", async (req, res) => {
     const id = req.params.id;
     if (!id) return res.redirect("/");
-    res.sendFile(path.join(dirname, "src", "frontend", "cadastro.html"));
+    res.sendFile(path.join(dirname, "frontend", "cadastro.html"));
 });
 // Rota da página de inicio
 app.get("/inicio/:id", async (req, res) => {
     const id = req.params.id;
     if (!id) return res.redirect("/");
-    res.sendFile(path.join(dirname, "src", "frontend", "paginaInicio.html"));
+    res.sendFile(path.join(dirname, "frontend", "paginaInicio.html"));
 });
 //Rota da página de postoatendimento
 app.get("/postosatendimento/:id", async (req, res) => {
     const id = req.params.id;
     if (!id) return res.redirect("/");
-    res.sendFile(
-        path.join(dirname, "src", "frontend", "postoatendimento.html")
-    );
+    res.sendFile(path.join(dirname, "frontend", "postoatendimento.html"));
 });
 //Rota da página de escala
 app.get("/escala/:id", async (req, res) => {
     const id = req.params.id;
     if (!id) return res.redirect("/");
-    res.sendFile(path.join(dirname, "src", "frontend", "escala.html"));
+    res.sendFile(path.join(dirname, "frontend", "escala.html"));
 });
 //Rota da página de sessoes
 app.get("/sessao/:id", async (req, res) => {
     const id = req.params.id;
     if (!id) return res.redirect("/");
-    res.sendFile(path.join(dirname, "src", "frontend", "sessao.html"));
+    res.sendFile(path.join(dirname, "frontend", "sessao.html"));
 });
+
+
 // Rota de API
 app.get("/api/colaboradores/:id", checkToken, async (req, res) => {
     const id = req.params.id;
@@ -85,6 +84,8 @@ app.get("/api/colaboradores/:id", checkToken, async (req, res) => {
         res.status(500).json({ msg: "Erro no servidor." });
     }
 });
+ 
+//Função que verifica se o login foi realizado para liberar a página de api
 function checkToken(req, res, next) {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
@@ -239,7 +240,6 @@ app.post("/auth/client/register", async (req, res) => {
         });
     }
 });
-
 // Verifica o Login
 app.post("/auth/login", async (req, res) => {
     const { email, pass } = req.body;
@@ -283,7 +283,6 @@ app.post("/auth/login", async (req, res) => {
         res.status(500).json("Aconteceu um erro na aplicação!");
     }
 });
-
 // Verifica se o email a ser recuperado está no banco de dados
 app.post("/recuperar", async (req, res) => {
     const { emailRecuperacao } = req.body;
