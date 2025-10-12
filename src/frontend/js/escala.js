@@ -3,12 +3,12 @@ let eventos = []; // Array armazena todos os agendamentos.
 let celulaSelecionada = null;
 let eventoEmEdicao = null;
 
-// Configurações de Horário
+
 const HORA_INICIO = 9;
 const HORA_FIM = 23;
 const INTERVALO_MINUTOS = 60;
 
-// Elementos do DOM
+
 const tabelaCalendario = document.getElementById("tabela-calendario");
 const modal = document.getElementById("modal-agendamento");
 const fecharBtn = document.querySelector(".fechar-btn");
@@ -18,16 +18,9 @@ const horarioSelecionadoDisplay = document.getElementById(
 );
 const btnSalvar = document.getElementById("btn-salvar");
 const btnExcluir = document.getElementById("btn-excluir");
+const modalAlterElementosPopUp = document.querySelector(".modal-conteudo")
 
-// ==========================================================
-// 2. Funções de Utilidade de Data
-// ==========================================================
 
-/**
- * Retorna a data de início da semana (domingo) baseada na data fornecida.
- * @param {Date} data - A data de referência.
- * @returns {Date} - O primeiro dia da semana (Domingo, 00:00:00).
- */
 function getInicioSemana(data) {
   const dia = data.getDay(); // 0 (Domingo) a 6 (Sábado)
   const inicio = new Date(data);
@@ -36,31 +29,27 @@ function getInicioSemana(data) {
   return inicio;
 }
 
-/**
- * Formata um objeto Date para uma string 'DD/MM'.
- */
+
 function formatarData(data) {
-  const dia = String(data.getDate()).padStart(2, "0"); // padStart Garante 2 digitos no mes e dia
+  const dia = String(data.getDate()).padStart(2, "0"); 
   const mes = String(data.getMonth() + 1).padStart(2, "0");
   return `${dia}/${mes}`;
 }
 
-/**
- * Gera a tabela do calendário para a semana atual.
- */
+
 function renderizarCalendario() {
   const inicioSemana = getInicioSemana(dataAtual);
   const diasDaSemana = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
   let datas = [];
 
-  // Calcular Datas da Semana
+  
   for (let i = 0; i < 7; i++) {
     const data = new Date(inicioSemana);
     data.setDate(inicioSemana.getDate() + i);
     datas.push(data);
   }
 
-  //  Gera o Cabeçalho (Thead)
+  
   let theadHTML = "<tr><th>Horário</th>";
   datas.forEach((data, index) => {
     const diaNome = diasDaSemana[index];
@@ -70,7 +59,7 @@ function renderizarCalendario() {
   theadHTML += "</tr>";
   tabelaCalendario.querySelector("thead").innerHTML = theadHTML;
 
-  // Gerar o Corpo (Tbody) com os Horários
+  
   let tbodyHTML = "";
   const hoje = new Date();
 
@@ -84,14 +73,14 @@ function renderizarCalendario() {
       let linha = `<tr><td>${horario}</td>`;
 
       datas.forEach((data) => {
-        // Cria a data e hora local exata
+       
         const dataHoraLocal = new Date(
           data.getFullYear(),
           data.getMonth(),
           data.getDate(),
           h,
           m
-        ); // CORREÇÃO: Geramos uma string de chave que IGNORA o fuso horário. // O formato será 'AAAA-MM-DDTHH:MM', mas sem o 'Z' de UTC, // e sem deixar o navegador ajustar o horário.
+        ); 
         const ano = dataHoraLocal.getFullYear();
         const mes = String(dataHoraLocal.getMonth() + 1).padStart(2, "0");
         const dia = String(dataHoraLocal.getDate()).padStart(2, "0");
@@ -113,7 +102,7 @@ function renderizarCalendario() {
   exibirEventos();
 }
 
-// ==========================================================
+
 function exibirEventos() {
   document.querySelectorAll(".evento").forEach((el) => el.remove());
 
@@ -123,7 +112,7 @@ function exibirEventos() {
     if (celula && !celula.querySelector(".evento")) {
       const divEvento = document.createElement("div");
       divEvento.classList.add("evento");
-      // Adiciona o ID/Index do evento para facilitar a edição/exclusão
+      
       divEvento.dataset.eventoIndex = index;
       divEvento.title = `${evento.funcionario} - ${
         evento.tipoTrabalho
@@ -142,10 +131,10 @@ function excluirEvento(dataHora) {
   const indexParaExcluir = eventos.findIndex((e) => e.dataHora === dataHora);
   if (indexParaExcluir > -1) {
     eventos.splice(indexParaExcluir, 1);
-    exibirEventos(); // Redesenha os eventos
+    exibirEventos(); 
   }
 }
-// ==========================================================
+
 function adicionarListenersCelulas() {
   document.querySelectorAll(".horario-celula").forEach((celula) => {
     celula.addEventListener("click", (e) => {
@@ -153,11 +142,11 @@ function adicionarListenersCelulas() {
       const eventoDiv = e.target.closest(".evento");
 
       if (eventoDiv) {
-        // Modo EDIÇÃO: Se clicou em um evento
+        
         const index = parseInt(eventoDiv.dataset.eventoIndex);
         abrirModalEdicao(eventos[index]);
       } else {
-        // Modo CRIAÇÃO: Se clicou em uma célula vazia
+        
         celulaSelecionada = celula;
         abrirModalCriacao(dataHoraKey);
       }
@@ -169,7 +158,7 @@ function abrirModalCriacao(dataHoraKey) {
   eventoEmEdicao = null;
   formAgendamento.reset();
 
-  // Configura o modal para criação
+  
   document.getElementById("horario-selecionado").textContent = new Date(
     dataHoraKey
   ).toLocaleString("pt-BR", {
@@ -181,27 +170,30 @@ function abrirModalCriacao(dataHoraKey) {
   });
 
   btnSalvar.textContent = "Salvar Agendamento";
-  btnExcluir.style.display = "none"; // Esconde o botão de excluir
-  modal.style.display = "block";
+  btnExcluir.style.display = "none"; 
+  modal.style.display = "flex";
+  modal.style.alignItems = "center";   
+  modal.style.justifyContent = "center"; 
+  modalAlterElementosPopUp.style.backgroundColor = "#fff"; 
+  modalAlterElementosPopUp.style.padding = "35px";
+  modalAlterElementosPopUp.style.border = "2px solid #ccc";
+  modalAlterElementosPopUp.style.borderRadius = "10px";
 }
 
-/**
- * Prepara e abre o modal para a edição de um agendamento existente.
- * @param {object} evento - O objeto evento a ser editado.
- */
+
 function abrirModalEdicao(evento) {
   eventoEmEdicao = evento;
   celulaSelecionada = document.querySelector(
     `[data-time="${evento.dataHora}"]`
   );
 
-  // Preenche o formulário com os dados existentes
+  
   document.getElementById("funcionario").value = evento.funcionario;
   document.getElementById("tipo-trabalho").value = evento.tipoTrabalho;
-  // document.getElementById('equipamentos').value = evento.equipamentos || '';
+ 
   document.getElementById("equipamentoss").value = evento.equipamentoss;
 
-  // Configura o modal para edição
+  
   document.getElementById("horario-selecionado").textContent = new Date(
     evento.dataHora
   ).toLocaleString("pt-BR", {
@@ -213,11 +205,16 @@ function abrirModalEdicao(evento) {
   });
 
   btnSalvar.textContent = "Salvar Alterações";
-  btnExcluir.style.display = "block"; // Mostra o botão de excluir
-  modal.style.display = "block";
+  btnExcluir.style.display = "block"; 
+  modal.style.display = "flex";
+  modal.style.alignItems = "center";  
+  modal.style.justifyContent = "center"; 
+  modalAlterElementosPopUp.style.backgroundColor = "#fff"; 
+  modalAlterElementosPopUp.style.padding = "35px";
+  modalAlterElementosPopUp.style.border = "2px solid #ccc";
 }
 
-// Listener para o formulário (Salvar/Editar)
+
 formAgendamento.addEventListener("submit", function (e) {
   e.preventDefault();
 
@@ -229,27 +226,27 @@ formAgendamento.addEventListener("submit", function (e) {
   };
 
   if (eventoEmEdicao) {
-    // Modo Edição: Atualiza os dados no objeto original
+    
     const index = eventos.findIndex(
       (e) => e.dataHora === eventoEmEdicao.dataHora
     );
     if (index > -1) {
-      // Se a data/hora não foi alterada (mantendo o evento no mesmo lugar)
+      
       eventos[index] = { ...eventos[index], ...dados };
     }
   } else {
     eventos.push(dados);
   }
 
-  // Fecha e Limpa
+  
   modal.style.display = "none";
   formAgendamento.reset();
   celulaSelecionada = null;
   eventoEmEdicao = null;
-  exibirEventos(); // Redesenha a tela
+  exibirEventos(); 
 });
 
-// Listener para o botão Excluir
+
 btnExcluir.addEventListener("click", () => {
   if (
     eventoEmEdicao &&
@@ -262,13 +259,13 @@ btnExcluir.addEventListener("click", () => {
   }
 });
 
-// Função para voltar para a semana atual
+
 document.getElementById("btn-hoje").addEventListener("click", () => {
-  dataAtual = new Date(); // Reseta para a data de hoje
+  dataAtual = new Date(); 
   renderizarCalendario();
 });
 
-// Listener para fechar o modal
+
 fecharBtn.onclick = function () {
   modal.style.display = "none";
   celulaSelecionada = null;
@@ -276,7 +273,7 @@ fecharBtn.onclick = function () {
   formAgendamento.reset();
 };
 
-// Fechar o modal ao clicar fora dele
+
 window.onclick = function (event) {
   if (event.target == modal) {
     modal.style.display = "none";
@@ -286,7 +283,7 @@ window.onclick = function (event) {
   }
 };
 
-// Navegação Semanal
+
 document.getElementById("btn-anterior").addEventListener("click", () => {
   dataAtual.setDate(dataAtual.getDate() - 7);
   renderizarCalendario();

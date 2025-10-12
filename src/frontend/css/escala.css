@@ -45,10 +45,7 @@
     color: #9db668 !important;
 }
 
-.header-escala {
-    text-align: center;
-    margin-bottom: 25px;
-}
+
 
 .nav-botoes {
     display: flex;
@@ -63,7 +60,7 @@
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
-    background-color: #9db668; /* Azul primário */
+    background-color: #9db668;
     color: white;
     cursor: pointer;
     transition: background-color 0.3s;
@@ -74,9 +71,9 @@
     background-color: #0056b3;
 }
 
-/* Estilo da Tabela do Calendário */
+
 .calendario-container {
-    overflow-x: auto; /* Permite rolagem lateral em telas menores */
+    overflow-x: auto; 
     background-color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
@@ -86,8 +83,8 @@
 #tabela-calendario {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed; /* Ajuda a manter a largura das colunas consistente */
-    min-width: 900px; /* Garante que a tabela tenha um tamanho mínimo */
+    table-layout: fixed; 
+    min-width: 900px;
 }
 
 #tabela-calendario th,
@@ -95,29 +92,29 @@
     border: 1px solid #ddd;
     padding: 10px;
     text-align: center;
-    height: 50px; /* Altura padrão da célula de horário */
+    height: 50px; 
 }
 
 #tabela-calendario thead th {
-    background-color: #e9ecef; /* Cor do cabeçalho */
+    background-color: #e9ecef; 
     font-weight: bold;
     color: #495057;
 }
 
-/* Células de horários disponíveis */
+
 .horario-celula {
     cursor: pointer;
     transition: background-color 0.2s;
-    position: relative; /* Para posicionar o evento dentro */
+    position: relative; 
 }
 
 .horario-celula:hover {
-    background-color: #ffe8cc; /* Cor suave ao passar o mouse */
+    background-color: #ffe8cc; 
 }
 
-/* Estilo dos Eventos Agendados */
+
 .evento {
-    background-color: #28a745; /* Verde para agendamentos */
+    background-color: #28a745; 
     color: white;
     border-radius: 3px;
     padding: 5px;
@@ -137,23 +134,27 @@
     box-sizing: border-box;
 }
 
-/* Estilos do Modal de Agendamento */
-.modalescala {
-    display: none; /* Escondido por padrão */
+
+.modal {
+
+    display: none; 
     position: fixed;
-    z-index: 100; /* Fica acima de tudo */
+    z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4); /* Fundo escuro transparente */
+    background-color: rgba(0, 0, 0, 0.4); 
+    align-items: center !important; 
+    justify-content: center !important;
+
 }
 
-.modalescala-conteudo {
-    background-color: #fff;
-    margin: 10% auto; /* 10% do topo e centralizado */
-    padding: 25px;
+
+.modal-conteudo {
+    background-color: #fff !important;
+    padding: 35px !important;
     border: 1px solid #888;
     width: 80%;
     max-width: 500px;
@@ -176,8 +177,9 @@
     text-decoration: none;
 }
 
-/* Estilos do Formulário */
+
 #form-agendamento label {
+    background-color: #fff !important;
     display: block;
     margin-top: 15px;
     margin-bottom: 5px;
@@ -197,7 +199,7 @@
 .btn-salvar {
     width: 100%;
     padding: 12px;
-    background-color: #ffc107; /* Amarelo/Laranja, Cor de destaque */
+    background-color: #ffc107; 
     color: #333;
     border: none;
     border-radius: 5px;
@@ -214,7 +216,7 @@
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
-    background-color: #ffc107; /* Amarelo/Laranja, Cor de destaque */
+    background-color: #ffc107; 
     color: #333;
     cursor: pointer;
     transition: background-color 0.3s;
@@ -224,11 +226,11 @@
 #btn-hoje:hover {
     background-color: #e0a800;
 }
-/* style.css (Adicione no final) */
+
 .btn-excluir {
     width: 100%;
     padding: 12px;
-    background-color: #dc3545; /* Vermelho para exclusão */
+    background-color: #dc3545; 
     color: white;
     border: none;
     border-radius: 5px;
