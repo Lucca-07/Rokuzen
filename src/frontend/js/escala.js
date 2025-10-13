@@ -104,28 +104,45 @@ function renderizarCalendario() {
 
 
 function exibirEventos() {
-  document.querySelectorAll(".evento").forEach((el) => el.remove());
+    document.querySelectorAll(".evento").forEach((el) => el.remove());
 
-  eventos.forEach((evento, index) => {
-    const celula = document.querySelector(`[data-time="${evento.dataHora}"]`);
+    
+    const eventosPorCelula = eventos.reduce((acc, evento, index) => {
+        const key = evento.dataHora;
+        if (!acc[key]) {
+            acc[key] = [];
+        }
+        acc[key].push({ ...evento, index }); 
+        return acc;
+    }, {});
 
-    if (celula && !celula.querySelector(".evento")) {
-      const divEvento = document.createElement("div");
-      divEvento.classList.add("evento");
-      
-      divEvento.dataset.eventoIndex = index;
-      divEvento.title = `${evento.funcionario} - ${
-        evento.tipoTrabalho
-      }\nEquipamentos: ${evento.equipamentoss || "Nenhum"}`;
+    
+    Object.keys(eventosPorCelula).forEach(dataHoraKey => {
+    const eventosDaCelula = eventosPorCelula[dataHoraKey];
+    const celula = document.querySelector(`[data-time="${dataHoraKey}"]`);
+    
+    if (celula) {
+        
+        celula.innerHTML = ''; 
+        
+        eventosDaCelula.forEach((eventoDetalhe) => {
+            const divEvento = document.createElement("div");
+            divEvento.classList.add("evento");
+            
+           
+            divEvento.dataset.eventoIndex = eventoDetalhe.index; 
+            divEvento.dataset.dataHora = dataHoraKey; 
+            
+            divEvento.title = `${eventoDetalhe.funcionario} - ${
+                eventoDetalhe.tipoTrabalho
+            }\nEquipamentos: ${eventoDetalhe.equipamentoss || "Nenhum"}`;
+            divEvento.textContent = `${eventoDetalhe.funcionario.split(" ")[0]}`;
 
-      divEvento.textContent = `${evento.funcionario.split(" ")[0]} / ${
-        evento.tipoTrabalho.split(" ")[0]
-      }`;
-
-      celula.appendChild(divEvento);
+            celula.appendChild(divEvento);
+        });
     }
-  });
-}
+});
+} 
 
 function excluirEvento(dataHora) {
   const indexParaExcluir = eventos.findIndex((e) => e.dataHora === dataHora);
@@ -136,22 +153,30 @@ function excluirEvento(dataHora) {
 }
 
 function adicionarListenersCelulas() {
-  document.querySelectorAll(".horario-celula").forEach((celula) => {
-    celula.addEventListener("click", (e) => {
-      const dataHoraKey = celula.dataset.time;
-      const eventoDiv = e.target.closest(".evento");
-
-      if (eventoDiv) {
-        
-        const index = parseInt(eventoDiv.dataset.eventoIndex);
-        abrirModalEdicao(eventos[index]);
-      } else {
-        
-        celulaSelecionada = celula;
-        abrirModalCriacao(dataHoraKey);
-      }
+    document.querySelectorAll(".horario-celula").forEach((celula) => {
+        celula.replaceWith(celula.cloneNode(true));
     });
-  });
+    
+    document.querySelectorAll(".horario-celula").forEach((celula) => {
+        celula.addEventListener("click", (e) => {
+            const dataHoraKey = celula.dataset.time;
+            const eventoDiv = e.target.closest(".evento");
+            const eventosAtuais = eventos.filter(e => e.dataHora === dataHoraKey).length;
+            
+            if (eventoDiv) {
+                const index = parseInt(eventoDiv.dataset.eventoIndex);
+                abrirModalEdicao(eventos[index]);
+            } else if (e.target.classList.contains('horario-celula') || e.target.classList.contains('limite-atingido')) {
+                
+                if (eventosAtuais >= 5) {
+                    alert("Limite de 5 agendamentos atingido para este horário.");
+                    return;
+                }
+                celulaSelecionada = celula;
+                abrirModalCriacao(dataHoraKey);
+            }
+        });
+    });
 }
 
 function abrirModalCriacao(dataHoraKey) {
@@ -226,13 +251,9 @@ formAgendamento.addEventListener("submit", function (e) {
   };
 
   if (eventoEmEdicao) {
-    
-    const index = eventos.findIndex(
-      (e) => e.dataHora === eventoEmEdicao.dataHora
-    );
-    if (index > -1) {
-      
-      eventos[index] = { ...eventos[index], ...dados };
+    const indexParaAtualizar = eventoEmEdicao.index;
+    if (indexParaAtualizar !== undefined && indexParaAtualizar > -1) {
+      eventos[indexParaAtualizar] = { ...eventos[indexParaAtualizar], ...dados };
     }
   } else {
     eventos.push(dados);

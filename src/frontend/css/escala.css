@@ -1,51 +1,34 @@
-@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap");
-
-.sair {
-    background-color: #c7ed79;
-    height: 40px;
-    border-radius: 10px;
+.btncustom {
+    background: #a0af68;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 6px 14px;
+    margin-top: 5px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
-.sair:hover {
-    background: #cbff63;
+.btncustom:hover {
+    background: #8fa25d;
 }
 
-.navbar {
-    border-top: 5px solid #9db668;
-    border-bottom: 5px solid #e9eaee;
-    height: 150px;
+.fechar {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
 }
 
-.menu a:hover {
-    color: #9db668 !important;
+.header-escala {
+    text-align: center;
+    margin-bottom: 25px;
 }
-
-.josefin-sans {
-    font-family: "Josefin Sans", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 400;
-    font-style: normal;
-}
-
-.dropcnt {
-    border: 5px solid #e9eaee;
-    border-top: none;
-    height: 305px;
-    top: 150px;
-    z-index: 999 !important;
-}
-
-.dropopt {
-    height: 100px;
-    border: 1px solid #e9eaee;
-    background-color: white;
-}
-
-.dropopt a:hover {
-    color: #9db668 !important;
-}
-
-
 
 .nav-botoes {
     display: flex;
@@ -60,7 +43,7 @@
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
-    background-color: #9db668;
+    background-color: #9db668; /* Azul primário */
     color: white;
     cursor: pointer;
     transition: background-color 0.3s;
@@ -71,9 +54,9 @@
     background-color: #0056b3;
 }
 
-
+/* Estilo da Tabela do Calendário */
 .calendario-container {
-    overflow-x: auto; 
+    overflow-x: auto; /* Permite rolagem lateral em telas menores */
     background-color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
@@ -83,8 +66,8 @@
 #tabela-calendario {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed; 
-    min-width: 900px;
+    table-layout: fixed; /* Ajuda a manter a largura das colunas consistente */
+    min-width: 900px; /* Garante que a tabela tenha um tamanho mínimo */
 }
 
 #tabela-calendario th,
@@ -92,29 +75,29 @@
     border: 1px solid #ddd;
     padding: 10px;
     text-align: center;
-    height: 50px; 
+    height: 50px; /* Altura padrão da célula de horário */
 }
 
 #tabela-calendario thead th {
-    background-color: #e9ecef; 
+    background-color: #e9ecef; /* Cor do cabeçalho */
     font-weight: bold;
     color: #495057;
 }
 
-
+/* Células de horários disponíveis */
 .horario-celula {
     cursor: pointer;
     transition: background-color 0.2s;
     position: relative; 
+    padding: 10px;
 }
 
 .horario-celula:hover {
     background-color: #ffe8cc; 
 }
 
-
 .evento {
-    background-color: #28a745; 
+    background-color: #28a745;
     color: white;
     border-radius: 3px;
     padding: 5px;
@@ -123,38 +106,34 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
+    margin-bottom: 5px; 
+    position: static; 
+    width: 100%; 
+    min-height: 20px; 
+    cursor: pointer; 
 }
 
 
-.modal {
-
-    display: none; 
+.modalescala {
+    display: none; /* Escondido por padrão */
     position: fixed;
-    z-index: 1000;
+    z-index: 100; /* Fica acima de tudo */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4); 
-    align-items: center !important; 
-    justify-content: center !important;
-
+    background-color: rgba(0, 0, 0, 0.4); /* Fundo escuro transparente */
 }
 
-
-.modal-conteudo {
-    background-color: #fff !important;
-    padding: 35px !important;
+.modalescala-conteudo {
+    background-color: #fff;
+    margin: 10% auto; /* 10% do topo e centralizado */
+    padding: 25px;
     border: 1px solid #888;
     width: 80%;
     max-width: 500px;
@@ -177,9 +156,8 @@
     text-decoration: none;
 }
 
-
+/* Estilos do Formulário */
 #form-agendamento label {
-    background-color: #fff !important;
     display: block;
     margin-top: 15px;
     margin-bottom: 5px;
@@ -199,7 +177,7 @@
 .btn-salvar {
     width: 100%;
     padding: 12px;
-    background-color: #ffc107; 
+    background-color: #ffc107; /* Amarelo/Laranja, Cor de destaque */
     color: #333;
     border: none;
     border-radius: 5px;
@@ -216,7 +194,7 @@
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
-    background-color: #ffc107; 
+    background-color: #ffc107; /* Amarelo/Laranja, Cor de destaque */
     color: #333;
     cursor: pointer;
     transition: background-color 0.3s;
@@ -226,11 +204,11 @@
 #btn-hoje:hover {
     background-color: #e0a800;
 }
-
+/* style.css (Adicione no final) */
 .btn-excluir {
     width: 100%;
     padding: 12px;
-    background-color: #dc3545; 
+    background-color: #dc3545; /* Vermelho para exclusão */
     color: white;
     border: none;
     border-radius: 5px;
