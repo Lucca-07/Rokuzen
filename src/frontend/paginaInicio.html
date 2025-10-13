@@ -52,49 +52,58 @@
     </div>
   </div>
 
-  <main class="container my-5">
-    <div class="row justify-content-center g-5">
+  <main class="container-fluid my-5 px-5">
 
-      <div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center">
-        <a href="#" class="text-decoration-none">
-          <div class="card text-center shadow border-0 p-3" style="width: 270px; height: 360px;">
-            <div class="card-image"
-              style="background-image: url('Imagem Escala Horario.jpg'); background-size: cover; background-position: center;">
-            </div>
-            <div class="card-body">
-              <h3 class="fs-5 text-dark">Visualizar Escala</h3>
-            </div>
+    <div class="row g-4">
+      <div class="col-12 col-lg-6">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-light fw-semibold fs-5 text-center">
+            Pontuação dos Terapeutas
           </div>
-        </a>
+          <div class="card-body">
+            <table class="table table-striped text-center align-middle">
+              <thead class="table-success">
+                <tr>
+                  <th>Terapeuta</th>
+                  <th>Quant. Pontos</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Caíque Piol</td><td>85</td></tr>
+                <tr><td>Lucca Chagas</td><td>73</td></tr>
+                <tr><td>Diego Frassão</td><td>65</td></tr>
+                <tr><td>Enzo Rodrigues</td><td>90</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
-      <div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center">
-        <a href="#" class="text-decoration-none">
-          <div class="card text-center shadow border-0 p-3" style="width: 270px; height: 360px;">
-            <div class="card-image"
-              style="background-image: url('Imagem Postos Atendimento.jpg'); background-size: cover; background-position: center;">
-            </div>
-            <div class="card-body">
-              <h3 class="fs-5 text-dark">Postos de Atendimento</h3>
-            </div>
+      <div class="col-12 col-lg-6">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-light fw-semibold fs-5 text-center">
+            Postos de Atendimento
           </div>
-        </a>
-      </div>
-
-      <div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center">
-        <a href="#" class="text-decoration-none">
-          <div class="card text-center shadow border-0 p-3" style="width: 270px; height: 360px;">
-            <div class="card-image"
-              style="background-image: url('Imagem Sessoes.jpg'); background-size: cover;">
-            </div>
-            <div class="card-body">
-              <h3 class="fs-5 text-dark">Gerenciar Sessão</h3>
-            </div>
+          <div class="card-body p-0">
+            <iframe src="postosAtendimento.html" class="iframe-preview" style="height:300px;"></iframe>
           </div>
-        </a>
+        </div>
       </div>
-
     </div>
+
+    <div class="row mt-5">
+      <div class="col-12">
+        <div class="card shadow border-0">
+          <div class="card-header bg-light fw-semibold fs-5 text-center">
+            Visualizar Escala
+          </div>
+          <div class="card-body p-0">
+            <iframe src="visualizarEscala.html" class="iframe-preview" style="height:500px;"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </main>
 
 

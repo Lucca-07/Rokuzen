@@ -69,3 +69,19 @@
 a.text-decoration-none:hover h3 {
   color: #9DB668 !important;
 }
+
+.iframe-preview {
+  width: 100%;
+  border: none;
+  transform: scale(1);
+  transform-origin: top left;
+}
+
+.card {
+  border-radius: 15px;
+}
+
+.card-header {
+  border-bottom: 2px solid #E9EAEE;
+}
+
