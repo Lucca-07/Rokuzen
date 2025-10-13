@@ -39,6 +39,12 @@ app.get("/cadastrar/:id", async (req, res) => {
     if (!id) return res.redirect("/");
     res.sendFile(path.join(dirname, "frontend", "cadastro.html"));
 });
+// Rota para a Página de Cadastro
+app.get("/user/listar/:id", async (req, res) => {
+    const id = req.params.id;
+    if (!id) return res.redirect("/");
+    res.sendFile(path.join(dirname, "frontend", "listarCadastros.html"));
+});
 // Rota da página de inicio
 app.get("/inicio/:id", async (req, res) => {
     const id = req.params.id;
@@ -64,7 +70,6 @@ app.get("/sessao/:id", async (req, res) => {
     res.sendFile(path.join(dirname, "frontend", "sessao.html"));
 });
 
-
 // Rota de API
 app.get("/api/colaboradores/:id", checkToken, async (req, res) => {
     const id = req.params.id;
@@ -84,7 +89,7 @@ app.get("/api/colaboradores/:id", checkToken, async (req, res) => {
         res.status(500).json({ msg: "Erro no servidor." });
     }
 });
- 
+
 //Função que verifica se o login foi realizado para liberar a página de api
 function checkToken(req, res, next) {
     const authHeader = req.headers["authorization"];
@@ -333,6 +338,19 @@ app.post("/atualizarSenha", async (req, res) => {
         }
     } catch (error) {
         console.error("Erro ao atualizar senha:", error);
+        res.status(500).json({ msg: "Erro no servidor" });
+    }
+});
+// Pega os dados do Colaborador e envia ao front
+app.post("/api/user/listar", async (req, res) => {
+    try {
+        const users = await Colaboradores.find();
+        if (!users || users.length === 0) {
+            return res.status(422).json({ msg: "Nenhum usuário encontrado!" });
+        }
+        res.status(200).json({ users });
+    } catch (error) {
+        console.error(error);
         res.status(500).json({ msg: "Erro no servidor" });
     }
 });
