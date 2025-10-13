@@ -4,15 +4,24 @@ function abrirMenu() {
   dropcnt.classList.toggle("d-none");
 }
 
+const statusMap = {
+  verde: "Disponível",
+  vermelho: "Ocupado",
+  amarelo: "Manutenção",
+  laranja: "Intervalo",
+};
+
+const colorMap = {
+  Disponível: "verde",
+  Ocupado: "vermelho",
+  Manutenção: "amarelo",
+  Intervalo: "laranja",
+};
+
 function abrirPopup(tipo) {
   fecharTodosPopups();
   const popup = document.getElementById(`popup-${tipo}`);
   if (popup) popup.style.display = "flex";
-}
-
-function fecharPopup(tipo) {
-  const popup = document.getElementById(`popup-${tipo}`);
-  if (popup) popup.style.display = "none";
 }
 
 function fecharTodosPopups() {
@@ -21,72 +30,55 @@ function fecharTodosPopups() {
   });
 }
 
-/* === Funções de Interação === */
 document.addEventListener("DOMContentLoaded", () => {
-  // Adiciona eventos a todos os botões de cada popup
-  document.querySelectorAll(".popupposto").forEach((popup) => {
-    const tipo = popup.parentElement.id.replace("popup-", "");
-    const frame = popup.querySelector(".frameposto");
-    const btns = popup.querySelectorAll(".btncustom");
+  document.querySelectorAll(".popup").forEach((popup) => {
+    const tipo = popup.querySelector("h2").textContent.split(" ")[0].toLowerCase();
+    const frame = popup.querySelector(".frame");
+    const btnAdicionar = popup.querySelector(".adicionar");
+    const btnConfirmar = popup.querySelector(".confirmar");
 
-    const btnRemover = btns[0];
-    const btnAdicionar = btns[1];
-    const btnConfirmar = btns[2];
-
-    // Ao clicar em "Adicionar"
     btnAdicionar.addEventListener("click", () => {
-      const itens = frame.querySelectorAll(".itemposto");
-      const novoNumero = itens.length + 1;
+      const itens = frame.querySelectorAll(".linha");
+      const numero = itens.length + 1;
 
-      const novoItem = document.createElement("div");
-      novoItem.classList.add("itemposto", "verde");
-      novoItem.textContent =
-        tipo.charAt(0).toUpperCase() + tipo.slice(1) + " " + novoNumero;
+      const linha = document.createElement("div");
+      linha.classList.add("linha");
 
-      // Adiciona o evento de alternar cor
-      novoItem.addEventListener("click", alternarCor);
+      const item = document.createElement("div");
+      item.classList.add("item", "verde");
+      item.textContent = `${tipo.charAt(0).toUpperCase() + tipo.slice(1)} ${numero}`;
 
-      frame.insertBefore(novoItem, btnRemover);
+      const statusSelect = document.createElement("select");
+      statusSelect.classList.add("status-select");
+
+      ["Disponível", "Ocupado", "Manutenção", "Intervalo"].forEach((opcao) => {
+        const option = document.createElement("option");
+        option.value = opcao;
+        option.textContent = opcao;
+        statusSelect.appendChild(option);
+      });
+
+      statusSelect.value = "Disponível";
+
+      statusSelect.addEventListener("change", () => {
+        const novaCor = colorMap[statusSelect.value];
+        item.classList.remove("verde", "vermelho", "amarelo", "laranja");
+        item.classList.add(novaCor);
+      });
+
+      const trash = document.createElement("div");
+      trash.classList.add("trash");
+      trash.innerHTML = "🗑️";
+      trash.addEventListener("click", () => linha.remove());
+
+      linha.append(item);
+      linha.insertAdjacentHTML("beforeend", `<span>Status:</span>`);
+      linha.append(statusSelect, trash);
+      frame.append(linha);
     });
 
-    // Ao clicar em "Remover"
-    btnRemover.addEventListener("click", () => {
-      const itens = frame.querySelectorAll(".itemposto");
-      if (itens.length > 0) {
-        const ultimo = itens[itens.length - 1];
-        ultimo.remove();
-      }
-    });
-
-    // Ao clicar em "Confirmar"
     btnConfirmar.addEventListener("click", () => {
-      fecharPopup(tipo);
-    });
-
-    // Adiciona alternância de cor nos itens existentes
-    frame.querySelectorAll(".itemposto").forEach((item) => {
-      item.addEventListener("click", alternarCor);
+      popup.parentElement.style.display = "none";
     });
   });
 });
-
-/* === Alternância de Cores === */
-function alternarCor(event) {
-  const cores = ["verde", "amarelo", "vermelho", "laranja"];
-  const item = event.target;
-
-  // Descobre a cor atual
-  const corAtual = cores.find((c) => item.classList.contains(c));
-  let proximaCor;
-
-  if (corAtual) {
-    const index = cores.indexOf(corAtual);
-    proximaCor = cores[(index + 1) % cores.length];
-    item.classList.remove(corAtual);
-  } else {
-    proximaCor = "verde"; // caso inicial
-  }
-
-  item.classList.add(proximaCor);
-}
-

@@ -2,12 +2,14 @@ import express from "express";
 const app = express();
 const port = 8080;
 
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+app.use(express.static(dirname));
+
 import dotenv from "dotenv";
 dotenv.config();
 
 import path from "path";
 import { fileURLToPath } from "node:url";
-const dirname = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 
 import connectDB from "./modules/connect.js";
 connectDB();
@@ -30,11 +32,11 @@ app.get("/", (req, res) => {
 
 // Rota da Página de Recuperação de senha
 app.get("/recuperar", (req, res) => {
-    res.sendFile(path.join(dirname, "src", "frontend", "recuperarSenha.html"));
+    res.sendFile(path.join(dirname, "frontend", "recuperarSenha.html"));
 });
 
 app.get("/cadastrar", (req, res) => {
-    res.sendFile(path.join(dirname, "src", "frontend", "cadastro.html"));
+    res.sendFile(path.join(dirname, "frontend", "cadastro.html"));
 });
 
 // Verifica o Login
@@ -113,7 +115,7 @@ app.get("/inicio", (req, res) => {
 });
 
 app.get("/postosatendimento", (req, res) => {
-    res.sendFile(path.join(dirname, "src", "frontend", "postoatendimento.html"));
+    res.sendFile(path.join(dirname,  "frontend", "postoatendimento.html"));
 });
 
 app.get("/escala", (req, res) => {
