@@ -104,9 +104,10 @@ function renderizarCalendario() {
 
 
 function exibirEventos() {
+    // 1. Limpa todos os eventos existentes na interface
     document.querySelectorAll(".evento").forEach((el) => el.remove());
 
-    
+    // 2. Agrupa eventos por dataHora, garantindo que o 'index' esteja em cada objeto
     const eventosPorCelula = eventos.reduce((acc, evento, index) => {
         const key = evento.dataHora;
         if (!acc[key]) {
@@ -116,62 +117,88 @@ function exibirEventos() {
         return acc;
     }, {});
 
-    
+    // 3. Itera sobre as células e adiciona TODOS os eventos
     Object.keys(eventosPorCelula).forEach(dataHoraKey => {
-    const eventosDaCelula = eventosPorCelula[dataHoraKey];
-    const celula = document.querySelector(`[data-time="${dataHoraKey}"]`);
-    
-    if (celula) {
+        const eventosDaCelula = eventosPorCelula[dataHoraKey];
+        const celula = document.querySelector(`[data-time="${dataHoraKey}"]`);
         
-        celula.innerHTML = ''; 
-        
-        eventosDaCelula.forEach((eventoDetalhe) => {
-            const divEvento = document.createElement("div");
-            divEvento.classList.add("evento");
+        if (celula) {
             
-           
-            divEvento.dataset.eventoIndex = eventoDetalhe.index; 
-            divEvento.dataset.dataHora = dataHoraKey; 
+            celula.innerHTML = ''; // Limpa antes de adicionar todos
             
-            divEvento.title = `${eventoDetalhe.funcionario} - ${
-                eventoDetalhe.tipoTrabalho
-            }\nEquipamentos: ${eventoDetalhe.equipamentoss || "Nenhum"}`;
-            divEvento.textContent = `${eventoDetalhe.funcionario.split(" ")[0]}`;
+            // Adiciona classe de limite se for o caso
+            if (eventosDaCelula.length >= 5) {
+                celula.classList.add('limite-atingido');
+            } else {
+                celula.classList.remove('limite-atingido');
+            }
+            
+            // Renderiza TODOS OS EVENTOS DA CÉLULA (o loop que faltava)
+            eventosDaCelula.forEach((eventoDetalhe) => {
+                
+                const divEvento = document.createElement("div");
+                divEvento.classList.add("evento");
+                
+                // Adiciona o INDEX do evento original - CRUCIAL PARA EDIÇÃO
+                divEvento.dataset.eventoIndex = eventoDetalhe.index; 
+                divEvento.dataset.dataHora = dataHoraKey; 
+                
+                divEvento.title = `${eventoDetalhe.funcionario} - ${
+                    eventoDetalhe.tipoTrabalho
+                }\nEquipamentos: ${eventoDetalhe.equipamentoss || "Nenhum"}`;
+                
+                // Exibe o nome do funcionário
+                divEvento.textContent = `${eventoDetalhe.funcionario.split(" ")[0]}`;
 
-            celula.appendChild(divEvento);
-        });
+                celula.appendChild(divEvento);
+            });
+        }
+    });
+}
+
+function excluirEvento(indexParaExcluir) {
+    // Verifica se o índice é válido antes de remover
+    if (indexParaExcluir !== undefined && indexParaExcluir > -1) {
+        // Usa o índice diretamente para remover 1 elemento a partir daquele ponto
+        eventos.splice(indexParaExcluir, 1);
+        exibirEventos(); 
     }
-});
-} 
-
-function excluirEvento(dataHora) {
-  const indexParaExcluir = eventos.findIndex((e) => e.dataHora === dataHora);
-  if (indexParaExcluir > -1) {
-    eventos.splice(indexParaExcluir, 1);
-    exibirEventos(); 
-  }
 }
 
 function adicionarListenersCelulas() {
+    // Clona e substitui para remover listeners antigos e evitar duplicação
     document.querySelectorAll(".horario-celula").forEach((celula) => {
-        celula.replaceWith(celula.cloneNode(true));
+        const newCelula = celula.cloneNode(true);
+        celula.replaceWith(newCelula);
     });
-    
+
+    // Readquire as células para adicionar os novos listeners
     document.querySelectorAll(".horario-celula").forEach((celula) => {
         celula.addEventListener("click", (e) => {
             const dataHoraKey = celula.dataset.time;
-            const eventoDiv = e.target.closest(".evento");
+            
+            // Verifica se o clique foi diretamente em um DIV.EVENTO
+            const eventoDiv = e.target.closest(".evento"); 
+            
+            // Conta quantos eventos já existem para este horário
             const eventosAtuais = eventos.filter(e => e.dataHora === dataHoraKey).length;
             
             if (eventoDiv) {
+                // MODO EDIÇÃO: Clicou em um evento específico
                 const index = parseInt(eventoDiv.dataset.eventoIndex);
-                abrirModalEdicao(eventos[index]);
+                
+                // Passamos o objeto evento COMPLETO, incluindo o índice
+                const eventoCompleto = { ...eventos[index], index: index };
+                abrirModalEdicao(eventoCompleto);
+                
             } else if (e.target.classList.contains('horario-celula') || e.target.classList.contains('limite-atingido')) {
+                // MODO CRIAÇÃO: Clicou no fundo da célula
                 
                 if (eventosAtuais >= 5) {
-                    alert("Limite de 5 agendamentos atingido para este horário.");
-                    return;
+                    alert("Limite de 5 agendamentos atingido para este horário. Não é possível adicionar mais.");
+                    return; // Impede a abertura do modal
                 }
+
                 celulaSelecionada = celula;
                 abrirModalCriacao(dataHoraKey);
             }
@@ -269,15 +296,20 @@ formAgendamento.addEventListener("submit", function (e) {
 
 
 btnExcluir.addEventListener("click", () => {
-  if (
-    eventoEmEdicao &&
-    confirm("Tem certeza que deseja excluir esta reserva?")
-  ) {
-    excluirEvento(eventoEmEdicao.dataHora);
-    modal.style.display = "none";
-    celulaSelecionada = null;
-    eventoEmEdicao = null;
-  }
+    // eventoEmEdicao agora contém o 'index' correto graças às correções anteriores.
+    if (
+        eventoEmEdicao &&
+        confirm("Tem certeza que deseja excluir esta reserva?")
+    ) {
+        // *** CORREÇÃO APLICADA AQUI ***
+        // Chamamos excluirEvento passando o índice (index) do evento a ser excluído
+        excluirEvento(eventoEmEdicao.index); 
+        
+        modal.style.display = "none";
+        celulaSelecionada = null;
+        eventoEmEdicao = null;
+        // Não precisamos chamar exibirEventos() novamente, pois ele é chamado dentro de excluirEvento
+    }
 });
 
 

@@ -1,3 +1,33 @@
+.navbar {
+    border-top: 5px solid #9db668;
+    border-bottom: 5px solid #e9eaee;
+    height: 150px;
+}
+
+.menu a:hover {
+    color: #9db668 !important;
+}
+
+.dropcnt {
+    border: 5px solid #e9eaee;
+    border-top: none;
+    height: 305px;
+    /* position: fixed; */
+    top: 150px;
+    z-index: 999 !important;
+}
+
+.dropopt {
+    height: 100px;
+    border: 1px solid #e9eaee;
+    background-color: white;
+}
+
+.dropopt a:hover {
+    color: #9db668 !important;
+}
+
+
 .btncustom {
     background: #a0af68;
     color: white;
