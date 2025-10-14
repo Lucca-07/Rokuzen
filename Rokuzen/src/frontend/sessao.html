@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Gerenciar Sessão</title>
+
+	<!-- Link do MATERIAL DESIGN ICONS  -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+
+	<!-- Bootstrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+
+	<!-- Google Fonts -->
+	<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;600&display=swap" rel="stylesheet">
+
+	<!-- CSS -->
+	<link rel="stylesheet" href="/frontend/css/sessao.css">
+</head>
+
+<body class="bg-light">
+
+	<!-- NAVBAR -->
+	<div>
+		<nav class="navbar container-fluid josefin-sans" style="background: #FFF;">
+			<div class="row m-0 w-100 justify-content-center justify-content-lg-start">
+				<div class="logo col-sm-12 col-lg-3 mb-1 mb-lg-0 text-center align-self-center"> <!-- ! LOGO-->
+					<a href="/inicio"><img src="/frontend/img/logo.png" alt="" height="80px"></a>
+				</div>
+				<div class="menu col-sm-12 col-lg-9 text-center d-flex align-items-center"> <!-- ! MENU DA NAVBAR-->
+					<ul
+						class="list-unstyled d-none d-lg-flex w-100 m-0 justify-content-around align-items-center flex-wrap">
+						<li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5"
+								href="/escala">Visualizar
+								escala</a></li>
+						<li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5"
+								href="/postosatendimento">Postos de
+								atendimento</a>
+						</li>
+						<li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5"
+								href="/sessao">Gerenciar sessão</a>
+						</li>
+						<li><button class="sair px-4 fs my-2 align-self-center">Sair</button></li>
+					</ul>
+				</div>
+				<div id="menubtn" role="button" class="sidebar col-1 d-lg-none text-center">
+					<!-- ! BOTAO PARA ABRIR MENU EM TELAS PEQUENAS-->
+					<i onclick="abrirMenu()" class="mdi mdi-menu fs-1"></i>
+				</div>
+			</div>
+		</nav>
+		<div id="dropcnt" class="dropcnt container-fluid p-0 d-none w-100 d-lg-none">
+			<!-- ! CONTEÚDO DO BOTAO DE ABRIR MENU-->
+			<div class="dropopt container-fluid d-flex align-items-center justify-content-center">
+				<a class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
+					href="" style="height: 100%;">Visualizar escala</a>
+			</div>
+			<div class="dropopt container-fluid d-flex align-items-center justify-content-center">
+				<a class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
+					href="" style="height: 100%;">Postos de atendimento</a>
+			</div>
+			<div class="dropopt container-fluid d-flex align-items-center justify-content-center">
+				<a class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
+					href="" style="height: 100%;">Gerenciar sessão</a>
+			</div>
+		</div>
+	</div>
+
+	<!-- Conteudo da pagina divido em 2 partes -->
+	<div class="container my-4">
+		<div class="row gy-4">
+
+			<!-- LADO ESQUERDO: Terapeuta e Timer -->
+			<div
+				class="col-12 col-lg-6 d-flex flex-column align-items-center align-items-lg-start text-center text-lg-start px-3">
+
+
+				<!-- Botão Selecionar Terapeuta -->
+				<button class="btn btn-light border rounded-3 px-4 py-3 fs-5 mb-4 w-100 w-md-auto"
+					style="background-color: #F6F6F6;" data-bs-toggle="modal" data-bs-target="#popupTerapeuta">
+					Selecionar Terapeuta
+				</button>
+
+				</button>
+
+				<!-- Círculo com timer -->
+				<div class="d-flex flex-column justify-content-center align-items-center w-100">
+
+					<!-- Círculo -->
+					<div
+						class="timer-circle d-flex flex-column justify-content-center align-items-center text-center mb-4">
+						<h2 id="timer" class="timer-title display-1 fw-bold">10:00</h2>
+
+						<!-- Botões de adicionar tempo -->
+						<div class="d-flex flex-wrap justify-content-center w-75 mt-3">
+							<div class="d-flex gap-2 justify-content-center w-100">
+								<button id="Adicionar1min"
+									class="btn btn-outline-success rounded-pill px-3 fw-bold">+1:00</button>
+								<button id="Adicionar5min"
+									class="btn btn-outline-success rounded-pill px-3 fw-bold">+5:00</button>
+							</div>
+							<div class="d-flex justify-content-center w-100 mt-2">
+								<button id="Adicionar10min"
+									class="btn btn-outline-success rounded-pill px-3 fw-bold">+10:00</button>
+							</div>
+						</div>
+					</div>
+
+					<!-- Botões de controle -->
+					<div class="text-center">
+						<button id="btnIniciar" onclick="iniciarTimer()"
+							class="btn btn-success btn-lg rounded-pill px-5 py-3 fw-bold">
+							Iniciar
+						</button>
+						<button id="btnPausar" onclick="pausarOuContinuar()"
+							class="btn btn-lg rounded-pill px-5 py-3 fw-bold d-none"
+							style="background-color:#8ABB00; border-color:#8ABB00; color:white;">
+							Pausar
+						</button>
+						<button id="btnReiniciar" onclick="reiniciarTimer()"
+							class="btn btn-lg rounded-pill px-5 py-3 fw-bold d-none"
+							style="background-color:#8ABB00; border-color:#8ABB00; color:white;">
+							Reiniciar
+						</button>
+					</div>
+
+				</div>
+			</div>
+
+			<!-- LADO DIREITO : Agendamentos do dia -->
+			<div class="col-12 col-lg-6 d-flex flex-column align-items-center align-items-lg-end px-3">
+				<div class="border rounded-3 shadow-sm bg-white p-3 w-100" style="max-width: 100%;">
+					<h3 class="fs-5 fw-semibold text-dark mb-4 text-center text-center">
+						Próximos Agendamentos do Dia
+					</h3>
+
+
+					<div class="border border-2 rounded-3 bg-light-subtle p-2 mb-3 w-100">
+						<span class="small d-block mb-1">👤Nome</span>
+						<span class="small d-block mb-1">⏰ 12:20</span>
+						<p class="fw-semibold d-block mb-0 small">Tipo de massagem: Terapêutica</p>
+						<p class="fw-semibold d-block mb-0 small">Tempo de sessão: 10 minutos</p>
+					</div>
+
+					<div class="border border-2 rounded-3 bg-light-subtle p-2 mb-3 w-100">
+						<span class="small d-block mb-1">👤Nome</span>
+						<span class="small d-block mb-1">⏰ 13:20</span>
+						<p class="fw-semibold mb-0 small">Tipo de massagem: Terapêutica</p>
+						<p class="fw-semibold mb-0 small">Tempo de sessão: 15 minutos</p>
+					</div>
+
+					<div class="border border-2 rounded-3 bg-light-subtle p-2 w-100">
+						<span class="small d-block mb-1">👤Nome</span>
+						<span class="small d-block mb-1">⏰ 14:20</span>
+						<p class="fw-semibold mb-0 small">Tipo de massagem: Terapêutica</p>
+						<p class="fw-semibold mb-0 small">Tempo de sessão: 20 minutos</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Modal Selecionar Terapeuta  -->
+	<div class="modal fade" id="popupTerapeuta" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-body p-3">
+					<h3 class="fs-5 fw-semibold text-dark mb-4">Selecionar Terapeuta</h3>
+					<div id="listaTerapeutas"></div> <!-- Lista de terapeutas será inserida aqui no JavaScript -->
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Bootstrap JS -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+		crossorigin="anonymous"></script>
+	<script src="/frontend/js/sessao.js"></script>
+</body>
+
+</html>
