@@ -22,7 +22,7 @@ const port = 8080;
 app.use(express.json());
 
 // Servir os arquivos estáticos do projeto (CSS, IMG ...)
-app.use(express.static(dirname));
+app.use("/frontend", express.static(path.join(dirname, "frontend")));
 
 // GETS
 // Rota da Página de Login
@@ -40,9 +40,7 @@ app.get("/cadastrar/:id", async (req, res) => {
     res.sendFile(path.join(dirname, "frontend", "cadastro.html"));
 });
 // Rota para a Página de Cadastro
-app.get("/user/listar/:id", async (req, res) => {
-    const id = req.params.id;
-    if (!id) return res.redirect("/");
+app.get("/user/listar/", async (req, res) => {
     res.sendFile(path.join(dirname, "frontend", "listarCadastros.html"));
 });
 // Rota da página de inicio
@@ -349,6 +347,25 @@ app.post("/api/user/listar", async (req, res) => {
             return res.status(422).json({ msg: "Nenhum usuário encontrado!" });
         }
         res.status(200).json({ users });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: "Erro no servidor" });
+    }
+});
+// Pega os dados do Colaborador do front e deleta no banco
+app.post("/api/user/deletar", async (req, res) => {
+    const { id } = req.body;
+    try {
+        const user = await Colaboradores.findById(id);
+        if (!user) {
+            return res.status(422).json({
+                msg: "Usuário não encontrado!",
+            });
+        }
+        await Colaboradores.findByIdAndDelete(id);
+        res.status(200).json({
+            msg: "Usuário deletado com sucesso!",
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ msg: "Erro no servidor" });
