@@ -56,14 +56,18 @@ async function listarColaboradores() {
 function popupDelete(id) {
     const main = document.getElementById("main");
     const deletepopup = `<div id="popupdelete"
-        class="position-fixed top-50 start-50 translate-middle bg-light border border-2 border-black p-4" style="border-radius: 20px;">
+        class="position-fixed top-50 start-50 translate-middle bg-light border border-2 border-black p-4 z-3" style="border-radius: 20px;">
         <p class="fs-4">Tem certeza que deseja excluir este usuário?</p>
         <div class="d-flex justify-content-center align-content-center gap-2">
             <button id="confirmbtn" class="w-25 bg-success-subtle" style="border-radius: 10px;" onclick="deleteColaborador('${id}')">Sim</button>
             <button id="cancelbtn" class="w-25 bg-danger-subtle" style="border-radius: 10px;"
-        onclick="document.getElementById('popupdelete').remove()">Não</button>
+        onclick="document.getElementById('popupdelete').remove(), document.getElementById('overlay').remove()">Não</button>
         </div>
     </div>`;
+    const overylay = `<div id="overlay" class="overlay position-fixed top-0 start-0 z-2" style="background: rgba(0,0,0,0.3); width: 100vw; height: 100vh;">
+
+    </div>`;
+    main.insertAdjacentHTML("beforeend", overylay)
     main.insertAdjacentHTML("beforeend", deletepopup);
 }
 
