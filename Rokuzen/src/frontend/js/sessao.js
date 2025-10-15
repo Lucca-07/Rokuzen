@@ -273,7 +273,7 @@ async function carregarTerapeutas() {
             const btnSelect = document.getElementById(`select-${tid}`);
 
             // atualiza display inicial (prefere estado carregado do DB quando disponível)
-            const initVal = (window.__timers__ && window.__timers__[tid]) ? window.__timers__[tid].tempo : (typeof terapeuta.tempoRestante === 'number' ? terapeuta.tempoRestante : 10*60);
+            const initVal = (window.__timers__ && window.__timers__[tid]) ? window.__timers__[tid].tempo : (typeof terapeuta.tempoRestante === 'number' ? terapeuta.tempoRestante : 10 * 60);
             if (!window.__timers__ || !window.__timers__[tid]) {
                 if (!window.__timers__) window.__timers__ = {};
                 window.__timers__[tid] = window.__timers__[tid] || {
@@ -397,3 +397,45 @@ if (btnAbrirTerapeuta) {
 }
 
 
+// Função para carregar os agendamentos do dia
+async function carregarAgendamentos() {
+    try {
+        const resposta = await fetch("/api/agendamentos");
+        const agendamentos = await resposta.json();
+        console.log(agendamentos);
+
+
+        const container = document.getElementById("agendamentos");
+        container.innerHTML = "";
+
+        // Procura agendamentos
+        if (!agendamentos.length || (agendamentos.length === 1 && agendamentos[0].mensagem)) {
+            container.innerHTML = `<p class="text-center text-muted small">Nenhum agendamento para hoje.</p>`;
+            return;
+        }
+
+        agendamentos.forEach(a => {
+            // so pra ver se o agendamento existe no log
+            console.log("inicio_atendimento recebido:", a.inicio_atendimento);
+            const bloco = document.createElement("div");
+            bloco.className = "border border-2 rounded-3 bg-light-subtle p-2 mb-3 w-100";
+
+            // Pega diretamente HH:MM da string ISO enviada pelo backend
+            const horaFormatada = a.inicio_atendimento?.substr(11, 5) || "??:??";
+            bloco.innerHTML = `
+        <span class="small d-block mb-1">👤 ${a.colaborador || "Desconhecido"}</span>
+        <span class="small d-block mb-1">⏰ ${horaFormatada}</span>
+        <p class="fw-semibold mb-0 small">Tipo de massagem: ${a.tipo}</p>
+        <p class="fw-semibold mb-0 small">Tempo de sessão: ${a.tempo}</p>
+    `;
+            container.appendChild(bloco);
+        });
+    } catch (err) {
+        console.error("Erro ao carregar agendamentos:", err);
+        document.getElementById("agendamentos").innerHTML =
+            `<p class="text-danger small text-center">Erro ao carregar agendamentos.</p>`;
+    }
+}
+
+// Carrega agendamentos quando a página é carregada
+document.addEventListener("DOMContentLoaded", carregarAgendamentos);

@@ -8,7 +8,10 @@ import connectDB from "./modules/connect.js";
 import recuperarSenha from "./modules/recuperarSenha.js";
 import Colaboradores from "./models/Colaboradores.js";
 import Timer from "./models/Timers.js";
+import Atendimentos from "./models/Atendimentos.js";
 
+
+// conectando com banco de dados
 dotenv.config();
 await connectDB();
 
@@ -229,18 +232,48 @@ app.delete('/api/timers/:id', async (req, res) => {
   }
 });
 
-// Handler para rotas /api não encontradas,retorna JSON claro em vez de Not Found 
-app.use('/api', (req, res) => {
-  console.warn('Rota API não encontrada:', req.method, req.originalUrl);
-  res.status(404).json({ error: 'Rota API não encontrada', path: req.originalUrl });
+
+// Rota para buscar todos os agendamentos
+app.get("/api/agendamentos", async (req, res) => {
+  try {
+    // Busca todos os agendamentos no MongoDB e faz populate para trazer o nome do colaborador
+    const agendamentos = await Atendimentos.find().populate('colaborador_id', 'nome_colaborador');
+    
+    // Log para verificar o que está vindo do banco
+    console.log("Agendamentos do MongoDB:", agendamentos);
+
+    // Mapeia os dados para enviar ao front-end de forma limpa
+    const dados = agendamentos.map(a => ({
+      // Nome do colaborador se existir, senão "Desconhecido"
+      colaborador: a.colaborador_id?.nome_colaborador || "Desconhecido",
+
+      // Tipo de serviço fixo (pode ser alterado se quiser pegar do servico_id)
+      tipo: "Serviço",
+
+      // Envia as datas como string ISO para garantir que o front-end consiga interpretar
+      inicio_atendimento: a.inicio_atendimento?.toISOString(),
+      fim_atendimento: a.fim_atendimento?.toISOString(),
+
+      // Calcula o tempo de sessão em minutos
+      tempo: `${Math.round(
+        (new Date(a.fim_atendimento) - new Date(a.inicio_atendimento)) / 60000
+      )} minutos`,
+
+      // Observação do cliente ou "-" caso não exista
+      observacao: a.observacao_cliente || "-"
+    }));
+
+    // Retorna os dados processados como JSON
+    res.json(dados);
+  } catch (err) {
+    // caso de erro ele loga no console e envia mensagem de erro para o front-end
+    console.error(err);
+    res.status(500).json({ mensagem: "Erro ao carregar agendamentos" });
+  }
 });
 
-// Erro 404 para outras rotas, retorna HTML simples
-app.use((req, res) => {
-  console.warn('Rota não encontrada:', req.method, req.originalUrl);
-  if (req.originalUrl.startsWith('/api')) return res.status(404).json({ error: 'Rota API não encontrada' });
-  res.status(404).send('Página não encontrada');
-});
+
+
 
 // --- INICIA SERVIDOR ---
 app.listen(port, () => {

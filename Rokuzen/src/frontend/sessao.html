@@ -135,31 +135,12 @@
 					<h3 class="fs-5 fw-semibold text-dark mb-4 text-center text-center">
 						Próximos Agendamentos do Dia
 					</h3>
-
-
-					<div class="border border-2 rounded-3 bg-light-subtle p-2 mb-3 w-100">
-						<span class="small d-block mb-1">👤Nome</span>
-						<span class="small d-block mb-1">⏰ 12:20</span>
-						<p class="fw-semibold d-block mb-0 small">Tipo de massagem: Terapêutica</p>
-						<p class="fw-semibold d-block mb-0 small">Tempo de sessão: 10 minutos</p>
-					</div>
-
-					<div class="border border-2 rounded-3 bg-light-subtle p-2 mb-3 w-100">
-						<span class="small d-block mb-1">👤Nome</span>
-						<span class="small d-block mb-1">⏰ 13:20</span>
-						<p class="fw-semibold mb-0 small">Tipo de massagem: Terapêutica</p>
-						<p class="fw-semibold mb-0 small">Tempo de sessão: 15 minutos</p>
-					</div>
-
-					<div class="border border-2 rounded-3 bg-light-subtle p-2 w-100">
-						<span class="small d-block mb-1">👤Nome</span>
-						<span class="small d-block mb-1">⏰ 14:20</span>
-						<p class="fw-semibold mb-0 small">Tipo de massagem: Terapêutica</p>
-						<p class="fw-semibold mb-0 small">Tempo de sessão: 20 minutos</p>
-					</div>
+					<!-- Agendamentos do dia que virão através do Javascript -->
+					<div id="agendamentos"></div>
 				</div>
 			</div>
 		</div>
+	</div>
 	</div>
 	<!-- Modal Selecionar Terapeuta  -->
 	<div class="modal fade" id="popupTerapeuta" tabindex="-1" aria-hidden="true">
@@ -178,6 +159,7 @@
 		integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
 		crossorigin="anonymous"></script>
 	<script src="/frontend/js/sessao.js"></script>
+	
 </body>
 
 </html>
