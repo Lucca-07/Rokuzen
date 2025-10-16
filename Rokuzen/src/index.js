@@ -236,9 +236,21 @@ app.delete('/api/timers/:id', async (req, res) => {
 // Rota para buscar todos os agendamentos
 app.get("/api/agendamentos", async (req, res) => {
   try {
-    // Busca todos os agendamentos no MongoDB e faz populate para trazer o nome do colaborador
-    const agendamentos = await Atendimentos.find().populate('colaborador_id', 'nome_colaborador');
-    
+    // Define início e fim do dia atual
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0); // 00:00:00
+        const amanha = new Date(hoje);
+        amanha.setDate(hoje.getDate() + 1); // próximo dia 00:00:00
+    // Busca todos os agendamentos e ordena pelo início do atendimento (do mais cedo para o mais tarde)
+        const agendamentos = await Atendimentos.find({
+            inicio_atendimento: { $gte: hoje, $lt: amanha }
+        })
+        .populate('colaborador_id', 'nome_colaborador')
+        .sort({ inicio_atendimento: 1 });
+
+        console.log("Agendamentos do MongoDB:", agendamentos);
+
+
     // Log para verificar o que está vindo do banco
     console.log("Agendamentos do MongoDB:", agendamentos);
 
