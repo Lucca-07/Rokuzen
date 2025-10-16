@@ -8,6 +8,7 @@ import connectDB from "./modules/connect.js";
 connectDB();
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 import recuperarSenha from "./modules/recuperarSenha.js";
 import Clientes from "./models/Clientes.js";
@@ -369,6 +370,64 @@ app.post("/api/user/deletar", async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ msg: "Erro no servidor" });
+    }
+});
+app.post("/api/user/edit", async (req, res) => {
+    const { id } = req.body;
+    try {
+        const user = await Colaboradores.findById(id);
+        if (!user) {
+            return res.status(422).json({
+                msg: "Usuário não encontrado!",
+            });
+        }
+        const salt = await bcrypt.genSalt(12);
+        res.status(200).json({
+            data: user,
+            id: user._id,
+            nome: user.nome_colaborador,
+            email: user.login.email,
+            perfis: user.perfis_usuario,
+            unidades: user.unidades_trabalha,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: "Erro no servidor!" });
+    }
+});
+app.put("/api/user/update", async (req, res) => {
+    const { id, nome, email, perfis, unidades } = req.body;
+
+    if (!id) {
+        return res.status(400).json({ msg: "ID do usuário é obrigatório" });
+    }
+
+    try {
+        // Converter id para ObjectId do Mongo
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ msg: "ID inválido" });
+        }
+
+        // Atualizar o usuário
+        const result = await Colaboradores.findByIdAndUpdate(
+            id,
+            {
+                nome_colaborador: nome,
+                "login.email": email,
+                perfis_usuario: perfis,
+                unidades_trabalha: unidades,
+            },
+            { new: true } // retorna o documento atualizado
+        );
+
+        if (!result) {
+            return res.status(404).json({ msg: "Usuário não encontrado" });
+        }
+
+        res.json({ success: true, user: result });
+    } catch (err) {
+        console.error("Erro ao atualizar usuário:", err);
+        res.status(500).json({ msg: "Erro no servidor", error: err.message });
     }
 });
 

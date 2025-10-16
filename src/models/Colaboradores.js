@@ -6,7 +6,7 @@ const ColaboradoresSchema = new mongoose.Schema({
     tipo_colaborador: { type: String, enum: ["admin", "user"], default: "user" },
     unidades_trabalha: { type: [String], default: [] },
     perfis_usuario: { type: [String], default: [] },
-    login: { type: Object, required: true },
+    login: { type: Object },
 });
 
 export default mongoose.model("Colaboradores", ColaboradoresSchema);
