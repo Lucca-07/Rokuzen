@@ -281,6 +281,7 @@ app.post("/auth/login", async (req, res) => {
             validado: true,
             redirect: `/inicio/${user._id}`,
             id: user._id,
+            unidades: user.unidades_trabalha,
         });
     } catch (error) {
         console.log(error);

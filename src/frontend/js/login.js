@@ -1,4 +1,4 @@
-const acessar = document.getElementById("acessar");
+const acessar = document.getElementById("proximo");
 acessar.addEventListener("click", validarUsuario);
 
 const esqueci = document.getElementById("esqueci");
@@ -13,6 +13,13 @@ const recuperarButton = document.getElementById("recuperarButton");
 recuperarButton.addEventListener("click", recuperarSenha);
 const emailRecuperacaoInput = document.getElementById("emailRecuperacao");
 
+document.getElementById("acessar").addEventListener("click", () => {
+    const select = document.getElementById("unidades");
+    const selectedOption = select.options[select.selectedIndex].text;
+    localStorage.setItem("unidade", selectedOption);
+    window.location.href = localStorage.getItem("redirect");
+});
+
 //Valida o login
 async function validarUsuario() {
     const email = document.getElementById("email").value;
@@ -23,15 +30,32 @@ async function validarUsuario() {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ email: email, pass: pass }),
+            body: JSON.stringify({
+                email: email,
+                pass: pass,
+            }),
         });
 
         const data = await response.json();
 
-        if (data.validado && data.redirect) {
+        if (data.validado) {
             localStorage.setItem("token", data.token); // salva o token
             localStorage.setItem("userId", data.id); // Salva o id
-            window.location.href = data.redirect; 
+            document.getElementById("cardLogin").classList.toggle("d-none");
+            document.getElementById("cardUnidades").classList.toggle("d-none");
+            const select = document.getElementById("unidades");
+            let listaUnidades;
+            console.log(typeof localStorage.getItem("unidadesTotais"));
+            if (data.unidades.includes(",")) {
+                listaUnidades = data.unidades.split(",");
+            } else {
+                listaUnidades = data.unidades;
+            }
+            console.log(listaUnidades);
+            listaUnidades.forEach((unidade) => {
+                select.add(new Option(unidade, unidade));
+            });
+            localStorage.setItem("redirect", data.redirect);
         } else {
             console.error("Falha no login:", data.msg);
             alert(data.msg || "Email ou senha inválidos");
