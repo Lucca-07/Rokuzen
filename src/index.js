@@ -27,7 +27,7 @@ app.use(express.static(path.join(dirname, "src")));
 
 // Rota da Página de Login
 app.get("/", (req, res) => {
-    res.sendFile(path.join(dirname, "src", "frontend", "index.html"));
+    res.sendFile(path.join(dirname, "frontend", "index.html"));
 });
 
 // Rota da Página de Recuperação de senha
@@ -111,7 +111,7 @@ app.post("/atualizarSenha", async (req, res) => {
 
 // Rota da página de inicio
 app.get("/inicio", (req, res) => {
-    res.sendFile(path.join(dirname, "src", "frontend", "paginaInicio.html"));
+    res.sendFile(path.join(dirname,  "frontend", "paginaInicio.html"));
 });
 
 app.get("/postosatendimento", (req, res) => {
