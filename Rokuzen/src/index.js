@@ -232,58 +232,45 @@ app.delete('/api/timers/:id', async (req, res) => {
   }
 });
 
-
-// Rota para buscar todos os agendamentos
 app.get("/api/agendamentos", async (req, res) => {
   try {
-    // Define início e fim do dia atual
-        const hoje = new Date();
-        hoje.setHours(0, 0, 0, 0); // 00:00:00
-        const amanha = new Date(hoje);
-        amanha.setDate(hoje.getDate() + 1); // próximo dia 00:00:00
-    // Busca todos os agendamentos e ordena pelo início do atendimento (do mais cedo para o mais tarde)
-        const agendamentos = await Atendimentos.find({
-            inicio_atendimento: { $gte: hoje, $lt: amanha }
-        })
-        .populate('colaborador_id', 'nome_colaborador')
-        .sort({ inicio_atendimento: 1 });
+    const idTerapeuta = req.query.id; // id vindo do front
+    if (!idTerapeuta) {
+      return res.status(400).json({ mensagem: "ID do terapeuta não informado." });
+    }
 
-        console.log("Agendamentos do MongoDB:", agendamentos);
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const amanha = new Date(hoje);
+    amanha.setDate(hoje.getDate() + 1);
 
+    // Busca apenas os agendamentos do terapeuta logado
+    const agendamentos = await Atendimentos.find({
+      colaborador_id: idTerapeuta,
+      inicio_atendimento: { $gte: hoje, $lt: amanha }
+    })
+      .populate("colaborador_id", "nome_colaborador")
+      .sort({ inicio_atendimento: 1 });
 
-    // Log para verificar o que está vindo do banco
     console.log("Agendamentos do MongoDB:", agendamentos);
 
-    // Mapeia os dados para enviar ao front-end de forma limpa
     const dados = agendamentos.map(a => ({
-      // Nome do colaborador se existir, senão "Desconhecido"
       colaborador: a.colaborador_id?.nome_colaborador || "Desconhecido",
-
-      // Tipo de serviço fixo (pode ser alterado se quiser pegar do servico_id)
       tipo: "Serviço",
-
-      // Envia as datas como string ISO para garantir que o front-end consiga interpretar
       inicio_atendimento: a.inicio_atendimento?.toISOString(),
       fim_atendimento: a.fim_atendimento?.toISOString(),
-
-      // Calcula o tempo de sessão em minutos
       tempo: `${Math.round(
         (new Date(a.fim_atendimento) - new Date(a.inicio_atendimento)) / 60000
       )} minutos`,
-
-      // Observação do cliente ou "-" caso não exista
       observacao: a.observacao_cliente || "-"
     }));
 
-    // Retorna os dados processados como JSON
     res.json(dados);
   } catch (err) {
-    // caso de erro ele loga no console e envia mensagem de erro para o front-end
     console.error(err);
     res.status(500).json({ mensagem: "Erro ao carregar agendamentos" });
   }
 });
-
 
 
 
