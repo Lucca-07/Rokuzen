@@ -144,7 +144,6 @@ app.get("/api/terapeutas", async (req, res) => {
 
     // Buscar timers correspondentes (por nome_colaborador) e anexar tempoRestante
     try {
-      // Primeiro tenta localizar timers por colaborador_id (se o Timer tiver esse campo)
       const ids = terapeutas.map(t => t._id).filter(Boolean);
       const timersById = await Timer.find({ colaborador_id: { $in: ids } }, { colaborador_id: 1, tempoRestante: 1 }).lean();
       const mapaTimersById = new Map(timersById.map(t => [String(t.colaborador_id), t.tempoRestante]));
@@ -232,6 +231,7 @@ app.delete('/api/timers/:id', async (req, res) => {
   }
 });
 
+// Agendamentos
 app.get("/api/agendamentos", async (req, res) => {
   try {
     const idTerapeuta = req.query.id; // id vindo do front
@@ -256,14 +256,14 @@ app.get("/api/agendamentos", async (req, res) => {
 
     const dados = agendamentos.map(a => ({
       colaborador: a.colaborador_id?.nome_colaborador || "Desconhecido",
+      colaborador_id: a.colaborador_id?._id || null, // importante para o frontend
       tipo: "Serviço",
       inicio_atendimento: a.inicio_atendimento?.toISOString(),
       fim_atendimento: a.fim_atendimento?.toISOString(),
-      tempo: `${Math.round(
-        (new Date(a.fim_atendimento) - new Date(a.inicio_atendimento)) / 60000
-      )} minutos`,
+      tempo: Math.round((new Date(a.fim_atendimento) - new Date(a.inicio_atendimento)) / 60000),
       observacao: a.observacao_cliente || "-"
     }));
+
 
     res.json(dados);
   } catch (err) {

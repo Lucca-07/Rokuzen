@@ -396,41 +396,139 @@ if (btnAbrirTerapeuta) {
     });
 }
 
+// id
 const id = localStorage.getItem("idUser");
+
 // Função para carregar os agendamentos do dia
 async function carregarAgendamentos() {
-  try {
-    const resposta = await fetch(`/api/agendamentos?id=${id}`);
-    const agendamentos = await resposta.json();
-    console.log(agendamentos);
+    try {
+        const resposta = await fetch(`/api/agendamentos?id=${id}`);
+        const agendamentos = await resposta.json();
+        console.log(agendamentos);
 
-    const container = document.getElementById("agendamentos");
-    container.innerHTML = "";
+        const container = document.getElementById("agendamentos");
+        container.innerHTML = "";
 
-    if (!agendamentos.length || (agendamentos.length === 1 && agendamentos[0].mensagem)) {
-      container.innerHTML = `<p class="text-center text-muted small">Nenhum agendamento para hoje.</p>`;
-      return;
-    }
+        if (!agendamentos.length || (agendamentos.length === 1 && agendamentos[0].mensagem)) {
+            container.innerHTML = `<p class="text-center text-muted small">Nenhum agendamento para hoje.</p>`;
+            return;
+        }
 
-    agendamentos.forEach(a => {
-      const bloco = document.createElement("div");
-      bloco.className = "border border-2 rounded-3 bg-light-subtle p-2 mb-3 w-100";
+        agendamentos.forEach(a => {
+            const bloco = document.createElement("div");
+            bloco.className = "border border-2 rounded-3 bg-light-subtle p-2 mb-3 w-100 cursor-pointer";
 
-      const horaFormatada = a.inicio_atendimento?.substr(11, 5) || "??:??";
-      bloco.innerHTML = `
+            const horaFormatada = a.inicio_atendimento?.substr(11, 5) || "??:??";
+            const tempoSessao = parseInt(a.tempo) || 10;
+
+            bloco.innerHTML = `
         <span class="small d-block mb-1">👤 ${a.colaborador || "Desconhecido"}</span>
         <span class="small d-block mb-1">⏰ ${horaFormatada}</span>
         <p class="fw-semibold mb-0 small">Tipo de massagem: ${a.tipo}</p>
-        <p class="fw-semibold mb-0 small">Tempo de sessão: ${a.tempo}</p>
+        <p class="fw-semibold mb-0 small">Tempo de sessão: ${tempoSessao} min</p>
       `;
-      container.appendChild(bloco);
-    });
-  } catch (err) {
-    console.error("Erro ao carregar agendamentos:", err);
-    document.getElementById("agendamentos").innerHTML =
-      `<p class="text-danger small text-center">Erro ao carregar agendamentos.</p>`;
-  }
+
+            // Hover visual
+            bloco.style.transition = "background-color 0.3s, transform 0.2s";
+            bloco.addEventListener("mouseenter", () => {
+                bloco.style.backgroundColor = "#e8f5e9";
+                bloco.style.transform = "scale(1.02)";
+            });
+            bloco.addEventListener("mouseleave", () => {
+                bloco.style.backgroundColor = "rgba(248,249,250)";
+                bloco.style.transform = "scale(1)";
+            });
+
+            // Clique no agendamento
+            bloco.addEventListener("click", async () => {
+                const segundos = tempoSessao * 60;
+
+                if (!window.__timers__) window.__timers__ = {};
+                const tid = String(a.colaborador_id || a.colaborador || "desconhecido");
+
+                // Cria ou atualiza timer, mas pausado
+                window.__timers__[tid] = {
+                    tempo: segundos,
+                    pausado: true,   // IMPORTANTE: timer não roda ainda
+                    interval: null,
+                    serverId: window.__timers__[tid]?.serverId || null,
+                    colaborador_id: a.colaborador_id || null,
+                    nome_colaborador: a.colaborador || "Desconhecido"
+                };
+
+                // Define terapeuta selecionado globalmente
+                selectedTid = tid;
+
+                // Atualiza display com o tempo do agendamento
+                timerDisplay.textContent = formatarTempo(segundos);
+
+                // Atualiza botões de controle, se houver
+                if (typeof atualizarDisplay === 'function') atualizarDisplay();
+
+                // Sincroniza com servidor (não inicia countdown)
+                await syncTimerToServer(tid);
+
+                console.log("✅ Terapeuta selecionado, timer pronto mas pausado:", tid);
+            });
+
+
+
+            container.appendChild(bloco);
+        });
+    } catch (err) {
+        console.error("Erro ao carregar agendamentos:", err);
+        document.getElementById("agendamentos").innerHTML =
+            `<p class="text-danger small text-center">Erro ao carregar agendamentos.</p>`;
+    }
 }
 
 document.addEventListener("DOMContentLoaded", carregarAgendamentos);
+
+// Função para formatar tempo em mm:ss
+function formatarTempo(sec) {
+    if (typeof sec !== 'number' || isNaN(sec)) return '—';
+    const m = Math.floor(sec / 60).toString().padStart(2, '0');
+    const s = Math.floor(sec % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+}
+
+// Sincroniza um timer local com o servidor (cria ou atualiza)
+async function syncTimerToServer(tid) {
+    try {
+        const state = window.__timers__ && window.__timers__[tid];
+        if (!state) return;
+
+        const dados = {
+            colaborador_id: state.colaborador_id || null,
+            nome_colaborador: state.nome_colaborador || tid,
+            tempoRestante: state.tempo,
+            emAndamento: !!state.interval
+        };
+
+        if (state.serverId) {
+            // Atualiza (PUT)
+            await fetch(`/api/timers/${state.serverId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tempoRestante: state.tempo,
+                    emAndamento: !!state.interval
+                })
+            });
+        } else {
+            // Cria (POST)
+            await fetch('/api/timers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados)
+            });
+            if (r.ok) {
+                const data = await r.json();
+                state.serverId = data._id || data.id || state.serverId;
+            }
+        }
+    } catch (e) {
+        console.warn('⚠️ Erro ao sincronizar timer com servidor:', e);
+    }
+}
 
