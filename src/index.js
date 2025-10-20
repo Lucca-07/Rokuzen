@@ -17,6 +17,8 @@ connectDB();
 import recuperarSenha from "./modules/recuperarSenha.js";
 import Clientes from "../src/models/Clientes.js";
 import Colaboradores from "../src/models/Colaboradores.js";
+import PostosAtendimento from "./models/PostosAtendimento.js";
+import Unidades from "./models/Unidades.js";
 
 app.use(express.json());
 
@@ -111,11 +113,11 @@ app.post("/atualizarSenha", async (req, res) => {
 
 // Rota da página de inicio
 app.get("/inicio", (req, res) => {
-    res.sendFile(path.join(dirname,  "frontend", "paginaInicio.html"));
+    res.sendFile(path.join(dirname, "frontend", "paginaInicio.html"));
 });
 
 app.get("/postosatendimento", (req, res) => {
-    res.sendFile(path.join(dirname,  "frontend", "postoatendimento.html"));
+    res.sendFile(path.join(dirname, "frontend", "postoatendimento.html"));
 });
 
 app.get("/escala", (req, res) => {
@@ -124,6 +126,52 @@ app.get("/escala", (req, res) => {
 
 app.get("/sessao", (req, res) => {
     res.sendFile(path.join(dirname, "src", "frontend", "sessao.html"));
+});
+
+app.post("/postoatendimento", async (req, res) => {
+    const { unidade } = req.body;
+    try {
+        const unidadeId = await Unidades.findOne({
+            nome_unidade: unidade,
+        });
+        if (!unidadeId) {
+            res.status(404).json({
+                msg: "Unidade não encontrada",
+            });
+        }
+        const postos = await PostosAtendimento.find({
+            unidade_id: unidadeId._id,
+        });
+        if (!postos) {
+            res.status(404).json({
+                msg: "Postos não encontrados",
+            });
+        }
+        let quick = [];
+        let poltrona = [];
+        let maca = [];
+        postos.forEach((posto) => {
+            switch (posto.nome_posto) {
+                case "Cadeira Quick":
+                    quick.push(posto);
+                    break;
+                case "Poltrona de Reflexologia":
+                    poltrona.push(posto);
+                    break;
+                case "Sala de Maca":
+                    maca.push(posto);
+                    break;
+                default:
+                  console.log("Erro")
+            }
+            
+        });console.log(quick, poltrona, maca)
+        res.status(200).json({
+            quick: quick,
+            poltrona: poltrona,
+            maca: maca,
+        });
+    } catch (error) {}
 });
 
 app.listen(8080, () => {

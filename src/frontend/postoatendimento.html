@@ -1,206 +1,242 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/frontend/css/postoatendimento.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
-      crossorigin="anonymous"
-    />
-    <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css"
-  />
-    <title>Postos de Atendimento</title>
-  </head>
-  <body>
-    <div>
-      <nav class="navbar container-fluid josefin-sans" style="background: #fff">
-        <div
-          class="row m-0 w-100 justify-content-center justify-content-lg-start"
-        >
-          <div
-            class="logo col-sm-12 col-lg-3 mb-1 mb-lg-0 text-center align-self-center"
-          >
-            <!-- ! LOGO-->
-            <a href="index.html"
-              ><img src="/frontend/img/logo.png" alt="" height="80px"
-            /></a>
-          </div>
-          <div
-            class="menu col-sm-12 col-lg-9 text-center d-flex align-items-center"
-          >
-            <!-- ! MENU DA NAVBAR-->
-            <ul
-              class="list-unstyled d-none d-lg-flex w-100 m-0 justify-content-around align-items-center flex-wrap"
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="/frontend/css/postoatendimento.css" />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css"
+        />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+            crossorigin="anonymous"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css"
+        />
+        <title>Postos de Atendimento</title>
+    </head>
+    <body style="height: 100vh">
+        <div>
+            <nav
+                class="navbar container-fluid josefin-sans"
+                style="background: #fff"
             >
-              <li class="my-2">
-                <a class="text-secondary text-decoration-none p-2 fs-5" href=""
-                  >Visualizar escala</a
+                <div
+                    class="row m-0 w-100 justify-content-center justify-content-lg-start"
                 >
-              </li>
-              <li class="my-2">
-                <a class="text-secondary text-decoration-none p-2 fs-5" href=""
-                  >Postos de atendimento</a
+                    <div
+                        class="logo col-sm-12 col-lg-3 mb-1 mb-lg-0 text-center align-self-center"
+                    >
+                        <!-- ! LOGO-->
+                        <a href="index.html"
+                            ><img
+                                src="/frontend/img/logo.png"
+                                alt=""
+                                height="80px"
+                        /></a>
+                    </div>
+                    <div
+                        class="menu col-sm-12 col-lg-9 text-center d-flex align-items-center"
+                    >
+                        <!-- ! MENU DA NAVBAR-->
+                        <ul
+                            class="list-unstyled d-none d-lg-flex w-100 m-0 justify-content-around align-items-center flex-wrap"
+                        >
+                            <li class="my-2">
+                                <a
+                                    class="text-secondary text-decoration-none p-2 fs-5"
+                                    href=""
+                                    >Visualizar escala</a
+                                >
+                            </li>
+                            <li class="my-2">
+                                <a
+                                    class="text-secondary text-decoration-none p-2 fs-5"
+                                    href=""
+                                    >Postos de atendimento</a
+                                >
+                            </li>
+                            <li class="my-2">
+                                <a
+                                    class="text-secondary text-decoration-none p-2 fs-5"
+                                    href=""
+                                    >Gerenciar sessão</a
+                                >
+                            </li>
+                            <li>
+                                <button
+                                    class="sair px-4 fs my-2 align-self-center"
+                                >
+                                    Sair
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div
+                        id="menubtn"
+                        role="button"
+                        class="sidebar col-1 d-lg-none text-center"
+                    >
+                        <!-- ! BOTAO PARA ABRIR MENU EM TELAS PEQUENAS-->
+                        <i onclick="abrirMenu()" class="mdi mdi-menu fs-1"></i>
+                    </div>
+                </div>
+            </nav>
+            <div
+                id="dropcnt"
+                class="dropcnt container-fluid p-0 d-none w-100 d-lg-none"
+            >
+                <!-- ! CONTEÚDO DO BOTAO DE ABRIR MENU-->
+                <div
+                    class="dropopt container-fluid d-flex align-items-center justify-content-center"
                 >
-              </li>
-              <li class="my-2">
-                <a class="text-secondary text-decoration-none p-2 fs-5" href=""
-                  >Gerenciar sessão</a
+                    <a
+                        class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
+                        href=""
+                        style="height: 100%"
+                        >Visualizar escala</a
+                    >
+                </div>
+                <div
+                    class="dropopt container-fluid d-flex align-items-center justify-content-center"
                 >
-              </li>
-              <li>
-                <button class="sair px-4 fs my-2 align-self-center">
-                  Sair
-                </button>
-              </li>
-            </ul>
-          </div>
-          <div
-            id="menubtn"
-            role="button"
-            class="sidebar col-1 d-lg-none text-center"
-          >
-            <!-- ! BOTAO PARA ABRIR MENU EM TELAS PEQUENAS-->
-            <i onclick="abrirMenu()" class="mdi mdi-menu fs-1"></i>
-          </div>
+                    <a
+                        class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
+                        href=""
+                        style="height: 100%"
+                        >Postos de atendimento</a
+                    >
+                </div>
+                <div
+                    class="dropopt container-fluid d-flex align-items-center justify-content-center"
+                >
+                    <a
+                        class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
+                        href=""
+                        style="height: 100%"
+                        >Gerenciar sessão</a
+                    >
+                </div>
+            </div>
         </div>
-      </nav>
-      <div
-        id="dropcnt"
-        class="dropcnt container-fluid p-0 d-none w-100 d-lg-none"
-      >
-        <!-- ! CONTEÚDO DO BOTAO DE ABRIR MENU-->
-        <div
-          class="dropopt container-fluid d-flex align-items-center justify-content-center"
-        >
-          <a
-            class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
-            href=""
-            style="height: 100%"
-            >Visualizar escala</a
-          >
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="container-fluid bg-white py-5 h-100">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-semibold" style="font-size: 70px">
+                    Postos de Atendimento
+                </h1>
+            </div>
+
+            <div
+                class="w-75 shadow-lg p-5"
+                style="margin: auto; background-color: #e9eaee"
+            >
+                <div class="row justify-content-center g-5 text-center">
+                    <!-- Cadeira -->
+                    <div class="col-12 col-md-4">
+                        <div
+                            class="card border-0 shadow-sm rounded-4 overflow-hidden"
+                            role="button"
+                            onclick="abrirPopup('cadeira')"
+                        >
+                            <img
+                                src="/frontend/img/quick.png"
+                                class="card-img-top"
+                                alt="Cadeira Quick"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Maca -->
+                    <div class="col-12 col-md-4">
+                        <div
+                            class="card border-0 shadow-sm rounded-4 overflow-hidden"
+                            role="button"
+                            onclick="abrirPopup('maca')"
+                        >
+                            <img
+                                src="/frontend/img/Maca.jpeg"
+                                class="card-img-top"
+                                alt="Maca"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Poltrona -->
+                    <div class="col-12 col-md-4">
+                        <div
+                            class="card border-0 shadow-sm rounded-4 overflow-hidden"
+                            role="button"
+                            onclick="abrirPopup('poltrona')"
+                        >
+                            <img
+                                src="/frontend/img/Poltrona.jpeg"
+                                class="card-img-top"
+                                alt="Poltrona Reflexologia"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Cadeira -->
+        <div class="popup-bg" id="popup-cadeira" style="display: none">
+            <div class="popup">
+                <h2>Cadeira Quick</h2>
+                <div class="frame" id="frame-cadeira"></div>
+                <div class="botoes">
+                    <button class="btn adicionar">Adicionar</button>
+                    <button class="btn confirmar">Confirmar</button>
+                </div>
+            </div>
         </div>
-        <div
-          class="dropopt container-fluid d-flex align-items-center justify-content-center"
-        >
-          <a
-            class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
-            href=""
-            style="height: 100%"
-            >Postos de atendimento</a
-          >
+
+        <!-- Maca-->
+        <div class="popup-bg" id="popup-maca" style="display: none">
+            <div class="popup">
+                <h2>Maca</h2>
+                <div class="frame" id="frame-maca"></div>
+                <div class="botoes">
+                    <button class="btn adicionar">Adicionar</button>
+                    <button class="btn confirmar">Confirmar</button>
+                </div>
+            </div>
         </div>
-        <div
-          class="dropopt container-fluid d-flex align-items-center justify-content-center"
-        >
-          <a
-            class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
-            href=""
-            style="height: 100%"
-            >Gerenciar sessão</a
-          >
+
+        <!-- Poltrona-->
+        <div class="popup-bg" id="popup-poltrona" style="display: none">
+            <div class="popup">
+                <h2>Poltrona Reflexologia</h2>
+                <div class="frame" id="frame-poltrona"></div>
+                <div class="botoes">
+                    <button class="btn adicionar">Adicionar</button>
+                    <button class="btn confirmar">Confirmar</button>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-    <main>
-</head>
-<body style="height: 100vh;">
 
+        <!-- Bootstrap JS (opcional) -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- CONTEÚDO PRINCIPAL -->
-<main class="container-fluid bg-white py-5 h-100">
-  <div class="text-center mb-5">
-    <h1 class="display-5 fw-semibold" style="font-size: 70px;">Postos de Atendimento</h1>
-  </div>
+        <!-- Seu script principal -->
+        <script src="/frontend/js/postoatendimento.js"></script>
 
-  <div class="w-75 shadow-lg p-5" style="margin: auto; background-color: #E9EAEE;">
-    <div class="row justify-content-center g-5 text-center">
-
-      <!-- Cadeira -->
-      <div class="col-12 col-md-4">
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden" role="button" onclick="abrirPopup('cadeira')">
-          <img src="/frontend/img/quick.png" class="card-img-top" alt="Cadeira Quick" />
+        <!-- Implementação do Vlibras -->
+        <div vw class="enabled">
+            <div vw-access-button class="active"></div>
+            <div vw-plugin-wrapper>
+                <div class="vw-plugin-topwrapper"></div>
+            </div>
         </div>
-      </div>
-
-      <!-- Maca -->
-      <div class="col-12 col-md-4">
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden" role="button" onclick="abrirPopup('maca')">
-          <img src="/frontend/img/Maca.jpeg" class="card-img-top" alt="Maca" />
-        </div>
-      </div>
-
-      <!-- Poltrona -->
-      <div class="col-12 col-md-4">
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden" role="button" onclick="abrirPopup('poltrona')">
-          <img src="/frontend/img/Poltrona.jpeg" class="card-img-top" alt="Poltrona Reflexologia" />
-        </div>
-      </div>
-    </div>
-  </div>
-</main>
-
-<!-- Cadeira -->
-<div class="popup-bg" id="popup-cadeira" style="display: none;">
-  <div class="popup">
-    <h2>Cadeira Quick</h2>
-    <div class="frame" id="frame-cadeira"></div>
-    <div class="botoes">
-      <button class="btn adicionar">Adicionar</button>
-      <button class="btn confirmar">Confirmar</button>
-    </div>
-  </div>
-</div>
-
-<!-- Maca-->
-<div class="popup-bg" id="popup-maca" style="display: none;">
-  <div class="popup">
-    <h2>Maca</h2>
-    <div class="frame" id="frame-maca"></div>
-    <div class="botoes">
-      <button class="btn adicionar">Adicionar</button>
-      <button class="btn confirmar">Confirmar</button>
-    </div>
-  </div>
-</div>
-
-<!-- Poltrona-->
-<div class="popup-bg" id="popup-poltrona" style="display: none;">
-  <div class="popup">
-    <h2>Poltrona Reflexologia</h2>
-    <div class="frame" id="frame-poltrona"></div>
-    <div class="botoes">
-      <button class="btn adicionar">Adicionar</button>
-      <button class="btn confirmar">Confirmar</button>
-    </div>
-  </div>
-</div>
-
-<!-- Bootstrap JS (opcional) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Seu script principal -->
-<script src="/frontend/js/postoatendimento.js"></script>
-
-<!-- Implementação do Vlibras -->
-<div vw class="enabled">
-  <div vw-access-button class="active"></div>
-  <div vw-plugin-wrapper>
-      <div class="vw-plugin-topwrapper"></div>
-  </div>
-</div>
-<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-<script>
-  new window.VLibras.Widget('https://vlibras.gov.br/app')
-</script>
-
-</body>
+        <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+        <script>
+            new window.VLibras.Widget("https://vlibras.gov.br/app");
+        </script>
+    </body>
 </html>
