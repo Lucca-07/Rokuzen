@@ -232,7 +232,7 @@ app.post("/escala/atendimento", async (req, res) => {
   const { dataHora, colaborador_id, servico_id, unidade_id } = req.body;
 
   try {
-    const inicioAtendimento = new Date(dataHora);
+    const inicioAtendimento = new Date(dataHora + "Z");
     const fimAtendimento = new Date(inicioAtendimento);
     fimAtendimento.setMinutes(fimAtendimento.getMinutes() + 60);
 
