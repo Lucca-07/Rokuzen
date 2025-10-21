@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const ColaboradoresSchema = new mongoose.Schema({
-    nome_colaborador: String,
+    nome_colaborador: { type: String, required: true },
     ativo: Boolean,
     tipo_colaborador: String,
     unidades_trabalha: Array,

@@ -1,13 +1,11 @@
-let dataAtual = new Date(); // data de hoje.
-let eventos = []; // Array armazena todos os agendamentos.
+let dataAtual = new Date(); 
+let eventos = []; 
 let celulaSelecionada = null;
 let eventoEmEdicao = null;
-
 
 const HORA_INICIO = 9;
 const HORA_FIM = 23;
 const INTERVALO_MINUTOS = 60;
-
 
 const tabelaCalendario = document.getElementById("tabela-calendario");
 const modal = document.getElementById("modal-agendamento");
@@ -18,38 +16,74 @@ const horarioSelecionadoDisplay = document.getElementById(
 );
 const btnSalvar = document.getElementById("btn-salvar");
 const btnExcluir = document.getElementById("btn-excluir");
-const modalAlterElementosPopUp = document.querySelector(".modal-conteudo")
-
+const modalAlterElementosPopUp = document.querySelector(".modal-conteudo");
 
 function getInicioSemana(data) {
-  const dia = data.getDay(); // 0 (Domingo) a 6 (Sábado)
+  const dia = data.getDay(); 
   const inicio = new Date(data);
   inicio.setDate(data.getDate() - dia);
   inicio.setHours(0, 0, 0, 0);
   return inicio;
 }
 
-
 function formatarData(data) {
-  const dia = String(data.getDate()).padStart(2, "0"); 
+  const dia = String(data.getDate()).padStart(2, "0");
   const mes = String(data.getMonth() + 1).padStart(2, "0");
   return `${dia}/${mes}`;
 }
 
+async function carregarEventosDaSemana() {
+  const inicioSemana = getInicioSemana(dataAtual);
+  const fimSemana = new Date(inicioSemana);
+  fimSemana.setDate(fimSemana.getDate() + 7);
 
-function renderizarCalendario() {
+  const inicioISO = inicioSemana.toISOString();
+  const fimISO = fimSemana.toISOString();
+
+  try {
+    const response = await fetch(`/api/atendimentos?inicio=${inicioISO}&fim=${fimISO}`);
+    if (!response.ok) {
+      throw new Error("Falha ao buscar agendamentos.");
+    }
+    const eventosDoServidor = await response.json();
+    
+    
+    eventos = eventosDoServidor.map(evento => {
+      
+      const nomeColaborador = evento.colaborador_id ? evento.colaborador_id.nome_colaborador : "N/D";
+      const idColaborador = evento.colaborador_id ? evento.colaborador_id._id : null;
+      const nomeServico = evento.servico_id ? evento.servico_id.nome_servico : "N/D";
+      const idServico = evento.servico_id ? evento.servico_id._id : null;
+
+      return {
+        id: evento._id, 
+        dataHora: evento.inicio_atendimento.slice(0, 16), 
+        funcionario: nomeColaborador,
+        funcionarioId: idColaborador,
+        tipoTrabalho: nomeServico,
+        tipoTrabalhoId: idServico,
+        unidadeId: evento.unidade_id,
+      };
+    });
+
+    exibirEventos(); 
+  } catch (error) {
+    console.error("Erro ao carregar eventos:", error);
+    alert("Não foi possível carregar os agendamentos.");
+  }
+}
+
+async function renderizarCalendario() {
   const inicioSemana = getInicioSemana(dataAtual);
   const diasDaSemana = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
   let datas = [];
 
-  
   for (let i = 0; i < 7; i++) {
     const data = new Date(inicioSemana);
     data.setDate(inicioSemana.getDate() + i);
     datas.push(data);
   }
 
-  
   let theadHTML = "<tr><th>Horário</th>";
   datas.forEach((data, index) => {
     const diaNome = diasDaSemana[index];
@@ -59,7 +93,6 @@ function renderizarCalendario() {
   theadHTML += "</tr>";
   tabelaCalendario.querySelector("thead").innerHTML = theadHTML;
 
-  
   let tbodyHTML = "";
   const hoje = new Date();
 
@@ -73,20 +106,19 @@ function renderizarCalendario() {
       let linha = `<tr><td>${horario}</td>`;
 
       datas.forEach((data) => {
-       
         const dataHoraLocal = new Date(
           data.getFullYear(),
           data.getMonth(),
           data.getDate(),
           h,
           m
-        ); 
+        );
         const ano = dataHoraLocal.getFullYear();
         const mes = String(dataHoraLocal.getMonth() + 1).padStart(2, "0");
         const dia = String(dataHoraLocal.getDate()).padStart(2, "0");
         const hora = String(dataHoraLocal.getHours()).padStart(2, "0");
         const minuto = String(dataHoraLocal.getMinutes()).padStart(2, "0");
-        const dataKey = `${ano}-${mes}-${dia}T${hora}:${minuto}`; // Novo formato
+        const dataKey = `${ano}-${mes}-${dia}T${hora}:${minuto}`; 
         let classeHoje =
           data.toDateString() === hoje.toDateString() ? "hoje" : "";
         linha += `<td class="horario-celula ${classeHoje}" data-time="${dataKey}"></td>`;
@@ -98,119 +130,150 @@ function renderizarCalendario() {
   }
   tabelaCalendario.querySelector("tbody").innerHTML = tbodyHTML;
 
+  await carregarEventosDaSemana(); 
   adicionarListenersCelulas();
-  exibirEventos();
+
 }
 
+
+
+
+async function carregarOpcoesDoFormulario() {
+  const selectFuncionario = document.getElementById("funcionario");
+  const selectServico = document.getElementById("tipo-trabalho");
+  const selectUnidade = document.getElementById("unidade");
+
+  
+  selectFuncionario.innerHTML =
+    '<option value="selecao">Selecione o colaborador</option>';
+  selectServico.innerHTML =
+    '<option value="selecao">Selecione o serviço</option>';
+  selectUnidade.innerHTML =
+    '<option value="selecao">Selecione a unidade</option>';
+
+  try {
+    
+    const responseColaboradores = await fetch("/api/colaboradores");
+    const colaboradores = await responseColaboradores.json();
+    colaboradores.forEach((colab) => {
+      const option = document.createElement("option");
+      option.value = colab._id;
+      option.textContent = colab.nome_colaborador; 
+      selectFuncionario.appendChild(option);
+    });
+
+    
+    const responseServicos = await fetch("/api/servicos");
+    const servicos = await responseServicos.json();
+    servicos.forEach((servico) => {
+      const option = document.createElement("option");
+      option.value = servico._id;
+      option.textContent = servico.nome_servico; 
+      selectServico.appendChild(option);
+    });
+
+    
+    const responseUnidades = await fetch("/api/unidades");
+    const unidades = await responseUnidades.json();
+    unidades.forEach((unidade) => {
+      const option = document.createElement("option");
+      option.value = unidade._id;
+      option.textContent = unidade.nome_unidade; 
+      selectUnidade.appendChild(option);
+    });
+  } catch (error) {
+    console.error("Erro ao carregar opções do formulário:", error);
+    alert(
+      "Não foi possível carregar os dados para agendamento. Tente recarregar a página."
+    );
+  }
+}
 
 function exibirEventos() {
-    // 1. Limpa todos os eventos existentes na interface
-    document.querySelectorAll(".evento").forEach((el) => el.remove());
 
-    // 2. Agrupa eventos por dataHora, garantindo que o 'index' esteja em cada objeto
-    const eventosPorCelula = eventos.reduce((acc, evento, index) => {
-        const key = evento.dataHora;
-        if (!acc[key]) {
-            acc[key] = [];
-        }
-        acc[key].push({ ...evento, index }); 
-        return acc;
-    }, {});
+  document.querySelectorAll(".evento").forEach((el) => el.remove());
 
-    // 3. Itera sobre as células e adiciona TODOS os eventos
-    Object.keys(eventosPorCelula).forEach(dataHoraKey => {
-        const eventosDaCelula = eventosPorCelula[dataHoraKey];
-        const celula = document.querySelector(`[data-time="${dataHoraKey}"]`);
-        
-        if (celula) {
-            
-            celula.innerHTML = ''; // Limpa antes de adicionar todos
-            
-            // Adiciona classe de limite se for o caso
-            if (eventosDaCelula.length >= 5) {
-                celula.classList.add('limite-atingido');
-            } else {
-                celula.classList.remove('limite-atingido');
-            }
-            
-            // Renderiza TODOS OS EVENTOS DA CÉLULA (o loop que faltava)
-            eventosDaCelula.forEach((eventoDetalhe) => {
-                
-                const divEvento = document.createElement("div");
-                divEvento.classList.add("evento");
-                
-                // Adiciona o INDEX do evento original - CRUCIAL PARA EDIÇÃO
-                divEvento.dataset.eventoIndex = eventoDetalhe.index; 
-                divEvento.dataset.dataHora = dataHoraKey; 
-                
-                divEvento.title = `${eventoDetalhe.funcionario} - ${
-                    eventoDetalhe.tipoTrabalho
-                }\nEquipamentos: ${eventoDetalhe.equipamentoss || "Nenhum"}`;
-                
-                // Exibe o nome do funcionário
-                divEvento.textContent = `${eventoDetalhe.funcionario.split(" ")[0]}`;
-
-                celula.appendChild(divEvento);
-            });
-        }
-    });
-}
-
-function excluirEvento(indexParaExcluir) {
-    // Verifica se o índice é válido antes de remover
-    if (indexParaExcluir !== undefined && indexParaExcluir > -1) {
-        // Usa o índice diretamente para remover 1 elemento a partir daquele ponto
-        eventos.splice(indexParaExcluir, 1);
-        exibirEventos(); 
+  const eventosPorCelula = eventos.reduce((acc, evento) => {
+    const key = evento.dataHora;
+    if (!acc[key]) {
+      acc[key] = [];
     }
+    acc[key].push(evento);
+    return acc;
+  }, {});
+
+  Object.keys(eventosPorCelula).forEach((dataHoraKey) => {
+    const eventosDaCelula = eventosPorCelula[dataHoraKey];
+    const celula = document.querySelector(`[data-time="${dataHoraKey}"]`);
+
+    if (celula) {
+      celula.innerHTML = ""; 
+
+      if (eventosDaCelula.length >= 5) {
+        celula.classList.add("limite-atingido");
+      } else {
+        celula.classList.remove("limite-atingido");
+      }
+
+      eventosDaCelula.forEach((eventoDetalhe) => {
+        const divEvento = document.createElement("div");
+        divEvento.classList.add("evento");
+
+        divEvento.dataset.eventoId = eventoDetalhe.id; 
+        
+        divEvento.title = `${eventoDetalhe.funcionario} - ${eventoDetalhe.tipoTrabalho}`;
+        divEvento.textContent = `${eventoDetalhe.funcionario.split(" ")[0]}`;
+
+        celula.appendChild(divEvento);
+      });
+    }
+  });
 }
+
 
 function adicionarListenersCelulas() {
-    // Clona e substitui para remover listeners antigos e evitar duplicação
-    document.querySelectorAll(".horario-celula").forEach((celula) => {
-        const newCelula = celula.cloneNode(true);
-        celula.replaceWith(newCelula);
-    });
+  
+  document.querySelectorAll(".horario-celula").forEach((celula) => {
+    const newCelula = celula.cloneNode(true);
+    celula.parentNode.replaceChild(newCelula, celula);
+  });
 
-    // Readquire as células para adicionar os novos listeners
-    document.querySelectorAll(".horario-celula").forEach((celula) => {
-        celula.addEventListener("click", (e) => {
-            const dataHoraKey = celula.dataset.time;
-            
-            // Verifica se o clique foi diretamente em um DIV.EVENTO
-            const eventoDiv = e.target.closest(".evento"); 
-            
-            // Conta quantos eventos já existem para este horário
-            const eventosAtuais = eventos.filter(e => e.dataHora === dataHoraKey).length;
-            
-            if (eventoDiv) {
-                // MODO EDIÇÃO: Clicou em um evento específico
-                const index = parseInt(eventoDiv.dataset.eventoIndex);
-                
-                // Passamos o objeto evento COMPLETO, incluindo o índice
-                const eventoCompleto = { ...eventos[index], index: index };
-                abrirModalEdicao(eventoCompleto);
-                
-            } else if (e.target.classList.contains('horario-celula') || e.target.classList.contains('limite-atingido')) {
-                // MODO CRIAÇÃO: Clicou no fundo da célula
-                
-                if (eventosAtuais >= 5) {
-                    alert("Limite de 5 agendamentos atingido para este horário. Não é possível adicionar mais.");
-                    return; // Impede a abertura do modal
-                }
+  document.querySelectorAll(".horario-celula").forEach((celula) => {
+    celula.addEventListener("click", (e) => {
+      const dataHoraKey = celula.dataset.time;
+      const eventoDiv = e.target.closest(".evento");
 
-                celulaSelecionada = celula;
-                abrirModalCriacao(dataHoraKey);
-            }
-        });
+      if (eventoDiv) {
+        
+        const eventoId = eventoDiv.dataset.eventoId; 
+        
+        const eventoCompleto = eventos.find(evt => evt.id === eventoId); 
+        
+        if(eventoCompleto) {
+            abrirModalEdicao(eventoCompleto);
+        }
+
+      } else {
+        
+        const eventosAtuais = eventos.filter(
+          (ev) => ev.dataHora === dataHoraKey
+        ).length;
+
+        if (eventosAtuais >= 5) {
+          alert("Limite de 5 agendamentos atingido para este horário.");
+          return;
+        }
+
+        celulaSelecionada = celula;
+        abrirModalCriacao(dataHoraKey);
+      }
     });
+  });
 }
-
 function abrirModalCriacao(dataHoraKey) {
   eventoEmEdicao = null;
   formAgendamento.reset();
 
-  
   document.getElementById("horario-selecionado").textContent = new Date(
     dataHoraKey
   ).toLocaleString("pt-BR", {
@@ -222,30 +285,28 @@ function abrirModalCriacao(dataHoraKey) {
   });
 
   btnSalvar.textContent = "Salvar Agendamento";
-  btnExcluir.style.display = "none"; 
+  btnExcluir.style.display = "none";
   modal.style.display = "flex";
-  modal.style.alignItems = "center";   
-  modal.style.justifyContent = "center"; 
-  modalAlterElementosPopUp.style.backgroundColor = "#fff"; 
+  modal.style.alignItems = "center";
+  modal.style.justifyContent = "center";
+  modalAlterElementosPopUp.style.backgroundColor = "#fff";
   modalAlterElementosPopUp.style.padding = "35px";
   modalAlterElementosPopUp.style.border = "2px solid #ccc";
   modalAlterElementosPopUp.style.borderRadius = "10px";
 }
 
-
 function abrirModalEdicao(evento) {
-  eventoEmEdicao = evento;
+  eventoEmEdicao = evento; 
   celulaSelecionada = document.querySelector(
     `[data-time="${evento.dataHora}"]`
   );
 
   
-  document.getElementById("funcionario").value = evento.funcionario;
-  document.getElementById("tipo-trabalho").value = evento.tipoTrabalho;
- 
-  document.getElementById("equipamentoss").value = evento.equipamentoss;
+  document.getElementById("funcionario").value = evento.funcionarioId;
+  document.getElementById("tipo-trabalho").value = evento.tipoTrabalhoId;
+  document.getElementById("unidade").value = evento.unidadeId;
 
-  
+
   document.getElementById("horario-selecionado").textContent = new Date(
     evento.dataHora
   ).toLocaleString("pt-BR", {
@@ -259,31 +320,58 @@ function abrirModalEdicao(evento) {
   btnSalvar.textContent = "Salvar Alterações";
   btnExcluir.style.display = "block"; 
   modal.style.display = "flex";
-  modal.style.alignItems = "center";  
-  modal.style.justifyContent = "center"; 
-  modalAlterElementosPopUp.style.backgroundColor = "#fff"; 
-  modalAlterElementosPopUp.style.padding = "35px";
-  modalAlterElementosPopUp.style.border = "2px solid #ccc";
+  
 }
 
-
-formAgendamento.addEventListener("submit", function (e) {
+formAgendamento.addEventListener("submit", async function (e) {
   e.preventDefault();
 
-  const dados = {
-    dataHora: celulaSelecionada.dataset.time,
-    funcionario: document.getElementById("funcionario").value,
-    tipoTrabalho: document.getElementById("tipo-trabalho").value,
-    equipamentoss: document.getElementById("equipamentoss").value || null,
+  const dadosParaEnviar = {
+    colaborador_id: document.getElementById("funcionario").value,
+    servico_id: document.getElementById("tipo-trabalho").value,
+    unidade_id: document.getElementById("unidade").value,
   };
 
+  
+  if (
+    dadosParaEnviar.colaborador_id === "selecao" ||
+    dadosParaEnviar.servico_id === "selecao" ||
+    dadosParaEnviar.unidade_id === "selecao"
+  ) {
+    alert("Por favor, selecione o profissional, o serviço e a unidade.");
+    return;
+  }
+
+  let urlAPI = "/escala/atendimento";
+  let metodoHTTP = "POST";
+
+  
   if (eventoEmEdicao) {
-    const indexParaAtualizar = eventoEmEdicao.index;
-    if (indexParaAtualizar !== undefined && indexParaAtualizar > -1) {
-      eventos[indexParaAtualizar] = { ...eventos[indexParaAtualizar], ...dados };
-    }
+    urlAPI = `/api/atendimentos/${eventoEmEdicao.id}`; 
+    metodoHTTP = "PUT";
   } else {
-    eventos.push(dados);
+    
+    dadosParaEnviar.dataHora = celulaSelecionada.dataset.time;
+  }
+
+  try {
+    const response = await fetch(urlAPI, {
+      method: metodoHTTP,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dadosParaEnviar),
+    });
+
+    const resultado = await response.json();
+
+    if (response.ok) {
+      alert(resultado.mensagem);
+      await carregarEventosDaSemana(); 
+    } else {
+      alert(`Erro: ${resultado.mensagem}`);
+    }
+  } catch (error) {
+    alert("Houve um erro de conexão com o servidor.");
+    console.error("Erro no fetch:", error);
   }
 
   
@@ -291,33 +379,40 @@ formAgendamento.addEventListener("submit", function (e) {
   formAgendamento.reset();
   celulaSelecionada = null;
   eventoEmEdicao = null;
-  exibirEventos(); 
 });
 
+btnExcluir.addEventListener("click", async () => {
+  if (eventoEmEdicao && confirm("Tem certeza que deseja excluir esta reserva?")) {
+    try {
+      const urlAPI = `/api/atendimentos/${eventoEmEdicao.id}`;
+      const response = await fetch(urlAPI, {
+        method: "DELETE",
+      });
 
-btnExcluir.addEventListener("click", () => {
-    // eventoEmEdicao agora contém o 'index' correto graças às correções anteriores.
-    if (
-        eventoEmEdicao &&
-        confirm("Tem certeza que deseja excluir esta reserva?")
-    ) {
-        // *** CORREÇÃO APLICADA AQUI ***
-        // Chamamos excluirEvento passando o índice (index) do evento a ser excluído
-        excluirEvento(eventoEmEdicao.index); 
-        
-        modal.style.display = "none";
-        celulaSelecionada = null;
-        eventoEmEdicao = null;
-        // Não precisamos chamar exibirEventos() novamente, pois ele é chamado dentro de excluirEvento
+      const resultado = await response.json();
+
+      if (response.ok) {
+        alert(resultado.mensagem);
+        await carregarEventosDaSemana(); 
+      } else {
+        alert(`Erro ao excluir: ${resultado.mensagem}`);
+      }
+    } catch (error) {
+      console.error("Erro ao excluir evento:", error);
+      alert("Houve um erro de conexão ao tentar excluir o agendamento.");
     }
-});
 
+    
+    modal.style.display = "none";
+    celulaSelecionada = null;
+    eventoEmEdicao = null;
+  }
+});
 
 document.getElementById("btn-hoje").addEventListener("click", () => {
-  dataAtual = new Date(); 
+  dataAtual = new Date();
   renderizarCalendario();
 });
-
 
 fecharBtn.onclick = function () {
   modal.style.display = "none";
@@ -325,7 +420,6 @@ fecharBtn.onclick = function () {
   eventoEmEdicao = null;
   formAgendamento.reset();
 };
-
 
 window.onclick = function (event) {
   if (event.target == modal) {
@@ -335,7 +429,6 @@ window.onclick = function (event) {
     formAgendamento.reset();
   }
 };
-
 
 document.getElementById("btn-anterior").addEventListener("click", () => {
   dataAtual.setDate(dataAtual.getDate() - 7);
@@ -347,5 +440,23 @@ document.getElementById("btn-proximo").addEventListener("click", () => {
   renderizarCalendario();
 });
 
-// Inicialização
-document.addEventListener("DOMContentLoaded", renderizarCalendario);
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderizarCalendario(); 
+  carregarOpcoesDoFormulario();
+});
+
+async function teste() {
+  try {
+    const response = await fetch("/escala/atendimento", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: {
+        nome_colaborador: variavel_do_nome,
+        servico: variavel_servico,
+      },
+    });
+  } catch (error) {}
+}

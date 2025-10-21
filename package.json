@@ -16,7 +16,7 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "nodemon src/index.js"
+        "start": "nodemon src/backend/enzo.js"
     },
     "dependencies": {
         "bootstrap": "^5.3.8",

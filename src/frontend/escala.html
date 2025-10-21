@@ -1,135 +1,191 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>calendário de massagens</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/frontend/css/escala.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css"
+    />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>calendário de massagens</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="/frontend/css/escala.css" />
-  <link rel="stylesheet" href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" />
-</head>
-
-<body>
-  <div class="codigoNavbar">
-    <nav class="navbar container-fluid josefin-sans" style="background: #fff">
-      <div class="row m-0 w-100 justify-content-center justify-content-lg-start">
-        <div class="logo col-sm-12 col-lg-3 mb-1 mb-lg-0 text-center align-self-center">
-          <!-- ! LOGO-->
-          <a href="/inicio"><img src="/frontend/img/logo.png" alt="" height="80px" /></a>
+  <body>
+    <div class="codigoNavbar">
+      <nav class="navbar container-fluid josefin-sans" style="background: #fff">
+        <div
+          class="row m-0 w-100 justify-content-center justify-content-lg-start"
+        >
+          <div
+            class="logo col-sm-12 col-lg-3 mb-1 mb-lg-0 text-center align-self-center"
+          >
+            <!-- ! LOGO-->
+            <a href="/inicio"
+              ><img src="/frontend/img/logo.png" alt="" height="80px"
+            /></a>
+          </div>
+          <div
+            class="menu col-sm-12 col-lg-9 text-center d-flex align-items-center"
+          >
+            <!-- ! MENU DA NAVBAR-->
+            <ul
+              class="list-unstyled d-none d-lg-flex w-100 m-0 justify-content-around align-items-center flex-wrap"
+            >
+              <li class="my-2">
+                <a
+                  class="text-secondary text-decoration-none p-2 fs-5"
+                  href="/escala"
+                  >Visualizar escala</a
+                >
+              </li>
+              <li class="my-2">
+                <a
+                  class="text-secondary text-decoration-none p-2 fs-5"
+                  href="/postosatendimento"
+                  >Postos de atendimento</a
+                >
+              </li>
+              <li class="my-2">
+                <a
+                  class="text-secondary text-decoration-none p-2 fs-5"
+                  href="/sessao"
+                  >Gerenciar sessão</a
+                >
+              </li>
+              <li>
+                <button class="sair px-4 fs my-2 align-self-center">
+                  Sair
+                </button>
+              </li>
+            </ul>
+          </div>
+          <div
+            id="menubtn"
+            role="button"
+            class="sidebar col-1 d-lg-none text-center"
+          >
+            <!-- ! BOTAO PARA ABRIR MENU EM TELAS PEQUENAS-->
+            <i onclick="abrirMenu()" class="mdi mdi-menu fs-1"></i>
+          </div>
         </div>
-        <div class="menu col-sm-12 col-lg-9 text-center d-flex align-items-center">
-          <!-- ! MENU DA NAVBAR-->
-          <ul class="list-unstyled d-none d-lg-flex w-100 m-0 justify-content-around align-items-center flex-wrap">
-            <li class="my-2">
-              <a class="text-secondary text-decoration-none p-2 fs-5" href="/escala">Visualizar escala</a>
-            </li>
-            <li class="my-2">
-              <a class="text-secondary text-decoration-none p-2 fs-5" href="/postosatendimento">Postos de atendimento</a>
-            </li>
-            <li class="my-2">
-              <a class="text-secondary text-decoration-none p-2 fs-5" href="/sessao">Gerenciar sessão</a>
-            </li>
-            <li>
-              <button class="sair px-4 fs my-2 align-self-center">
-                Sair
-              </button>
-            </li>
-          </ul>
+      </nav>
+      <div
+        id="dropcnt"
+        class="dropcnt container-fluid p-0 d-none w-100 d-lg-none"
+      >
+        <!-- ! CONTEÚDO DO BOTAO DE ABRIR MENU-->
+        <div
+          class="dropopt container-fluid d-flex align-items-center justify-content-center"
+        >
+          <a
+            class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
+            href=""
+            style="height: 100%"
+            >Visualizar escala</a
+          >
         </div>
-        <div id="menubtn" role="button" class="sidebar col-1 d-lg-none text-center">
-          <!-- ! BOTAO PARA ABRIR MENU EM TELAS PEQUENAS-->
-          <i onclick="abrirMenu()" class="mdi mdi-menu fs-1"></i>
+        <div
+          class="dropopt container-fluid d-flex align-items-center justify-content-center"
+        >
+          <a
+            class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
+            href=""
+            style="height: 100%"
+            >Postos de atendimento</a
+          >
         </div>
-      </div>
-    </nav>
-    <div id="dropcnt" class="dropcnt container-fluid p-0 d-none w-100 d-lg-none">
-      <!-- ! CONTEÚDO DO BOTAO DE ABRIR MENU-->
-      <div class="dropopt container-fluid d-flex align-items-center justify-content-center">
-        <a class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
-          href="" style="height: 100%">Visualizar escala</a>
-      </div>
-      <div class="dropopt container-fluid d-flex align-items-center justify-content-center">
-        <a class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
-          href="" style="height: 100%">Postos de atendimento</a>
-      </div>
-      <div class="dropopt container-fluid d-flex align-items-center justify-content-center">
-        <a class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
-          href="" style="height: 100%">Gerenciar sessão</a>
+        <div
+          class="dropopt container-fluid d-flex align-items-center justify-content-center"
+        >
+          <a
+            class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
+            href=""
+            style="height: 100%"
+            >Gerenciar sessão</a
+          >
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- <div class="calendario-container"> -->
-  <!-- começo codigo calendário -->
-  <header class="header-escala">
-    <h1>Serviços da Semanas</h1>
-    <div class="nav-botoes">
-      <button id="btn-anterior">Semana Anterior</button>
-      <button id="btn-hoje">Semana Atual</button>
-      <h2 id="semana-atual"></h2>
-      <button id="btn-proximo">Próxima Semana</button>
+    <!-- <div class="calendario-container"> -->
+    <!-- começo codigo calendário -->
+    <header class="header-escala">
+      <h1>Serviços da Semanas</h1>
+      <div class="nav-botoes">
+        <button id="btn-anterior">Semana Anterior</button>
+        <button id="btn-hoje">Semana Atual</button>
+        <h2 id="semana-atual"></h2>
+        <button id="btn-proximo">Próxima Semana</button>
+      </div>
+    </header>
+
+    <div class="calendario-container">
+      <table id="tabela-calendario">
+        <thead>
+          <!-- th, tr e th são as tabelas -->
+          <tr>
+            <th>Horário</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
     </div>
-  </header>
+    <div id="modal-agendamento" class="modal">
+      <div class="modal-conteudo">
+        <span class="fechar-btn">&times;</span>
+        <h2>Novo Agendamento</h2>
+        <p>Horário Selecionado <strong id="horario-selecionado"></strong></p>
 
-  <div class="calendario-container">
-    <table id="tabela-calendario">
-      <thead>
-        <!-- th, tr e th são as tabelas -->
-        <tr>
-          <th>Horário</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-  <div id="modal-agendamento" class="modal">
-    <div class="modal-conteudo">
-      <span class="fechar-btn">&times;</span>
-      <h2>Novo Agendamento</h2>
-      <p>Horário Selecionado <strong id="horario-selecionado"></strong></p>
+        <form id="form-agendamento">
+          <label for="funcionario">Profissional</label>
+          <select id="funcionario" required>
+            <option value="selecao" selected disabled>
+              Selecione um Profissional
+            </option>
+          </select>
 
-      <form id="form-agendamento">
-        <label for="funcionario">Funcionario</label>
-        <select id="funcionario" required>
-          <option value="selecao" selected disabled>Selecione um Profissional</option>
-          <option value="Lucca de Barros">Lucca de Barros</option>
-          <option value="Caique">Caique</option>
-          <option value="Diego">Diego</option>
-          <option value="Paulo">Paulo</option>
-        </select>
-        <label for="tipo-trabalho">Tipo de Trabalho</label>
-        <select id="tipo-trabalho" required>
-          <option value="tipo" selected disabled>Selecione o Tipo de Trabalho</option>
-          <option value="Massagem Relaxante">Relaxante</option>
-          <option value="Massagem Terapêutica">Terapêutica</option>
-          <option value="Drenagem Linfática">Drenagem</option>
-        </select>
-        <label for="equipamentoss">Equipamentos Utilizados</label>
-        <select id="equipamentoss" required>
-          <option value="tipo-equipamento" disabled selected>Selecione o tipo de equipamento</option>
-          <option value="cadeira-quick">cadeira-quick</option>
-          <option value="maca">Maca</option>
-          <option value="oleos">oleos</option>
-        </select>
-        <button type="submit" id="btn-salvar" class="btn-salvar">Salvar Agendamento</button>
-        <button type="button" id="btn-excluir" class="btn-excluir" style="display: none">
-          Excluir Reserva
-        </button>
-      </form>
+          <label for="tipo-trabalho">Serviço</label>
+          <select id="tipo-trabalho" required>
+            <option value="selecao" selected disabled>
+              Selecione o Serviço
+            </option>
+          </select>
+
+          <label for="unidade">Unidade</label>
+          <select id="unidade" required>
+            <option value="selecao" selected disabled>
+              Selecione a Unidade
+            </option>
+          </select>
+
+          <button type="submit" id="btn-salvar" class="btn-salvar">
+            Salvar Agendamento
+          </button>
+          <button
+            type="button"
+            id="btn-excluir"
+            class="btn-excluir"
+            style="display: none"
+          >
+            Excluir Reserva
+          </button>
+        </form>
+      </div>
     </div>
-  </div>
-  
 
-  <script>
-    const menubtn = document.getElementById("menubtn");
-    function abrirMenu() {
-      const dropcnt = document.getElementById("dropcnt");
-      dropcnt.classList.toggle("d-none");
-    }
-  </script>
-  <script src="/frontend/js/escala.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-
+    <script>
+      const menubtn = document.getElementById("menubtn");
+      function abrirMenu() {
+        const dropcnt = document.getElementById("dropcnt");
+        dropcnt.classList.toggle("d-none");
+      }
+    </script>
+    <script src="/frontend/js/escala.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
 </html>
