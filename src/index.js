@@ -19,6 +19,7 @@ import Clientes from "../src/models/Clientes.js";
 import Colaboradores from "../src/models/Colaboradores.js";
 import PostosAtendimento from "./models/PostosAtendimento.js";
 import Unidades from "./models/Unidades.js";
+import mongoose from "mongoose";
 
 app.use(express.json());
 
@@ -162,16 +163,51 @@ app.post("/postoatendimento", async (req, res) => {
                     maca.push(posto);
                     break;
                 default:
-                  console.log("Erro")
+                    console.log("Erro");
             }
-            
-        });console.log(quick, poltrona, maca)
+        });
+        console.log(quick, poltrona, maca);
         res.status(200).json({
             quick: quick,
             poltrona: poltrona,
             maca: maca,
         });
     } catch (error) {}
+});
+
+// Atualiza o status de um posto (cadeira, maca, poltrona) pelo ID
+app.post("/atualizarStatus", async (req, res) => {
+    const { id, status } = req.body;
+
+    console.log("📩 Dados recebidos para atualizar:", { id, status });
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ msg: "ID inválido" });
+    }
+
+    try {
+        const resultado = await PostosAtendimento.updateOne(
+            { _id: id },
+            { $set: { status: status } }
+        );
+
+        console.log("🧾 Resultado do update:", resultado);
+
+        if (resultado.matchedCount === 0) {
+            return res.status(404).json({ msg: "Posto não encontrado" });
+        }
+
+        if (resultado.modifiedCount === 0) {
+            return res.status(200).json({
+                msg: "Nenhuma modificação feita (status igual ao atual).",
+            });
+        }
+
+        res.status(200).json({ msg: "Status atualizado com sucesso!" });
+    } catch (error) {
+        console.error("❌ Erro ao atualizar status:", error);
+        res.status(500).json({ msg: "Erro no servidor" });
+    }
 });
 
 app.listen(8080, () => {

@@ -47,68 +47,90 @@ async function buscarPostos() {
         }
 
         const data = await response.json();
-        console.log(data)
+        console.log(data);
         console.log("Dados carregados:", data);
+        console.log("📬 Dados recebidos do backend:", data);
 
         // Renderize os dados nos popups
         renderizarPostos(data);
     } catch (error) {
         console.error("Erro ao buscar postos:", error);
     }
+    
+
 }
 
 // Função para renderizar os postos nos popups
 function renderizarPostos(data) {
     const { quick, poltrona, maca } = data;
-    console.log(typeof quick, typeof poltrona, typeof maca)
-    // Renderizar Cadeira Quick
+
+    // --- CADEIRAS QUICK ---
     const frameCadeira = document.getElementById("frame-cadeira");
-    frameCadeira.innerHTML = ""; // Limpa o conteúdo anterior
-    for (let i = 0; i < quick.length; i++) {
-        const linha = criarLinha(`Cadeira ${i + 1}`, "Disponível");
+    frameCadeira.innerHTML = "";
+    quick.forEach((posto, i) => {
+        const statusInicial =
+            posto.status && posto.status.trim() !== ""
+                ? posto.status
+                : "Disponível";
+                console.log(statusInicial);
+                
+        const linha = criarLinha(posto._id, `Cadeira ${i + 1}`, statusInicial);
         frameCadeira.appendChild(linha);
-    }
+    });
 
-    // Renderizar Poltrona
+    // --- POLTRONAS ---
     const framePoltrona = document.getElementById("frame-poltrona");
-    framePoltrona.innerHTML = ""; // Limpa o conteúdo anterior
-    for (let i = 0; i < poltrona.length; i++) {
-        const linha = criarLinha(`Poltrona ${i + 1}`, "Disponível");
+    framePoltrona.innerHTML = "";
+    poltrona.forEach((posto, i) => {
+        const statusInicial =
+            posto.status && posto.status.trim() !== ""
+                ? posto.status
+                : "Disponível";
+                console.log(statusInicial);
+                
+        const linha = criarLinha(posto._id, `Poltrona ${i + 1}`, statusInicial);
         framePoltrona.appendChild(linha);
-    }
+    });
 
-    // Renderizar Maca
+    // --- MACAS ---
     const frameMaca = document.getElementById("frame-maca");
-    frameMaca.innerHTML = ""; // Limpa o conteúdo anterior
-    for (let i = 0; i < maca.length; i++) {
-        const linha = criarLinha(`Maca ${i + 1}`, "Disponível");
+    frameMaca.innerHTML = "";
+    maca.forEach((posto, i) => {
+        const statusInicial =
+            posto.status && posto.status.trim() !== ""
+                ? posto.status
+                : "Disponível";
+                console.log(statusInicial);
+                
+        const linha = criarLinha(posto._id, `Maca ${i + 1}`, statusInicial);
         frameMaca.appendChild(linha);
-    }
+    });
 }
 
 // Função para criar uma linha com o layout desejado
-function criarLinha(nome, statusInicial) {
+function criarLinha(id, nome, statusInicial) {
     const linha = document.createElement("div");
     linha.classList.add("linha");
-    linha.style.display = "flex"; // Define o layout flexível
-    linha.style.alignItems = "center"; // Centraliza os itens verticalmente
-    linha.style.marginBottom = "10px"; // Espaçamento entre linhas
+    linha.dataset.id = id; // 🔹 armazena o ID do MongoDB
+    linha.style.display = "flex";
+    linha.style.alignItems = "center";
+    linha.style.marginBottom = "10px";
 
     const item = document.createElement("div");
-    item.classList.add("item", "verde");
+    item.classList.add("item");
     item.textContent = nome;
-    item.style.padding = "10px 20px"; // Adiciona espaçamento interno
-    item.style.borderRadius = "10px"; // Bordas arredondadas
-    item.style.backgroundColor = "#90ee90"; // Cor verde clara
-    item.style.flex = "1"; // Faz o item ocupar o espaço disponível
+    item.style.padding = "10px 20px";
+    item.style.borderRadius = "10px";
+    item.style.backgroundColor = colorMap[statusInicial] || "#90ee90";
+    item.style.flex = "1";
 
     const statusLabel = document.createElement("span");
     statusLabel.textContent = "Status:";
-    statusLabel.style.margin = "0 10px"; // Espaçamento entre o texto e o seletor
+    statusLabel.style.margin = "0 10px";
 
     const statusSelect = document.createElement("select");
     statusSelect.classList.add("status-select");
-    statusSelect.style.marginRight = "10px"; // Espaçamento entre o seletor e a lixeira
+    statusSelect.style.marginRight = "10px";
 
     ["Disponível", "Ocupado", "Manutenção", "Intervalo"].forEach((opcao) => {
         const option = document.createElement("option");
@@ -119,29 +141,12 @@ function criarLinha(nome, statusInicial) {
 
     statusSelect.value = statusInicial;
 
-    // Evento para alterar a cor do item com base no status selecionado
     statusSelect.addEventListener("change", () => {
         const novaCor = colorMap[statusSelect.value];
-        item.style.backgroundColor = novaCor; // Altera a cor de fundo diretamente
-        console.log(`Status alterado para: ${statusSelect.value}`);
+        item.style.backgroundColor = novaCor;
     });
 
-    const trash = document.createElement("div");
-    trash.classList.add("trash");
-    trash.innerHTML = "🗑️"; // Ícone de lixeira
-    trash.style.cursor = "pointer"; // Define o cursor como ponteiro
-    trash.style.fontSize = "20px"; // Tamanho do ícone
-    trash.addEventListener("click", () => {
-        console.log("Linha removida");
-        linha.remove();
-    });
-
-    // Adiciona os elementos à linha
-    linha.append(item);
-    linha.append(statusLabel);
-    linha.append(statusSelect);
-    linha.append(trash);
-
+    linha.append(item, statusLabel, statusSelect);
     return linha;
 }
 
@@ -223,8 +228,34 @@ document.addEventListener("DOMContentLoaded", async () => {
             console.log("Linha adicionada:", linha);
         });
 
-        btnConfirmar.addEventListener("click", () => {
-            popup.parentElement.style.display = "none";
+        btnConfirmar.addEventListener("click", async () => {
+            const linhas = frame.querySelectorAll(".linha");
+            const atualizacoes = [];
+
+            linhas.forEach((linha) => {
+                const id = linha.dataset.id;
+                const status = linha.querySelector(".status-select").value;
+                atualizacoes.push({ id, status });
+            });
+
+            try {
+                for (const item of atualizacoes) {
+                    const response = await fetch("/atualizarStatus", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(item),
+                    });
+
+                    const result = await response.json();
+                    console.log("🟢 Resultado atualização:", result);
+                }
+
+                alert("Status atualizado com sucesso!");
+                popup.parentElement.style.display = "none";
+            } catch (error) {
+                console.error("❌ Erro ao atualizar status:", error);
+                alert("Erro ao salvar as alterações!");
+            }
         });
     });
 
