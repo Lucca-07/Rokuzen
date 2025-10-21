@@ -14,16 +14,22 @@ recuperarButton.addEventListener("click", recuperarSenha);
 const emailRecuperacaoInput = document.getElementById("emailRecuperacao");
 
 document.getElementById("acessar").addEventListener("click", () => {
+    const unidadeErro = document.getElementById("erroUnidade");
     const select = document.getElementById("unidades");
     const selectedOption = select.options[select.selectedIndex].text;
-    localStorage.setItem("unidade", selectedOption);
-    window.location.href = localStorage.getItem("redirect");
+    if (selectedOption != "Selecionar") {
+        localStorage.setItem("unidade", selectedOption);
+        window.location.href = localStorage.getItem("redirect");
+    } else {
+        unidadeErro.innerHTML = "Selecione uma unidade válida!";
+    }
 });
 
 //Valida o login
 async function validarUsuario() {
     const email = document.getElementById("email").value;
     const pass = document.getElementById("pass").value;
+    const paragrafoErro = document.getElementById("erroLogin");
     try {
         const response = await fetch("/auth/login", {
             method: "POST",
@@ -58,7 +64,7 @@ async function validarUsuario() {
             localStorage.setItem("redirect", data.redirect);
         } else {
             console.error("Falha no login:", data.msg);
-            alert(data.msg || "Email ou senha inválidos");
+            paragrafoErro.innerHTML = "Usuário/Senha inválidos";
         }
     } catch (error) {
         console.error("Erro:", error);
@@ -67,6 +73,9 @@ async function validarUsuario() {
 }
 
 async function recuperarSenha() {
+    const recuperarErro = document.getElementById("erroRecuperacao");
+    const recuperarSucesso = document.getElementById("sucessoRecuperacao");
+
     const email = emailRecuperacaoInput.value;
 
     try {
@@ -81,9 +90,11 @@ async function recuperarSenha() {
         const data = await response.json();
 
         if (response.ok) {
-            alert(data.msg); // Ex: "Email enviado"
+            recuperarSucesso.innerHTML = "Email enviado!";
+            recuperarErro.innerHTML = "";
         } else {
-            alert(data.msg); // Ex: "Email não existente"
+            recuperarErro.innerHTML = "Email inválido!";
+            recuperarSucesso.innerHTML = "";
         }
     } catch (error) {
         console.error("Erro ao tentar recuperar senha:", error);
@@ -94,10 +105,16 @@ async function recuperarSenha() {
 function esqueciSenha() {
     const email = document.getElementById("email");
     const pass = document.getElementById("pass");
+    const paragrafoErro = document.getElementById("erroLogin");
     const emailRecuperacao = document.getElementById("emailRecuperacao");
+    const recuperarErro = document.getElementById("erroRecuperacao");
+    const unidadeErro = document.getElementById("erroUnidade");
     email.value = "";
     pass.value = "";
+    paragrafoErro.innerHTML = "";
     emailRecuperacao.value = "";
+    recuperarErro.innerHTML = "";
+    unidadeErro;
     cardLogin.classList.toggle("d-none");
     cardSenha.classList.toggle("d-none");
 }
