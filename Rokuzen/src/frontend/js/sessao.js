@@ -7,8 +7,6 @@ function abrirMenu() {
 
 // Timer
 // manter múltiplos timers por terapeuta
-let intervalo = null; // ainda usado para a UI central quando nenhuma seleção
-let pausado = false;
 let selectedTid = null; // id ou nome do terapeuta selecionado para controlar pelo timer central
 
 const timerDisplay = document.getElementById("timer");
@@ -16,16 +14,7 @@ const btnIniciar = document.getElementById("btnIniciar");
 const btnPausar = document.getElementById("btnPausar");
 const btnReiniciar = document.getElementById("btnReiniciar");
 
-function formatarTempo(segundos) {
-    let min = Math.floor(segundos / 60);
-    let sec = segundos % 60;
-    return `${min.toString().padStart(2, "0")}:${sec
-        .toString()
-        .padStart(2, "0")}`;
-}
-
 function atualizarDisplay() {
-    // mostra tempo do terapeuta selecionado, ou como segundo 10:00
     let sec = 10 * 60;
     if (selectedTid && window.__timers__ && window.__timers__[selectedTid]) {
         sec = window.__timers__[selectedTid].tempo;
@@ -53,7 +42,7 @@ setInterval(async () => {
     }
     // atualizar display central
     atualizarDisplay();
-}, 10000);
+}, 10000)
 
 // Função Iniciar
 async function iniciarTimer() {
@@ -85,7 +74,7 @@ async function iniciarTimer() {
             // Atualiza o backend com tempo zerado, sem excluir nada
             try {
                 if (state.serverId) {
-                    await fetch(`/api/timers/${state.serverId}`, {
+                    await fetch(`/api/atendimentos/${state.serverId}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ tempoRestante: 0, emAndamento: false })
@@ -179,7 +168,6 @@ btnReiniciar.classList.add("d-none");
 btnPausar.textContent = "Pausar";
 btnPausar.classList.remove("btn-primary");
 btnPausar.classList.add("btn-warning");
-pausado = false;
 
 // Botões de adicionar tempo
 // Seleciona os botões
@@ -242,7 +230,7 @@ async function carregarTerapeutas() {
             container.innerHTML = `Erro ao carregar terapeutas: ${details}`;
             return;
         }
-        //  espera resposta JSON
+        //  espera resposta JSON
         const terapeutas = await res.json();
         container.innerHTML = "";
         if (!Array.isArray(terapeutas)) {
@@ -258,20 +246,30 @@ async function carregarTerapeutas() {
             const tid = terapeuta._id ? String(terapeuta._id) : terapeuta.nome_colaborador;
 
             card.innerHTML = `
-                    <img src="/frontend/img/account-outline.svg" alt="Foto Terapeuta" class="avatar">
-                    <div>
-                        <span class="fw-medium small">${terapeuta.nome_colaborador}</span>
-                        <p class="small mb-0">Tipo: ${terapeuta.tipo_colaborador}</p>
-                    </div>
-                    <div class="ms-auto text-end small">
-                        <div>Timer:</div>
-                        <div class="fw-semibold" id="timer-display-${tid}">${terapeuta.tempoRestante != null ? formatSeconds(terapeuta.tempoRestante) : '10:00'}</div>
-                        <div class="btn-group mt-2" role="group">
-                            <button class="btn btn-sm btn-success" id="select-${tid}">Selecionar</button>
-                        </div>
-                    </div>
+  <div class="d-flex align-items-center flex-grow-1 gap-2">
+    <img src="/frontend/img/account-outline.svg" 
+         alt="Foto do Terapeuta" 
+         class="avatar border">
+    <div class="d-flex flex-column">
+      <span class="fw-semibold text-dark">${terapeuta.nome_colaborador}</span>
+      <small class="text-muted mb-0">Unidade: ${terapeuta.unidade_id || 'Não informada'}</small>
+      <small class="text-muted">Tipo: ${terapeuta.tipo_colaborador}</small>
+    </div>
+  </div>
+
+  <div class="text-end flex-shrink-0">
+    <div class="fw-semibold text-secondary small">Timer:</div>
+    <div class="fw-bold fs-5 text-success" id="timer-display-${tid}">
+      ${terapeuta.tempoRestante != null ? formatSeconds(terapeuta.tempoRestante) : '10:00'}
+    </div>
+    <button class="btn btn-success btn-sm mt-2 px-3" id="select-${tid}">
+      Selecionar
+    </button>
+  </div>
 `;
             container.appendChild(card);
+
+
 
             // cria estado local para cada terapeuta (sem controles no modal)
             if (!window.__timers__) window.__timers__ = {};
@@ -319,7 +317,7 @@ async function carregarTerapeutas() {
                     btnPausar.classList.add('d-none');
                     btnReiniciar.classList.add('d-none');
                 }
-                // fecha o modal (se estiver usando bootstrap)
+                // fecha o modal (bootstrap)
                 try { const modalEl = document.getElementById('popupTerapeuta'); if (modalEl) { const bs = bootstrap.Modal.getInstance(modalEl); if (bs) bs.hide(); } } catch (e) { }
             });
         });
@@ -344,9 +342,9 @@ async function syncTimerToServer(tid) {
         if (!state) return;
         const payload = { colaborador_id: state.colaborador_id || null, nome_colaborador: state.nome_colaborador || tid, tempoRestante: state.tempo, emAndamento: !!state.interval };
         if (state.serverId) {
-            await fetch(`/api/timers/${state.serverId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tempoRestante: state.tempo, emAndamento: !!state.interval }) });
+            await fetch(`/api/atendimentos/${state.serverId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tempoRestante: state.tempo, emAndamento: !!state.interval }) });
         } else {
-            const r = await fetch('/api/timers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            const r = await fetch('/api/atendimentos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
             if (r.ok) {
                 const data = await r.json();
                 state.serverId = data._id || data.id || state.serverId;
@@ -360,7 +358,7 @@ async function syncTimerToServer(tid) {
 // Carrega timers do servidor e inicializa estados locais; inicia contadores em andamento
 async function loadTimersFromDB() {
     try {
-        const res = await fetch('/api/timers');
+        const res = await fetch('/api/atendimentos');
         if (!res.ok) return;
         const timers = await res.json();
         if (!Array.isArray(timers)) return;
@@ -415,98 +413,86 @@ if (btnAbrirTerapeuta) {
 // id
 const id = localStorage.getItem("idUser");
 
-// Função para carregar os agendamentos do dia
+// Carrega os agendamentos do dia
 async function carregarAgendamentos() {
+    if (!id) return alert("ID do terapeuta não encontrado!");
+
     try {
         const resposta = await fetch(`/api/agendamentos?id=${id}`);
         const agendamentos = await resposta.json();
-        console.log(agendamentos);
 
         const container = document.getElementById("agendamentos");
         container.innerHTML = "";
 
-        if (!agendamentos.length || (agendamentos.length === 1 && agendamentos[0].mensagem)) {
-            container.innerHTML = `<p class="text-center text-muted small">Nenhum agendamento para hoje.</p>`;
+        if (!agendamentos.length) {
+            container.innerHTML = `<p class="text-center mt-3 text-muted">Nenhum agendamento encontrado para hoje.</p>`;
             return;
         }
 
-        agendamentos.forEach(a => {
-            const bloco = document.createElement("div");
-            bloco.className = "border border-2 rounded-3 bg-light-subtle p-2 mb-3 w-100 cursor-pointer";
+        agendamentos.forEach((a) => {
+            const inicio = new Date(a.inicio_atendimento);
+            const fim = new Date(a.fim_atendimento);
 
-            const horaFormatada = a.inicio_atendimento?.substr(11, 5) || "??:??";
-            const tempoSessao = parseInt(a.tempo) || 10;
+            // Calcula tempo em segundos
+            const tempoSegundos = Math.round((fim - inicio) / 1000);
+            a.tempoRestante = tempoSegundos;
+
+            // Cria horaFormatada para exibir exatamente o horário do banco (UTC)
+            const horas = String(inicio.getUTCHours()).padStart(2, '0');
+            const minutos = String(inicio.getUTCMinutes()).padStart(2, '0');
+            const horaFormatada = `${horas}:${minutos}`;
+
+            const bloco = document.createElement("div");
+            bloco.classList.add("card", "card-agendamento", "p-3", "mb-2", "shadow-sm");
+            bloco.dataset.serverId = a._id;
 
             bloco.innerHTML = `
-        <span class="small d-block mb-1">👤 ${a.colaborador || "Desconhecido"}</span>
-        <span class="small d-block mb-1">⏰ ${horaFormatada}</span>
-        <p class="fw-semibold mb-0 small">Tipo de massagem: ${a.tipo}</p>
-        <p class="fw-semibold mb-0 small">Tempo de sessão: ${tempoSessao} min</p>
-      `;
-
-            // Hover visual
-            bloco.style.transition = "background-color 0.3s, transform 0.2s";
-            bloco.addEventListener("mouseenter", () => {
-                bloco.style.backgroundColor = "#e8f5e9";
-                bloco.style.transform = "scale(1.02)";
-            });
-            bloco.addEventListener("mouseleave", () => {
-                bloco.style.backgroundColor = "rgba(248,249,250)";
-                bloco.style.transform = "scale(1)";
-            });
-
-            // Clique no agendamento
-            bloco.addEventListener("click", async () => {
-                const segundos = tempoSessao * 60;
-
-                if (!window.__timers__) window.__timers__ = {};
-                const tid = String(a.colaborador_id || a.colaborador || "desconhecido");
-
-                // Cria ou atualiza timer, mas pausado
-                window.__timers__[tid] = {
-                    tempo: segundos,
-                    pausado: true,   // IMPORTANTE: timer não roda ainda
-                    interval: null,
-                    serverId: window.__timers__[tid]?.serverId || null,
-                    colaborador_id: a.colaborador_id || null,
-                    nome_colaborador: a.colaborador || "Desconhecido"
-                };
-
-                // Define terapeuta selecionado globalmente
-                selectedTid = tid;
-
-                // Atualiza display com o tempo do agendamento
-                timerDisplay.textContent = formatarTempo(segundos);
-
-                // Atualiza botões de controle, se houver
-                if (typeof atualizarDisplay === 'function') atualizarDisplay();
-
-                // Sincroniza com servidor (não inicia countdown)
-                await syncTimerToServer(tid);
-
-                console.log("✅ Terapeuta selecionado, timer pronto mas pausado:", tid);
-            });
-
-
-
+<div class="d-flex justify-content-between align-items-start">
+    <div class="text-start">
+        <span class="fw-semibold d-block">👤${a.colaborador.nome_colaborador || a.colaborador}</span>
+        <small class="text-muted d-block">⏰Início: ${horaFormatada}</small>
+        <small class="text-muted d-block">Duração: ${Math.round(tempoSegundos / 60)} min</small>
+    </div>
+    <div class="ms-3">
+        <button class="btn btn-success btn-sm" onclick="selecionarAgendamento('${a._id}', ${tempoSegundos})">
+            Selecionar
+        </button>
+    </div>
+</div>
+<div id="timer-${a._id}" class="fs-5 fw-bold mt-2 text-success">
+    <!-- vazio: o tempo vai para o círculo central -->
+</div>
+`;
             container.appendChild(bloco);
         });
+
     } catch (err) {
         console.error("Erro ao carregar agendamentos:", err);
-        document.getElementById("agendamentos").innerHTML =
-            `<p class="text-danger small text-center">Erro ao carregar agendamentos.</p>`;
+        container.innerHTML = `<p class="text-center text-danger small">Erro ao carregar agendamentos do dia.</p>`;
     }
 }
 
+
+// Função chamada ao clicar em "Selecionar"
+function selecionarAgendamento(id, tempoSegundos) {
+    const bloco = document.querySelector(`[data-server-id="${id}"]`);
+    if (!bloco) return;
+
+    // Marca visualmente como selecionado
+    document.querySelectorAll('.card-agendamento').forEach(el => el.classList.remove('border-success'));
+    bloco.classList.add('border', 'border-success');
+
+    // Atualiza o timer central (dentro do círculo)
+    const timerDisplay = document.getElementById("timer"); // id do timer central
+    if (timerDisplay) timerDisplay.textContent = formatSeconds(tempoSegundos);
+
+    // Atualiza selectedTid global
+    selectedTid = id;
+}
+
+
 document.addEventListener("DOMContentLoaded", carregarAgendamentos);
 
-// Função para formatar tempo em mm:ss
-function formatarTempo(sec) {
-    if (typeof sec !== 'number' || isNaN(sec)) return '—';
-    const m = Math.floor(sec / 60).toString().padStart(2, '0');
-    const s = Math.floor(sec % 60).toString().padStart(2, '0');
-    return `${m}:${s}`;
-}
 
 // Sincroniza um timer local com o servidor (cria ou atualiza)
 async function syncTimerToServer(tid) {
@@ -523,7 +509,7 @@ async function syncTimerToServer(tid) {
 
         if (state.serverId) {
             // Atualiza (PUT)
-            await fetch(`/api/timers/${state.serverId}`, {
+            const r = await fetch(`/api/atendimentos/${state.serverId}`, { // Declarando 'r' para uso no log ou em checagens futuras
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -533,7 +519,7 @@ async function syncTimerToServer(tid) {
             });
         } else {
             // Cria (POST)
-            await fetch('/api/timers', {
+            const r = await fetch('/api/timers', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dados)
@@ -588,7 +574,7 @@ document.getElementById("fb-salvar").addEventListener("click", async () => {
     }
 
     try {
-        const res = await fetch(`/api/atendimentos/id=${sessaoId}/feedback`, {
+        const res = await fetch(`/api/atendimentos/${sessaoId}/feedback`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ observacao_cliente: texto })

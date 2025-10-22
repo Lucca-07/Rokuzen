@@ -23,8 +23,6 @@ body {
   border: 2px solid #9db668;
 }
 
-
-
 .avatar {
   width: 32px;
   height: 32px;
@@ -35,6 +33,39 @@ body {
   background-color: #f0f0f0 !important;
   transform: scale(1.02);
   cursor: pointer;
+}
+
+ /*Agendametos do dia  */
+.card-agendamento {
+  display: flex;
+  justify-content: space-between;
+  border: 2px solid #9db668;
+  border-radius: 0.75rem;
+  background-color: #ffffff;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.card-agendamento:hover {
+  background-color: #f0f5f0;
+  transform: scale(1.02);
+}
+
+.agendamento-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.agendamento-timer {
+  text-align: left;
+}
+
+.agendamento-buttons button {
+  margin-top: 0.5rem;
+  width: 100%;
 }
 
 /* Pop up do feedback */

@@ -8,7 +8,6 @@ import mongoose from "mongoose";
 import connectDB from "./modules/connect.js";
 import recuperarSenha from "./modules/recuperarSenha.js";
 import Colaboradores from "./models/Colaboradores.js";
-import Timer from "./models/Timers.js";
 import Atendimentos from "./models/Atendimentos.js";
 
 
@@ -127,160 +126,181 @@ app.post("/atualizarSenha", async (req, res) => {
 // Todos os terapeutas ativos
 app.get("/api/terapeutas", async (req, res) => {
   try {
+    // Busca todos os terapeutas ativos
     const terapeutas = await Colaboradores.find(
-      {
-        $and: [
-          {
-            $or: [
-              { tipo_colaborador: { $regex: /terapeuta/i } },
-              { perfis_usuario: { $in: [/terapeuta/i] } },
-            ],
-          },
-          { $or: [{ ativo: true }, { ativo: { $exists: false } }] },
-        ],
-      },
-      { nome_colaborador: 1, tipo_colaborador: 1, ativo: 1, perfis_usuario: 1 }
+      { /* ... suas condições */ },
+      { nome_colaborador: 1, tipo_colaborador: 1, unidade_id: 1 } // <-- Adicione 'unidade_id: 1'
     ).lean();
+
+    // Coleta os IDs dos terapeutas
+    const ids = terapeutas.map(t => t._id).filter(Boolean);
 
 
     // Buscar timers correspondentes (por nome_colaborador) e anexar tempoRestante
-    try {
-      const ids = terapeutas.map(t => t._id).filter(Boolean);
-      const timersById = await Timer.find({ colaborador_id: { $in: ids } }, { colaborador_id: 1, tempoRestante: 1 }).lean();
-      const mapaTimersById = new Map(timersById.map(t => [String(t.colaborador_id), t.tempoRestante]));
+    const atendimentos = await Atendimentos.aggregate([
+      { $match: { colaborador_id: { $in: ids } } },
+      { $sort: { updatedAt: -1 } },
+      {
+        $group: {
+          _id: "$colaborador_id",
+          tempoRestante: { $first: "$tempoRestante" },
+          emAndamento: { $first: "$emAndamento" },
+          updatedAt: { $first: "$updatedAt" }
+        }
+      }
+    ]);
 
-      // Também busque por nome_colaborador
-      const nomes = terapeutas.map(t => t.nome_colaborador).filter(Boolean);
-      const timersByName = await Timer.find({ nome_colaborador: { $in: nomes } }, { nome_colaborador: 1, tempoRestante: 1 }).lean();
-      const mapaTimersByName = new Map(timersByName.map(t => [t.nome_colaborador, t.tempoRestante]));
+    // Cria um mapa rápido de consulta por colaborador_id
+    const mapaAtendimentos = new Map(atendimentos.map(a => [String(a._id), a]));
 
-      const terapeutasComTimer = terapeutas.map(t => {
-        const byId = mapaTimersById.get(String(t._id));
-        const byName = mapaTimersByName.get(t.nome_colaborador);
-        return { ...t, tempoRestante: byId ?? byName ?? null };
-      });
+    // Junta terapeuta + atendimento
+    const terapeutasComAtendimento = terapeutas.map(t => {
+      const at = mapaAtendimentos.get(String(t._id));
+      return {
+        ...t,
+        tempoRestante: at?.tempoRestante ?? null,
+        emAndamento: at?.emAndamento ?? false,
+        ultimoUpdate: at?.updatedAt ?? null
+      };
+    });
 
-      res.json(terapeutasComTimer);
-    } catch (timerErr) {
-      // Se houve erro ao buscar timers, retorna terapeutas sem tempo 
-      res.json(terapeutas.map(t => ({ ...t, tempoRestante: null })));
-    }
+    res.json(terapeutasComAtendimento);
+
   } catch (err) {
-    // Em caso de erro, retorna mensagem padrão sem detalhes sensíveis
+    console.error("Erro ao buscar terapeutas:", err);
     res.status(500).json({ error: "Erro ao buscar terapeutas" });
   }
 });
 
 // Todos os timers
-app.get("/api/timers", async (req, res) => {
+app.get("/api/atendimentos", async (req, res) => {
   try {
-    const timers = await Timer.find();
-    res.json(timers);
+    const atendimentos = await Atendimentos.find();
+    res.json(atendimentos);
   } catch (err) {
-    console.error("Erro ao buscar timers:", err);
-    res.status(500).json({ error: "Erro ao buscar timers" });
+    console.error("Erro ao buscar atendimentos:", err);
+    res.status(500).json({ error: "Erro ao buscar atendimentos" });
   }
 });
 
 // Cria ou atualiza um timer para um colaborador
-app.post('/api/timers', async (req, res) => {
+app.post("/api/atendimentos", async (req, res) => {
   try {
-    const { colaborador_id, nome_colaborador, tempoRestante, emAndamento } = req.body;
-    if (!colaborador_id && !nome_colaborador) return res.status(400).json({ error: 'colaborador_id ou nome_colaborador é necessário' });
+    const { colaborador_id, servico_id, inicio_atendimento, fim_atendimento, tempoRestante, emAndamento, tipo_colaborador } = req.body;
+    if (!colaborador_id || !servico_id) {
+      return res.status(400).json({ error: "colaborador_id e servico_id são obrigatórios" });
+    }
 
-    // tenta upsert por colaborador_id primeiro, senão por nome
-    const query = colaborador_id ? { colaborador_id } : { nome_colaborador };
-    const update = { colaborador_id, nome_colaborador, tempoRestante, emAndamento };
+    const update = {
+      tipo_colaborador,
+      servico_id,
+      inicio_atendimento,
+      fim_atendimento,
+      tempoRestante,
+      emAndamento,
+    };
+
     const opts = { upsert: true, new: true, setDefaultsOnInsert: true };
+    const atendimento = await Atendimentos.findOneAndUpdate({ colaborador_id, servico_id }, update, opts);
 
-    const timer = await Timer.findOneAndUpdate(query, update, opts);
-    res.json(timer);
+    res.json(atendimento);
   } catch (err) {
-    console.error('Erro ao criar/atualizar timer:', err);
-    res.status(500).json({ error: 'Erro ao criar/atualizar timer' });
+    console.error("Erro ao criar/atualizar atendimento:", err);
+    res.status(500).json({ error: "Erro ao criar/atualizar atendimento" });
   }
 });
 
 // Atualiza um timer (tempo restante / estado)
-app.put('/api/timers/:id', async (req, res) => {
+app.put("/api/atendimentos/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { tempoRestante, emAndamento } = req.body;
-    const update = {};
-    if (typeof tempoRestante !== 'undefined') update.tempoRestante = tempoRestante;
-    if (typeof emAndamento !== 'undefined') update.emAndamento = emAndamento;
+    const { tempoRestante, emAndamento, observacao_cliente } = req.body;
 
-    const timer = await Timer.findByIdAndUpdate(id, { $set: update }, { new: true });
-    if (!timer) return res.status(404).json({ error: 'Timer não encontrado' });
-    res.json(timer);
+    const update = {};
+    if (typeof tempoRestante !== "undefined") update.tempoRestante = tempoRestante;
+    if (typeof emAndamento !== "undefined") update.emAndamento = emAndamento;
+    if (typeof observacao_cliente !== "undefined") update.observacao_cliente = observacao_cliente;
+
+    const atendimento = await Atendimentos.findByIdAndUpdate(id, { $set: update }, { new: true });
+    if (!atendimento) return res.status(404).json({ error: "Atendimento não encontrado" });
+
+    res.json(atendimento);
   } catch (err) {
-    console.error('Erro ao atualizar timer:', err);
-    res.status(500).json({ error: 'Erro ao atualizar timer' });
+    console.error("Erro ao atualizar atendimento:", err);
+    res.status(500).json({ error: "Erro ao atualizar atendimento" });
   }
 });
 
 // Deleta um timer
-app.delete('/api/timers/:id', async (req, res) => {
+app.delete("/api/atendimentos/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const timer = await Timer.findByIdAndDelete(id);
-    if (!timer) return res.status(404).json({ error: 'Timer não encontrado' });
+    const atendimento = await Atendimentos.findByIdAndDelete(id);
+    if (!atendimento) return res.status(404).json({ error: "Atendimento não encontrado" });
     res.json({ ok: true });
   } catch (err) {
-    console.error('Erro ao deletar timer:', err);
-    res.status(500).json({ error: 'Erro ao deletar timer' });
+    console.error("Erro ao deletar atendimento:", err);
+    res.status(500).json({ error: "Erro ao deletar atendimento" });
   }
 });
 
 // Agendamentos
 app.get("/api/agendamentos", async (req, res) => {
   try {
-    const idTerapeuta = req.query.id; // id vindo do front
+    const idTerapeuta = req.query.id; // ID vindo do front
+
     if (!idTerapeuta) {
       return res.status(400).json({ mensagem: "ID do terapeuta não informado." });
     }
 
+    // Garante que o ID é um ObjectId válido
+    if (!mongoose.Types.ObjectId.isValid(idTerapeuta)) {
+      return res.status(400).json({ mensagem: "ID do terapeuta inválido." });
+    }
+
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
+
     const amanha = new Date(hoje);
     amanha.setDate(hoje.getDate() + 1);
 
-    // Busca apenas os agendamentos do terapeuta logado
+    // Busca os agendamentos do terapeuta apenas para o dia atual
     const agendamentos = await Atendimentos.find({
-      colaborador_id: idTerapeuta,
+      colaborador_id: new mongoose.Types.ObjectId(idTerapeuta),
       inicio_atendimento: { $gte: hoje, $lt: amanha }
     })
-      .populate("colaborador_id", "nome_colaborador")
+      .populate("colaborador_id", "nome_colaborador") // traz o nome do colaborador
       .sort({ inicio_atendimento: 1 });
 
     console.log("Agendamentos do MongoDB:", agendamentos);
 
+    // Mapeia os dados para o formato esperado pelo front
     const dados = agendamentos.map(a => ({
       colaborador: a.colaborador_id?.nome_colaborador || "Desconhecido",
-      colaborador_id: a.colaborador_id?._id || null, // importante para o frontend
-      tipo: "Serviço",
+      colaborador_id: a.colaborador_id?._id || null,
+      tipo: a.tipo_colaborador || "Serviço",
       inicio_atendimento: a.inicio_atendimento?.toISOString(),
       fim_atendimento: a.fim_atendimento?.toISOString(),
       tempo: Math.round((new Date(a.fim_atendimento) - new Date(a.inicio_atendimento)) / 60000),
       observacao: a.observacao_cliente || "-"
     }));
 
-
     res.json(dados);
   } catch (err) {
-    console.error(err);
+    console.error("Erro ao carregar agendamentos:", err);
     res.status(500).json({ mensagem: "Erro ao carregar agendamentos" });
   }
 });
 
-app.put('/api/atendimentos/:id/feedback', async (req, res) => {
+//  FEEDBACK DOS AGENDAMENTOS
+app.put("/api/atendimentos/:id/feedback", async (req, res) => {
   const atendimentoId = req.params.id;
   const { observacao_cliente } = req.body;
 
-  if (!observacao_cliente) 
+  if (!observacao_cliente) {
     return res.status(400).json({ message: "Campo observacao_cliente é obrigatório" });
+  }
 
-  // Verifica se o ID é válido
   if (!mongoose.Types.ObjectId.isValid(atendimentoId)) {
     return res.status(400).json({ message: "ID do atendimento inválido" });
   }
@@ -292,8 +312,9 @@ app.put('/api/atendimentos/:id/feedback', async (req, res) => {
       { new: true }
     );
 
-    if (!atendimento)
+    if (!atendimento) {
       return res.status(404).json({ message: "Atendimento não encontrado" });
+    }
 
     res.json({ message: "Feedback atualizado com sucesso", atendimento });
   } catch (err) {
