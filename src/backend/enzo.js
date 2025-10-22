@@ -201,7 +201,7 @@ app.put("/api/atendimentos/:id", async (req, res) => {
     }
 
     res.json({
-      mensagem: "Agendamento atualizado com sucesso!",
+      mensagem: "Agendamento atualizado!!",
       atendimento: atendimentoAtualizado,
     });
   } catch (error) {
@@ -220,7 +220,7 @@ app.delete("/api/atendimentos/:id", async (req, res) => {
       return res.status(404).json({ mensagem: "Agendamento não encontrado." });
     }
 
-    res.json({ mensagem: "Agendamento excluído com sucesso!" });
+    res.json({ mensagem: "Agendamento excluído!" });
   } catch (error) {
     console.error("Erro ao excluir agendamento:", error);
     res.status(500).json({ mensagem: "Erro no servidor." });
