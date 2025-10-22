@@ -23,6 +23,8 @@ body {
   border: 2px solid #9db668;
 }
 
+
+
 .avatar {
   width: 32px;
   height: 32px;
@@ -33,6 +35,23 @@ body {
   background-color: #f0f0f0 !important;
   transform: scale(1.02);
   cursor: pointer;
+}
+
+/* Pop up do feedback */
+.fb-frame {
+  border: 2px solid #9db668;
+}
+
+.fb-btn-salvar {
+  background-color: #9db668;
+  color: white;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.fb-btn-salvar:hover {
+  background-color: #8aa45d;
+  color: white;
 }
 
 

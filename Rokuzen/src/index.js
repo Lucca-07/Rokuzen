@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "node:url";
 import fs from "fs";
+import mongoose from "mongoose";
 
 import connectDB from "./modules/connect.js";
 import recuperarSenha from "./modules/recuperarSenha.js";
@@ -271,6 +272,36 @@ app.get("/api/agendamentos", async (req, res) => {
     res.status(500).json({ mensagem: "Erro ao carregar agendamentos" });
   }
 });
+
+app.put('/api/atendimentos/:id/feedback', async (req, res) => {
+  const atendimentoId = req.params.id;
+  const { observacao_cliente } = req.body;
+
+  if (!observacao_cliente) 
+    return res.status(400).json({ message: "Campo observacao_cliente é obrigatório" });
+
+  // Verifica se o ID é válido
+  if (!mongoose.Types.ObjectId.isValid(atendimentoId)) {
+    return res.status(400).json({ message: "ID do atendimento inválido" });
+  }
+
+  try {
+    const atendimento = await Atendimentos.findByIdAndUpdate(
+      atendimentoId,
+      { observacao_cliente },
+      { new: true }
+    );
+
+    if (!atendimento)
+      return res.status(404).json({ message: "Atendimento não encontrado" });
+
+    res.json({ message: "Feedback atualizado com sucesso", atendimento });
+  } catch (err) {
+    console.error("Erro ao atualizar feedback:", err);
+    res.status(500).json({ message: "Erro ao atualizar feedback" });
+  }
+});
+
 
 
 

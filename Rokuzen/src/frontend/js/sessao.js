@@ -25,7 +25,7 @@ function formatarTempo(segundos) {
 }
 
 function atualizarDisplay() {
-    // mostra tempo do terapeuta selecionado, ou como segunp 10:00
+    // mostra tempo do terapeuta selecionado, ou como segundo 10:00
     let sec = 10 * 60;
     if (selectedTid && window.__timers__ && window.__timers__[selectedTid]) {
         sec = window.__timers__[selectedTid].tempo;
@@ -81,13 +81,29 @@ async function iniciarTimer() {
         } else {
             clearInterval(state.interval);
             state.interval = null;
-            // notificar fim
+
+            // Atualiza o backend com tempo zerado, sem excluir nada
             try {
-                if (state.serverId) await fetch(`/api/timers/${state.serverId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tempoRestante: 0, emAndamento: false }) });
-            } catch (e) { }
-            alert('⏰ O tempo acabou!');
+                if (state.serverId) {
+                    await fetch(`/api/timers/${state.serverId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ tempoRestante: 0, emAndamento: false })
+                    });
+                }
+            } catch (e) {
+                console.error('Erro ao atualizar tempo zerado:', e);
+            }
+
+            // Mostra o modal Bootstrap
+            const modal = new bootstrap.Modal(document.getElementById("encerrarSessaoModal"));
+            modal.show();
+
+            // Guarda o ID da sessão para usar depois
+            window.sessaoEncerrarId = state.serverId;
         }
     }, 1000);
+
 
     // trocar botões centrais
     btnIniciar.classList.add('d-none');
@@ -532,3 +548,70 @@ async function syncTimerToServer(tid) {
     }
 }
 
+// Final de sessão  abre modal de feedback
+document.getElementById("confirmarEncerramento").addEventListener("click", async () => {
+    const encerrarModalEl = document.getElementById("encerrarSessaoModal");
+    const encerrarModal = bootstrap.Modal.getInstance(encerrarModalEl);
+    encerrarModal.hide();
+
+    // Remove o atendimento da tela (sem excluir do banco)
+    const atendimentoEl = document.querySelector(`[data-server-id="${window.sessaoEncerrarId}"]`);
+    if (atendimentoEl) atendimentoEl.remove();
+
+    // Exibe o modal de feedback
+    const fbModalEl = document.getElementById("fbModal");
+    const fbModal = new bootstrap.Modal(fbModalEl);
+    fbModal.show();
+
+    // Preenche nome e horário no feedback automaticamente
+    const state = Object.values(window.__timers__ || {}).find(t => t.serverId === window.sessaoEncerrarId);
+    if (state) {
+        document.getElementById("fb-nomeTerapeuta").textContent = `👤 ${state.nome_colaborador || 'Desconhecido'}`;
+        const agora = new Date();
+        document.getElementById("fb-horarioSessao").textContent = `⏰ ${agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+    }
+});
+
+// Quando clicar em "Salvar" no modal de feedback
+document.getElementById("fb-salvar").addEventListener("click", async () => {
+    const texto = document.getElementById("fb-texto").value.trim();
+    if (!texto) {
+        alert("Por favor, escreva seu feedback antes de salvar.");
+        return;
+    }
+
+    const sessaoId = window.sessaoEncerrarId;
+    console.log(sessaoId)// ID do atendimento encerrado
+    if (!sessaoId) {
+        alert("Não foi possível identificar a sessão.");
+        return;
+    }
+
+    try {
+        const res = await fetch(`/api/atendimentos/id=${sessaoId}/feedback`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ observacao_cliente: texto })
+        });
+
+        if (!res.ok) {
+            const err = await res.json();
+            alert("Erro ao salvar feedback: " + (err.message || res.statusText));
+            return;
+        }
+
+        alert("Feedback salvo com sucesso ✅");
+
+        // Fecha modal
+        const fbModalEl = document.getElementById("fbModal");
+        const fbModal = bootstrap.Modal.getInstance(fbModalEl);
+        fbModal.hide();
+
+        // Limpa textarea
+        document.getElementById("fb-texto").value = "";
+
+    } catch (e) {
+        console.error("Erro ao salvar feedback:", e);
+        alert("Ocorreu um erro ao salvar o feedback.");
+    }
+});
