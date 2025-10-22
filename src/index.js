@@ -120,6 +120,7 @@ app.post("/auth/user/register", async (req, res) => {
         tipo_colaborador,
         unidades_trabalha,
         perfis_usuario,
+        imagem,
     } = req.body;
     const { email, pass } = req.body.login;
     if (!nome_colaborador) {
@@ -159,6 +160,7 @@ app.post("/auth/user/register", async (req, res) => {
         tipo_colaborador,
         unidades_trabalha,
         perfis_usuario,
+        imagem: imagem || null,
         login: { email, pass: passHash },
     });
     try {

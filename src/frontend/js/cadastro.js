@@ -6,6 +6,62 @@ const selectUser = document.getElementById("usuarioselect");
 const setorcargo = document.getElementById("setorcargo");
 const cargoselect = document.getElementById("cargoselect");
 
+// --- Funções para imagem: compressão e preview ---
+function compressImage(file, maxSize = 800, quality = 0.7) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const img = new Image();
+            img.onload = function () {
+                let width = img.width;
+                let height = img.height;
+                if (width > height) {
+                    if (width > maxSize) {
+                        height = Math.round((height * maxSize) / width);
+                        width = maxSize;
+                    }
+                } else {
+                    if (height > maxSize) {
+                        width = Math.round((width * maxSize) / height);
+                        height = maxSize;
+                    }
+                }
+                const canvas = document.createElement("canvas");
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+                const dataUrl = canvas.toDataURL("image/jpeg", quality);
+                resolve(dataUrl);
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const imagemInput = document.getElementById("imagemUsuario");
+    const previewImg = document.querySelector("#foto img");
+    if (imagemInput && previewImg) {
+        imagemInput.addEventListener("change", async (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            try {
+                // mostra preview comprimido
+                const compressed = await compressImage(file, 800, 0.7);
+                previewImg.src = compressed;
+                // armazenar temporariamente no input dataset para enviar no salvar
+                imagemInput.dataset.preview = compressed;
+            } catch (err) {
+                console.error("Erro ao processar imagem:", err);
+            }
+        });
+    }
+});
+
 selectUser.addEventListener("change", () => {
     userExterno.classList.toggle("d-none");
     userInterno.classList.toggle("d-none");
@@ -97,6 +153,13 @@ async function salvarColaborador(event) {
     );
     const unidadesTrabalha = Array.from(checkboxes).map((cb) => cb.value);
 
+    // pega imagem (preview) se existir
+    const imagemInputEl = document.getElementById("imagemUsuario");
+    const imagemPreviewBase64 =
+        imagemInputEl && imagemInputEl.dataset && imagemInputEl.dataset.preview
+            ? imagemInputEl.dataset.preview
+            : null;
+
     try {
         const response = await fetch("/auth/user/register", {
             method: "POST",
@@ -108,6 +171,7 @@ async function salvarColaborador(event) {
                 unidades_trabalha: unidadesTrabalha,
                 perfis_usuario: [cargoSelecionado, setor ?? null],
                 login: { email, pass: senha },
+                imagem: imagemPreviewBase64,
             }),
         });
 

@@ -7,6 +7,7 @@ const ColaboradoresSchema = new mongoose.Schema({
     unidades_trabalha: { type: [String], default: [] },
     perfis_usuario: { type: [String], default: [] },
     login: { type: Object },
+    imagem: { type: String, default: null }, // base64 ou URL
 });
 
 export default mongoose.model("Colaboradores", ColaboradoresSchema);

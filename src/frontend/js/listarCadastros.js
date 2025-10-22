@@ -26,8 +26,10 @@ async function listarColaboradores() {
                 <div id="card-${contador}" class="row container-lg bg-light d-flex p-4 border mt-4 card-editar h-25 "
                     style="border-radius: 30px; animation: aparecer 0.3s ease-in forwards;">
                     <div class="col-12 col-md-6 col-lg-3 d-flex align-self-center align-items-center justify-content-center h-50">
-                        <img src="/frontend/img/account-outline.svg" alt=""
-                            style="border-radius: 25px; border: 1px solid black; height: 100px; width: 100px;">
+                        <img src="${
+                            user.imagem || "/frontend/img/account-outline.svg"
+                        }" alt=""
+                            style="border-radius: 25px; border: 1px solid black; height: 100px; width: 100px; object-fit: cover;">
                     </div>
                     <div class="col-12 col-md-6 col-lg-9 d-flex">
                         <div class="nome d-flex align-self-center align-items-center justify-content-center h-100" style="flex:40%">
@@ -37,8 +39,12 @@ async function listarColaboradores() {
                             <p class="fs-4 text-center">${perfis}</p>
                         </div>
                         <div class="perfil d-flex align-items-start justify-content-end h-100 gap-2" style="flex:20%">
-                            <i class="mdi mdi-pencil px-2 py-1 fs-5 bg-success-subtle" style="cursor:pointer; border-radius: 10px;" onclick="popupEdit('${user._id}')"></i>
-                            <i class="mdi mdi-delete px-2 py-1 fs-5 bg-danger-subtle" style="cursor:pointer; border-radius: 10px;" onclick="popupDelete('${user._id}')"></i>
+                            <i class="mdi mdi-pencil px-2 py-1 fs-5 bg-success-subtle" style="cursor:pointer; border-radius: 10px;" onclick="popupEdit('${
+                                user._id
+                            }')"></i>
+                            <i class="mdi mdi-delete px-2 py-1 fs-5 bg-danger-subtle" style="cursor:pointer; border-radius: 10px;" onclick="popupDelete('${
+                                user._id
+                            }')"></i>
                         </div>
 
                     </div>
