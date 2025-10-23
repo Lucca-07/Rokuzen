@@ -9,6 +9,8 @@ const atendimentoSchema = new mongoose.Schema({
   observacao_cliente: { type: String, default: "" },
   tempoRestante: { type: Number },
   emAndamento: { type: Boolean, default: false },
+  inicio_real: { type: Date },  
+  fim_real: { type: Date }  
   },
   { timestamps: true } 
 );

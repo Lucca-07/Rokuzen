@@ -44,7 +44,7 @@ function sendHtmlFile(res, filePath) {
   } catch (e) {
     console.error("stat error:", e);
   }
-  res.sendFile(filePath, (err) => {
+  res.sendFile(path.basename(filePath), { root: frontendDir }, (err) => {
     if (!err) return;
     console.error("sendFile error for", filePath, "->", err);
 
@@ -75,7 +75,7 @@ for (const [rota, arquivo] of Object.entries(rotasHTML)) {
   app.get(rota, (req, res) => {
     const filePath = path.join(frontendDir, arquivo);
     console.log(`GET ${rota} ->`, filePath, "exists:", fs.existsSync(filePath));
-    sendHtmlFile(res, filePath);
+    sendHtmlFile(res, path.resolve(frontendDir, arquivo));
   });
 }
 
@@ -186,49 +186,52 @@ app.get("/api/atendimentos", async (req, res) => {
 // Cria ou atualiza um timer para um colaborador
 app.post("/api/atendimentos", async (req, res) => {
   try {
-    const { colaborador_id, servico_id, inicio_atendimento, fim_atendimento, tempoRestante, emAndamento, tipo_colaborador } = req.body;
-    if (!colaborador_id || !servico_id) {
-      return res.status(400).json({ error: "colaborador_id e servico_id são obrigatórios" });
-    }
+    const data = req.body;
 
-    const update = {
-      tipo_colaborador,
-      servico_id,
-      inicio_atendimento,
-      fim_atendimento,
-      tempoRestante,
-      emAndamento,
-    };
+    // Cria o objeto com valores padrão
+    const atendimento = new Atendimentos({
+      colaborador_id: data.colaborador_id || null,
+      tipo_colaborador: data.tipo_colaborador || "",
+      servico_id: data.servico_id || new mongoose.Types.ObjectId().toString(), 
+      inicio_atendimento: data.inicio_atendimento || new Date(),
+      fim_atendimento: data.fim_atendimento || new Date(Date.now() + 60 * 60 * 1000), // +1 hora
+      observacao_cliente: data.observacao_cliente || "",
+      tempoRestante: typeof data.tempoRestante === "number" ? data.tempoRestante : 600,
+      emAndamento: !!data.emAndamento,
+      inicio_real: data.inicio_real || null,
+      fim_real: data.fim_real || null
+    });
 
-    const opts = { upsert: true, new: true, setDefaultsOnInsert: true };
-    const atendimento = await Atendimentos.findOneAndUpdate({ colaborador_id, servico_id }, update, opts);
+    const saved = await atendimento.save();
+    res.status(201).json(saved);
 
-    res.json(atendimento);
   } catch (err) {
-    console.error("Erro ao criar/atualizar atendimento:", err);
-    res.status(500).json({ error: "Erro ao criar/atualizar atendimento" });
+    console.error("❌ Erro ao criar atendimento:", err);
+    res.status(400).json({
+      error: "Erro ao criar atendimento",
+      details: err.message
+    });
   }
 });
 
 // Atualiza um timer (tempo restante / estado)
 app.put("/api/atendimentos/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { tempoRestante, emAndamento, observacao_cliente } = req.body;
+    try {
+        const atendimentoId = req.params.id; 
+        const update = {
+            tempoRestante: req.body.tempoRestante,
+            emAndamento: req.body.emAndamento
+        };
 
-    const update = {};
-    if (typeof tempoRestante !== "undefined") update.tempoRestante = tempoRestante;
-    if (typeof emAndamento !== "undefined") update.emAndamento = emAndamento;
-    if (typeof observacao_cliente !== "undefined") update.observacao_cliente = observacao_cliente;
+        const atendimento = await Atendimentos.findByIdAndUpdate(atendimentoId, update, { new: true });
 
-    const atendimento = await Atendimentos.findByIdAndUpdate(id, { $set: update }, { new: true });
-    if (!atendimento) return res.status(404).json({ error: "Atendimento não encontrado" });
+        if (!atendimento) return res.status(404).json({ error: "Atendimento não encontrado" });
 
-    res.json(atendimento);
-  } catch (err) {
-    console.error("Erro ao atualizar atendimento:", err);
-    res.status(500).json({ error: "Erro ao atualizar atendimento" });
-  }
+        res.json(atendimento);
+    } catch (err) {
+        console.error("Erro ao atualizar atendimento:", err);
+        res.status(500).json({ error: "Erro interno" });
+    }
 });
 
 // Deleta um timer
@@ -244,38 +247,31 @@ app.delete("/api/atendimentos/:id", async (req, res) => {
   }
 });
 
-// Agendamentos
+// Agendamentos do dia
 app.get("/api/agendamentos", async (req, res) => {
   try {
-    const idTerapeuta = req.query.id; // ID vindo do front
-
-    if (!idTerapeuta) {
-      return res.status(400).json({ mensagem: "ID do terapeuta não informado." });
-    }
-
-    // Garante que o ID é um ObjectId válido
-    if (!mongoose.Types.ObjectId.isValid(idTerapeuta)) {
-      return res.status(400).json({ mensagem: "ID do terapeuta inválido." });
-    }
+    const { id } = req.query; // ID do colaborador do localStorage
 
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
-
     const amanha = new Date(hoje);
     amanha.setDate(hoje.getDate() + 1);
 
-    // Busca os agendamentos do terapeuta apenas para o dia atual
-    const agendamentos = await Atendimentos.find({
-      colaborador_id: new mongoose.Types.ObjectId(idTerapeuta),
-      inicio_atendimento: { $gte: hoje, $lt: amanha }
-    })
-      .populate("colaborador_id", "nome_colaborador") // traz o nome do colaborador
-      .sort({ inicio_atendimento: 1 });
+    const filtro = {
+      inicio_atendimento: { $gte: hoje, $lt: amanha },
+    };
 
-    console.log("Agendamentos do MongoDB:", agendamentos);
+    if (id) {
+      filtro.colaborador_id = id; // filtra apenas o colaborador específico
+    }
 
-    // Mapeia os dados para o formato esperado pelo front
+    const agendamentos = await Atendimentos.find(filtro)
+      .populate("colaborador_id", "nome_colaborador")
+      .sort({ inicio_atendimento: 1 })
+      .lean();
+
     const dados = agendamentos.map(a => ({
+      _id: a._id,
       colaborador: a.colaborador_id?.nome_colaborador || "Desconhecido",
       colaborador_id: a.colaborador_id?._id || null,
       tipo: a.tipo_colaborador || "Serviço",
@@ -286,11 +282,13 @@ app.get("/api/agendamentos", async (req, res) => {
     }));
 
     res.json(dados);
+
   } catch (err) {
     console.error("Erro ao carregar agendamentos:", err);
     res.status(500).json({ mensagem: "Erro ao carregar agendamentos" });
   }
 });
+
 
 //  FEEDBACK DOS AGENDAMENTOS
 app.put("/api/atendimentos/:id/feedback", async (req, res) => {
