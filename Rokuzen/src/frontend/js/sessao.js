@@ -441,8 +441,20 @@ if (btnAbrirTerapeuta) {
     });
 }
 
-// id
+// id 
 const id = localStorage.getItem("idUser");
+
+document.addEventListener("DOMContentLoaded", () => {
+    // mostra o botão de abrir modal SelecionarTerapeuta só se for admin
+    const tipoUser = localStorage.getItem("tipoUser");
+    const btnAbrirModal = document.getElementById("btnAbrirModal");
+    if (tipoUser === "admin" && btnAbrirModal) {
+        btnAbrirModal.classList.remove("d-none");
+    }
+
+    // carrega terapeutas no modal
+    carregarTerapeutas();
+});
 
 // Carrega os agendamentos do dia
 async function carregarAgendamentos() {
