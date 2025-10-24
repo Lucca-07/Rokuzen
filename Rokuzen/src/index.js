@@ -129,7 +129,7 @@ app.get("/api/terapeutas", async (req, res) => {
     // Busca todos os terapeutas ativos
     const terapeutas = await Colaboradores.find(
       { /* ... suas condições */ },
-      { nome_colaborador: 1, tipo_colaborador: 1, unidade_id: 1 } // <-- Adicione 'unidade_id: 1'
+      { nome_colaborador: 1, tipo_colaborador: 1, unidade_id: 1, imagem: 1 } 
     ).lean();
 
     // Coleta os IDs dos terapeutas
@@ -332,7 +332,27 @@ app.put("/api/atendimentos/:id/feedback", async (req, res) => {
   }
 });
 
-
+  // Pega as imagens do banco
+  app.get("/api/colaboradores/:id/imagem", async (req, res) => {
+    try {
+      const colab = await Colaboradores.findById(req.params.id).lean();
+  
+      if (!colab || !colab.imagem) {
+        return res.sendFile("account-outline.svg", { root: path.join(frontendDir, "img") });
+      }
+  
+      // remover prefixo data:image/jpeg;base64, se existir
+      const base64Data = colab.imagem.replace(/^data:image\/\w+;base64,/, "");
+      const imgBuffer = Buffer.from(base64Data, "base64");
+  
+      res.set("Content-Type", "image/jpeg"); // ou "image/png" se for PNG
+      res.send(imgBuffer);
+  
+    } catch (err) {
+      console.error("Erro ao buscar imagem:", err);
+      res.status(500).send("Erro ao buscar imagem");
+    }
+  });
 
 
 // --- INICIA SERVIDOR ---

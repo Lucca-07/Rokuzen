@@ -187,7 +187,6 @@ function popterapeuta() {
     document.getElementById("poptera").classList.toggle("d-none");
 }
 
-
 // função para buscar e renderizar no modal os timers ativos
 async function carregarTerapeutas() {
     const container = document.getElementById("listaTerapeutas");
@@ -207,13 +206,17 @@ async function carregarTerapeutas() {
 
         terapeutas.forEach(t => {
             const tid = String(t._id);
-
+        
+            // Definir a URL da imagem para este terapeuta
+            const imagemUrl = t.imagem
+                ? `/api/colaboradores/${t._id}/imagem`
+                : "/frontend/img/account-outline.svg";
+        
             // Verificar se este terapeuta tem atendimento ativo
             const atendimentoAtivo = atendimentosAtivos.find(a => String(a.colaborador_id) === tid);
-
+        
             let state = window.__timers__[tid];
-
-            // Se não tem state mas tem atendimento ativo, criar o state
+        
             if (!state && atendimentoAtivo) {
                 state = {
                     tempo: atendimentoAtivo.tempoRestante ?? 600,
@@ -232,7 +235,7 @@ async function carregarTerapeutas() {
                 card.className = "card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2 mb-3";
                 card.innerHTML = `
                     <div class="d-flex align-items-center flex-grow-1 gap-2">
-                        <img src="/frontend/img/account-outline.svg" class="avatar border">
+                       <img src="${imagemUrl}" class="avatar border">
                         <div class="d-flex flex-column">
                             <span class="fw-semibold text-dark">${t.nome_colaborador}</span>
                             <small class="text-muted mb-0">Unidade: ${t.unidade_id || 'Não informada'}</small>
@@ -356,7 +359,7 @@ setInterval(() => {
     });
 
     // Sincroniza com servidor a cada 15 segundos para timers ativos (reduzido para evitar conflitos)
-    if (agora - lastSync > 15000) {
+    if (agora - lastSync > 500) {
         Object.keys(window.__timers__).forEach(tid => {
             const state = window.__timers__[tid];
             if (state && state.serverId && !state.pausado) {
