@@ -26,16 +26,16 @@ app.use(express.static(dirname));
 
 // Rota da Página de Login
 app.get("/", (req, res) => {
-  res.sendFile(path.join(dirname, "src", "frontend", "index.html"));
+  res.sendFile(path.join(dirname, "frontend", "index.html"));
 });
 
 // Rota da Página de Recuperação de senha
 app.get("/recuperar", (req, res) => {
-  res.sendFile(path.join(dirname, "src", "frontend", "recuperarSenha.html"));
+  res.sendFile(path.join(dirname, "frontend", "recuperarSenha.html"));
 });
 
 app.get("/cadastrar", (req, res) => {
-  res.sendFile(path.join(dirname, "src", "frontend", "cadastro.html"));
+  res.sendFile(path.join(dirname, "frontend", "cadastro.html"));
 });
 
 // Verifica o Login
@@ -110,11 +110,11 @@ app.post("/atualizarSenha", async (req, res) => {
 
 // Rota da página de inicio
 app.get("/inicio", (req, res) => {
-  res.sendFile(path.join(dirname, "src", "frontend", "paginaInicio.html"));
+  res.sendFile(path.join(dirname, "frontend", "paginaInicio.html"));
 });
 
 app.get("/postosatendimento", (req, res) => {
-  res.sendFile(path.join(dirname, "src", "frontend", "postoatendimento.html"));
+  res.sendFile(path.join(dirname, "frontend", "postoatendimento.html"));
 });
 
 app.get("/escala", (req, res) => {
@@ -229,7 +229,7 @@ app.delete("/api/atendimentos/:id", async (req, res) => {
 
 
 app.post("/escala/atendimento", async (req, res) => {
-  const { dataHora, colaborador_id, servico_id, unidade_id } = req.body;
+  const { dataHora, colaborador_id, servico_id, unidade_id, inicio_real, fim_real, tempo_restante } = req.body;
 
   try {
     const inicioAtendimento = new Date(dataHora + "Z");
@@ -237,6 +237,9 @@ app.post("/escala/atendimento", async (req, res) => {
     fimAtendimento.setMinutes(fimAtendimento.getMinutes() + 60);
 
     const novoAtendimento = new Atendimentos({
+      inicio_real,
+      fim_real,
+      tempo_restante,
       colaborador_id,
       servico_id,
       unidade_id,
@@ -246,7 +249,15 @@ app.post("/escala/atendimento", async (req, res) => {
       cliente_id: null,
       observacao_cliente: null,
       foi_marcado_online: true,
-      pacote_id: null
+      pacote_id: null,
+      cliente_id: null,
+      observacao_cliente: ".",
+      foi_marcado_online: true,
+      pacote_id: null,
+      em_andamento: false,      
+      inicio_real: null,        
+      fim_real: null,           
+      tempoRestante: 120        
     });
 
     await novoAtendimento.save();
@@ -272,7 +283,7 @@ app.post("/escala/atendimento", async (req, res) => {
 });
 
 app.get("/sessao", (req, res) => {
-  res.sendFile(path.join(dirname, "src", "frontend", "sessao.html"));
+  res.sendFile(path.join(dirname, "frontend", "sessao.html"));
 });
 
 app.listen(8080, () => {
