@@ -183,6 +183,17 @@ app.get("/api/atendimentos", async (req, res) => {
   }
 });
 
+// rota para listar apenas atendimentos ativos
+app.get("/api/atendimentos/ativos", async (req, res) => {
+  try {
+    const ativos = await Atendimentos.find({ emAndamento: true });
+    res.json(ativos);
+  } catch (err) {
+    console.error("Erro ao buscar atendimentos ativos:", err);
+    res.status(500).json({ error: "Erro ao buscar atendimentos ativos" });
+  }
+});
+
 // Cria ou atualiza um timer para um colaborador
 app.post("/api/atendimentos", async (req, res) => {
   try {
