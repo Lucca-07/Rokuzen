@@ -327,49 +327,51 @@ function atualizarDisplays(tid) {
         displayModal.className = `fw-bold fs-5 ${state.pausado ? 'text-secondary' : 'text-success'}`;
     }
 }
-// Atualiza todos os timers exibidos no modal (usado em operações manuais)
-function atualizarTimersModal() {
-    if (!window.__timers__) return;
-
-    Object.keys(window.__timers__).forEach(tid => {
-        const timer = window.__timers__[tid];
-        const display = document.getElementById(`timer-display-${tid}`);
-        if (display) {
-            display.textContent = formatSeconds(timer.tempo);
-            display.className = `fw-bold fs-5 ${timer.pausado ? 'text-secondary' : 'text-success'}`;
-        }
-    });
-}
-
-
-// Atualização automática global (1 vez por segundo) + sincronização periódica
+// Atualização automática global + sincronização periódica
 let lastSync = Date.now();
 setInterval(() => {
     if (!window.__timers__) return;
 
-    const modalAberto = document.getElementById("popupTerapeuta")?.classList.contains("show");
+    const modalAbertoTerapeuta = document.getElementById("popupTerapeuta")?.classList.contains("show");
     const agora = Date.now();
 
     Object.keys(window.__timers__).forEach(tid => {
         const state = window.__timers__[tid];
-        if (!state || state.pausado) return;
+        if (!state) return;
 
-        state.tempo = Math.max(0, state.tempo - 1);
-        atualizarDisplays(tid);
+        // Decrementa tempo se não estiver pausado
+        if (!state.pausado) {
+            state.tempo = Math.max(0, state.tempo - 1);
+            atualizarDisplays(tid);
+
+            // Abre modal de encerramento automaticamente
+            if (state.tempo === 0 && !state.encerrado) {
+                state.encerrado = true; // evita abrir várias vezes
+                window.sessaoEncerrarId = state.serverId;
+
+                const encerrarModalEl = document.getElementById("encerrarSessaoModal");
+                if (encerrarModalEl) {
+                    const encerrarModal = new bootstrap.Modal(encerrarModalEl);
+                    encerrarModal.show();
+                }
+
+                // Opcional: desativa botões de controle
+                if (selectedTid === tid) {
+                    btnIniciar.classList.add('d-none');
+                    btnPausar.classList.add('d-none');
+                    btnReiniciar.classList.add('d-none');
+                }
+            }
+        }
+
+        // Sincroniza com servidor a cada segundo
+        if (state.serverId && !state.pausado) {
+            syncTimerToServer(tid);
+        }
     });
 
-    // Sincroniza com servidor a cada 15 segundos para timers ativos (reduzido para evitar conflitos)
-    if (agora - lastSync > 500) {
-        Object.keys(window.__timers__).forEach(tid => {
-            const state = window.__timers__[tid];
-            if (state && state.serverId && !state.pausado) {
-                syncTimerToServer(tid);
-            }
-        });
-        lastSync = agora;
-    }
-
-    if (modalAberto) {
+    // Atualiza modal de terapeutas se aberto
+    if (modalAbertoTerapeuta) {
         atualizarTimersModal();
     }
 }, 1000);
@@ -571,13 +573,46 @@ document.getElementById("confirmarEncerramento").addEventListener("click", async
     const fbModal = new bootstrap.Modal(fbModalEl);
     fbModal.show();
 
-    // Preenche nome e horário no feedback automaticamente
-    const state = Object.values(window.__timers__ || {}).find(t => t.serverId === window.sessaoEncerrarId);
-    if (state) {
-        document.getElementById("fb-nomeTerapeuta").textContent = `👤 ${state.nome_colaborador || 'Desconhecido'}`;
-        const agora = new Date();
-        document.getElementById("fb-horarioSessao").textContent = `⏰ ${agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+ // Preenche nome e horário no feedback automaticamente
+const state = Object.values(window.__timers__ || {}).find(
+    t => t.serverId === window.sessaoEncerrarId
+);
+
+console.log("Timers completos:", window.__timers__);
+console.log("Sessão a encerrar:", window.sessaoEncerrarId);
+
+if (state) {
+    const colaboradorId = state.colaborador_id || state.colaboradorId; 
+    console.log("ID do colaborador:", colaboradorId);
+
+    const fbNomeEl = document.getElementById("fb-nomeTerapeuta");
+    const fbHorarioEl = document.getElementById("fb-horarioSessao");
+
+    // Preenche horário sempre
+    const agora = new Date();
+    fbHorarioEl.textContent = `⏰ ${agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+
+    if (colaboradorId) {
+        fetch(`/api/colaboradores/${colaboradorId}`)
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                return res.json();
+            })
+            .then(colaborador => {
+                console.log("Dados do colaborador:", colaborador);
+
+                // Use o campo correto
+                fbNomeEl.textContent = `👤 ${colaborador.nome_colaborador || 'Desconhecido'}`;
+            })
+            .catch(err => {
+                console.error("Erro ao buscar colaborador:", err);
+                fbNomeEl.textContent = '👤 Desconhecido';
+            });
+    } else {
+        fbNomeEl.textContent = '👤 Desconhecido';
     }
+}
+
 });
 
 // Quando clicar em "Salvar" no modal de feedback

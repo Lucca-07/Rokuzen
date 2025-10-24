@@ -129,7 +129,7 @@ app.get("/api/terapeutas", async (req, res) => {
     // Busca todos os terapeutas ativos
     const terapeutas = await Colaboradores.find(
       { /* ... suas condições */ },
-      { nome_colaborador: 1, tipo_colaborador: 1, unidade_id: 1, imagem: 1 } 
+      { nome_colaborador: 1, tipo_colaborador: 1, unidade_id: 1, imagem: 1 }
     ).lean();
 
     // Coleta os IDs dos terapeutas
@@ -203,7 +203,7 @@ app.post("/api/atendimentos", async (req, res) => {
     const atendimento = new Atendimentos({
       colaborador_id: data.colaborador_id || null,
       tipo_colaborador: data.tipo_colaborador || "",
-      servico_id: data.servico_id || new mongoose.Types.ObjectId().toString(), 
+      servico_id: data.servico_id || new mongoose.Types.ObjectId().toString(),
       inicio_atendimento: data.inicio_atendimento || new Date(),
       fim_atendimento: data.fim_atendimento || new Date(Date.now() + 60 * 60 * 1000), // +1 hora
       observacao_cliente: data.observacao_cliente || "",
@@ -227,22 +227,22 @@ app.post("/api/atendimentos", async (req, res) => {
 
 // Atualiza um timer (tempo restante / estado)
 app.put("/api/atendimentos/:id", async (req, res) => {
-    try {
-        const atendimentoId = req.params.id; 
-        const update = {
-            tempoRestante: req.body.tempoRestante,
-            emAndamento: req.body.emAndamento
-        };
+  try {
+    const atendimentoId = req.params.id;
+    const update = {
+      tempoRestante: req.body.tempoRestante,
+      emAndamento: req.body.emAndamento
+    };
 
-        const atendimento = await Atendimentos.findByIdAndUpdate(atendimentoId, update, { new: true });
+    const atendimento = await Atendimentos.findByIdAndUpdate(atendimentoId, update, { new: true });
 
-        if (!atendimento) return res.status(404).json({ error: "Atendimento não encontrado" });
+    if (!atendimento) return res.status(404).json({ error: "Atendimento não encontrado" });
 
-        res.json(atendimento);
-    } catch (err) {
-        console.error("Erro ao atualizar atendimento:", err);
-        res.status(500).json({ error: "Erro interno" });
-    }
+    res.json(atendimento);
+  } catch (err) {
+    console.error("Erro ao atualizar atendimento:", err);
+    res.status(500).json({ error: "Erro interno" });
+  }
 });
 
 // Deleta um timer
@@ -332,27 +332,42 @@ app.put("/api/atendimentos/:id/feedback", async (req, res) => {
   }
 });
 
-  // Pega as imagens do banco
-  app.get("/api/colaboradores/:id/imagem", async (req, res) => {
-    try {
-      const colab = await Colaboradores.findById(req.params.id).lean();
-  
-      if (!colab || !colab.imagem) {
-        return res.sendFile("account-outline.svg", { root: path.join(frontendDir, "img") });
-      }
-  
-      // remover prefixo data:image/jpeg;base64, se existir
-      const base64Data = colab.imagem.replace(/^data:image\/\w+;base64,/, "");
-      const imgBuffer = Buffer.from(base64Data, "base64");
-  
-      res.set("Content-Type", "image/jpeg"); // ou "image/png" se for PNG
-      res.send(imgBuffer);
-  
-    } catch (err) {
-      console.error("Erro ao buscar imagem:", err);
-      res.status(500).send("Erro ao buscar imagem");
+// Pega as imagens do banco
+app.get("/api/colaboradores/:id/imagem", async (req, res) => {
+  try {
+    const colab = await Colaboradores.findById(req.params.id).lean();
+
+    if (!colab || !colab.imagem) {
+      return res.sendFile("account-outline.svg", { root: path.join(frontendDir, "img") });
     }
-  });
+
+    // remover prefixo data:image/jpeg;base64, se existir
+    const base64Data = colab.imagem.replace(/^data:image\/\w+;base64,/, "");
+    const imgBuffer = Buffer.from(base64Data, "base64");
+
+    res.set("Content-Type", "image/jpeg"); // ou "image/png" se for PNG
+    res.send(imgBuffer);
+
+  } catch (err) {
+    console.error("Erro ao buscar imagem:", err);
+    res.status(500).send("Erro ao buscar imagem");
+  }
+});
+
+// GET /api/colaboradores/:id
+app.get("/api/colaboradores/:id", async (req, res) => {
+  try {
+    const colab = await Colaboradores.findById(req.params.id).lean();
+    if (!colab) return res.status(404).json({ error: "Colaborador não encontrado" });
+
+    res.json(colab);''
+  } catch (err) {
+    console.error("Erro ao buscar colaborador:", err);
+    res.status(500).json({ error: "Erro interno ao buscar colaborador" });
+  }
+});
+
+
 
 
 // --- INICIA SERVIDOR ---
