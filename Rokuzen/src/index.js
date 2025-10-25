@@ -144,7 +144,7 @@ app.get("/api/terapeutas", async (req, res) => {
         $group: {
           _id: "$colaborador_id",
           tempoRestante: { $first: "$tempoRestante" },
-          emAndamento: { $first: "$emAndamento" },
+          em_andamento: { $first: "$em_andamento" },
           updatedAt: { $first: "$updatedAt" }
         }
       }
@@ -159,7 +159,7 @@ app.get("/api/terapeutas", async (req, res) => {
       return {
         ...t,
         tempoRestante: at?.tempoRestante ?? null,
-        emAndamento: at?.emAndamento ?? false,
+        em_andamento: at?.em_andamento ?? false,
         ultimoUpdate: at?.updatedAt ?? null
       };
     });
@@ -186,7 +186,7 @@ app.get("/api/atendimentos", async (req, res) => {
 // rota para listar apenas atendimentos ativos
 app.get("/api/atendimentos/ativos", async (req, res) => {
   try {
-    const ativos = await Atendimentos.find({ emAndamento: true });
+    const ativos = await Atendimentos.find({ em_andamento: true });
     res.json(ativos);
   } catch (err) {
     console.error("Erro ao buscar atendimentos ativos:", err);
@@ -208,7 +208,7 @@ app.post("/api/atendimentos", async (req, res) => {
       fim_atendimento: data.fim_atendimento || new Date(Date.now() + 60 * 60 * 1000), // +1 hora
       observacao_cliente: data.observacao_cliente || "",
       tempoRestante: typeof data.tempoRestante === "number" ? data.tempoRestante : 600,
-      emAndamento: !!data.emAndamento,
+      em_andamento: !!data.em_andamento,
       inicio_real: data.inicio_real || null,
       fim_real: data.fim_real || null
     });
@@ -231,7 +231,7 @@ app.put("/api/atendimentos/:id", async (req, res) => {
     const atendimentoId = req.params.id;
     const update = {
       tempoRestante: req.body.tempoRestante,
-      emAndamento: req.body.emAndamento
+      em_andamento: req.body.em_andamento
     };
 
     const atendimento = await Atendimentos.findByIdAndUpdate(atendimentoId, update, { new: true });
@@ -367,7 +367,31 @@ app.get("/api/colaboradores/:id", async (req, res) => {
   }
 });
 
+// Encerrar atendimento (tempo zerado)
+app.put("/api/atendimentos/:id/encerrar", async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    const atendimento = await Atendimentos.findByIdAndUpdate(
+      id,
+      {
+        em_andamento: false,
+        tempoRestante: 0,
+        fim_real: new Date()
+      },
+      { new: true }
+    );
+
+    if (!atendimento) {
+      return res.status(404).json({ error: "Atendimento não encontrado" });
+    }
+
+    res.json({ message: "Atendimento encerrado com sucesso", atendimento });
+  } catch (err) {
+    console.error("Erro ao encerrar atendimento:", err);
+    res.status(500).json({ error: "Erro ao encerrar atendimento" });
+  }
+});
 
 
 // --- INICIA SERVIDOR ---
