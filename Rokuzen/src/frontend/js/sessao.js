@@ -134,7 +134,7 @@ async function pausarOuContinuar() {
     atualizarTimersModal();
 }
 
-// Função REINICIAR corrigida
+// Função REINICIAR 
 async function reiniciarTimer() {
     if (!selectedTid) return alert('Selecione um terapeuta');
     const state = window.__timers__[selectedTid];
@@ -327,6 +327,24 @@ function atualizarDisplays(tid) {
         displayModal.className = `fw-bold fs-5 ${state.pausado ? 'text-secondary' : 'text-success'}`;
     }
 }
+
+// Atualiza todos os timers que aparecem dentro do modal de terapeutas
+function atualizarTimersModal() {
+    if (!window.__timers__) return;
+
+    Object.keys(window.__timers__).forEach(tid => {
+        const state = window.__timers__[tid];
+        if (!state) return;
+
+        // Atualiza o display de cada terapeuta no modal
+        const display = document.getElementById(`timer-display-${tid}`);
+        if (display) {
+            display.textContent = formatSeconds(state.tempo);
+            display.className = `fw-bold fs-5 ${state.pausado ? 'text-secondary' : 'text-success'}`;
+        }
+    });
+}
+
 // Atualização automática global + sincronização periódica
 let lastSync = Date.now();
 setInterval(() => {

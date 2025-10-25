@@ -8,7 +8,7 @@ const atendimentoSchema = new mongoose.Schema({
   fim_atendimento: { type: Date, required: true },
   observacao_cliente: { type: String, default: "" },
   tempoRestante: { type: Number },
-  emAndamento: { type: Boolean, default: false },
+  em_andamento: { type: Boolean, default: false },
   inicio_real: { type: Date },  
   fim_real: { type: Date }  
   },
