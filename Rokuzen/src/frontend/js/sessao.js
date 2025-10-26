@@ -490,7 +490,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-// Carrega os agendamentos do dia
 async function carregarAgendamentos() {
     if (!id) return alert("ID do terapeuta não encontrado!");
 
@@ -510,78 +509,63 @@ async function carregarAgendamentos() {
         const vistos = new Set();
         const unicos = [];
         agendamentos.forEach(a => {
-            const chave = a._id || `${a.colaborador?.nome_colaborador || a.colaborador}_${a.inicio_atendimento}`;
-            if (!vistos.has(chave)) {
-                vistos.add(chave);
+            if (!vistos.has(a._id)) {
+                vistos.add(a._id);
                 unicos.push(a);
             }
         });
 
-        // Divide por status
-        const concluidos = [];
-        const outros = [];
+        // Ordena por hora de início (mais cedo primeiro)
+        unicos.sort((a, b) => new Date(a.inicio_atendimento) - new Date(b.inicio_atendimento));
 
+        // Renderiza cada agendamento
         unicos.forEach(a => {
-            if (a.fim_real) concluidos.push(a);
-            else outros.push(a);
-        });
+            const inicioStr = a.inicio_atendimento; // string ISO do banco
+            const fimStr = a.fim_atendimento;
 
-        const ordenarPorInicio = arr => arr.sort((x, y) => new Date(x.inicio_atendimento) - new Date(y.inicio_atendimento));
+            // Pega horas e minutos exatamente do banco
+            const inicio = new Date(inicioStr);
+            const fim = new Date(fimStr);
 
-        const listaFinal = [
-            ...ordenarPorInicio(concluidos),
-            ...ordenarPorInicio(outros)
-        ];
+            const [horaBanco, minutoBanco] = inicioStr.slice(11, 16).split(":");
+            const horaFormatada = `${horaBanco}:${minutoBanco}`;
 
-        // Renderiza
-        listaFinal.forEach(a => {
-            const inicio = new Date(a.inicio_atendimento);
-            const fim = new Date(a.fim_atendimento);
-
-            // Calcula tempo em segundos
             const tempoSegundos = Math.round((fim - inicio) / 1000);
-            a.tempoRestante = a.tempoRestante ?? 0; // garante valor
-
-            // Formata horário UTC
-            const horas = String(inicio.getUTCHours()).padStart(2, '0');
-            const minutos = String(inicio.getUTCMinutes()).padStart(2, '0');
-            const horaFormatada = `${horas}:${minutos}`;
 
             const bloco = document.createElement("div");
             bloco.classList.add("card", "card-agendamento", "p-3", "mb-2", "shadow-sm");
             bloco.dataset.serverId = a._id;
 
-            // Cores: verde para concluído, branco para outros
-            bloco.style.backgroundColor = a.fim_real ? "#d4edda" : "#ffffff";
-
-            // Protege o nome contra apóstrofos
-            const nomeCol = (a.colaborador && a.colaborador.nome_colaborador) ? a.colaborador.nome_colaborador : (a.colaborador || '');
-            const nomeEscaped = String(nomeCol).replace(/'/g, "\\'").replace(/\n/g, ' ').replace(/\r/g, '');
+            const encerrado = !!a.encerrado;
+            bloco.style.backgroundColor = encerrado ? "#d4edda" : "#ffffff";
 
             bloco.innerHTML = `
 <div class="d-flex justify-content-between align-items-start">
     <div class="text-start">
-        <span class="fw-semibold d-block">👤${nomeCol}</span>
+        <span class="fw-semibold d-block">👤${a.colaborador}</span>
         <small class="text-muted d-block">⏰Início: ${horaFormatada}</small>
         <small class="text-muted d-block">Duração: ${Math.round(tempoSegundos / 60)} min</small>
     </div>
     <div class="ms-3">
         <button class="btn btn-success btn-sm" 
-    onclick="selecionarAgendamento(
-        '${a._id}', 
-        ${tempoSegundos}, 
-        '${nomeEscaped}', 
-        '${a.colaborador._id || a.colaborador}'
-    )">
-    Selecionar
-</button>
-
+        onclick="selecionarAgendamento('${a._id}', ${tempoSegundos}, '${a.colaborador}', '${a.colaborador_id || ""}')">
+        Selecionar
+        </button>
     </div>
 </div>
-<div id="timer-${a._id}" class="fs-5 fw-bold mt-2 text-success">
-    <!-- vazio: o tempo vai para o círculo central -->
-</div>
+<div id="timer-${a._id}" class="fs-5 fw-bold mt-2 text-success"></div>
 `;
+
+            if (encerrado) {
+                const status = document.createElement("span");
+                status.className = "badge bg-success mt-2";
+                status.textContent = "Concluída";
+                bloco.appendChild(status);
+
+                const btnSelecionar = bloco.querySelector("button");
+                if (btnSelecionar) btnSelecionar.style.display = "none";
+            }
+
             container.appendChild(bloco);
         });
 
@@ -591,6 +575,8 @@ async function carregarAgendamentos() {
         if (container) container.innerHTML = `<p class="text-center text-danger small">Erro ao carregar agendamentos do dia.</p>`;
     }
 }
+
+
 
 
 // Função chamada ao clicar em "Selecionar"
@@ -708,7 +694,6 @@ document.getElementById("confirmarEncerramento").addEventListener("click", async
 });
 
 
-// Quando clicar em "Salvar" no modal de feedback
 document.getElementById("fb-salvar").addEventListener("click", async () => {
     const texto = document.getElementById("fb-texto").value.trim();
     if (!texto) {
@@ -723,6 +708,7 @@ document.getElementById("fb-salvar").addEventListener("click", async () => {
     }
 
     try {
+        // Salva o feedback
         const res = await fetch(`/api/atendimentos/${sessaoId}/feedback`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -737,7 +723,7 @@ document.getElementById("fb-salvar").addEventListener("click", async () => {
 
         alert("Feedback salvo com sucesso");
 
-        // Reset da pagina e marcado como concluído
+        // Reset da página e marca como concluído
         const tid = selectedTid;
         const state = window.__timers__[tid];
         if (state) {
@@ -745,6 +731,25 @@ document.getElementById("fb-salvar").addEventListener("click", async () => {
             state.tempo = 10 * 60;
             state.pausado = true;
             state.encerrado = true;
+            state.em_andamento = false;
+
+            // Atualiza no servidor: marca como encerrado
+            if (state.serverId) {
+                try {
+                    await fetch(`/api/atendimentos/${state.serverId}/encerrar`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            em_andamento: false,
+                            tempoRestante: 0,
+                            encerrado: true,
+                            fim_real: new Date()
+                        })
+                    });
+                } catch (err) {
+                    console.error("Erro ao marcar atendimento como encerrado no servidor:", err);
+                }
+            }
 
             await syncTimerToServer(tid);
             atualizarDisplays(tid);
@@ -753,11 +758,19 @@ document.getElementById("fb-salvar").addEventListener("click", async () => {
             // Atualiza o card visual da sessão iniciada
             const bloco = document.querySelector(`[data-server-id="${state.serverId}"]`);
             if (bloco) {
+                // Remove badge antiga, se existir
+                const badgeExistente = bloco.querySelector(".badge");
+                if (badgeExistente) bloco.removeChild(badgeExistente);
 
+                // Atualiza status
                 const status = document.createElement("span");
                 status.className = "badge bg-success mt-2";
                 status.textContent = "Concluída";
                 bloco.appendChild(status);
+
+                // Esconde botão Selecionar
+                const btnSelecionar = bloco.querySelector("button");
+                if (btnSelecionar) btnSelecionar.style.display = "none";
             }
         }
 

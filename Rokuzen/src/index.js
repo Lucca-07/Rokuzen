@@ -258,30 +258,25 @@ app.delete("/api/atendimentos/:id", async (req, res) => {
   }
 });
 
-// Agendamentos do dia
+// Agendamentos do dia (mantendo sessões encerradas)
 app.get("/api/agendamentos", async (req, res) => {
   try {
-    const { id } = req.query; // ID do colaborador do localStorage
-
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
     const amanha = new Date(hoje);
     amanha.setDate(hoje.getDate() + 1);
 
+    // Filtro para todos os atendimentos do dia, independentemente do estado
     const filtro = {
       inicio_atendimento: { $gte: hoje, $lt: amanha },
     };
 
-    if (id) {
-      filtro.colaborador_id = id; // filtra apenas o colaborador específico
-    }
-
     const agendamentos = await Atendimentos.find(filtro)
       .populate("colaborador_id", "nome_colaborador")
       .sort({
-        fim_real: -1,         // Concluídos primeiro (tem fim_real)
+        fim_real: -1,         // Concluídos primeiro
         em_andamento: -1,     // Depois os em andamento
-        inicio_atendimento: 1 // Ordena por horário (mais cedo primeiro)
+        inicio_atendimento: 1 // Mais cedo primeiro
       })
       .lean();
 
@@ -293,7 +288,9 @@ app.get("/api/agendamentos", async (req, res) => {
       inicio_atendimento: a.inicio_atendimento?.toISOString(),
       fim_atendimento: a.fim_atendimento?.toISOString(),
       tempo: Math.round((new Date(a.fim_atendimento) - new Date(a.inicio_atendimento)) / 60000),
-      observacao: a.observacao_cliente || "-"
+      observacao: a.observacao_cliente || "-",
+      em_andamento: !!a.em_andamento,    // true se ainda ativo
+      encerrado: !a.em_andamento         // true se encerrado
     }));
 
     res.json(dados);
@@ -303,6 +300,7 @@ app.get("/api/agendamentos", async (req, res) => {
     res.status(500).json({ mensagem: "Erro ao carregar agendamentos" });
   }
 });
+
 
 
 //  FEEDBACK DOS AGENDAMENTOS
@@ -376,12 +374,15 @@ app.put("/api/atendimentos/:id/encerrar", async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Atualiza o atendimento: marca como encerrado, tempo zerado e registra data de término
     const atendimento = await Atendimentos.findByIdAndUpdate(
       id,
       {
         em_andamento: false,
         tempoRestante: 0,
-        fim_real: new Date()
+        fim_real: new Date(),
+        encerrado: true,      
+        status: "encerrado"    
       },
       { new: true }
     );
@@ -397,25 +398,8 @@ app.put("/api/atendimentos/:id/encerrar", async (req, res) => {
   }
 });
 
-// Listar atendimentos do dia (ativos e concluídos)
-app.get("/api/atendimentos/hoje", async (req, res) => {
-  try {
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
 
-    const amanha = new Date(hoje);
-    amanha.setDate(hoje.getDate() + 1);
 
-    const atendimentos = await Atendimentos.find({
-      inicio_atendimento: { $gte: hoje, $lt: amanha }
-    }).populate("colaborador_id");
-
-    res.json(atendimentos);
-  } catch (err) {
-    console.error("Erro ao buscar atendimentos do dia:", err);
-    res.status(500).json({ error: "Erro ao buscar atendimentos do dia" });
-  }
-});
 
 // --- INICIA SERVIDOR ---
 app.listen(port, () => {
