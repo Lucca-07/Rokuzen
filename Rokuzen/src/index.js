@@ -278,7 +278,11 @@ app.get("/api/agendamentos", async (req, res) => {
 
     const agendamentos = await Atendimentos.find(filtro)
       .populate("colaborador_id", "nome_colaborador")
-      .sort({ inicio_atendimento: 1 })
+      .sort({
+        fim_real: -1,         // Concluídos primeiro (tem fim_real)
+        em_andamento: -1,     // Depois os em andamento
+        inicio_atendimento: 1 // Ordena por horário (mais cedo primeiro)
+      })
       .lean();
 
     const dados = agendamentos.map(a => ({
@@ -360,7 +364,7 @@ app.get("/api/colaboradores/:id", async (req, res) => {
     const colab = await Colaboradores.findById(req.params.id).lean();
     if (!colab) return res.status(404).json({ error: "Colaborador não encontrado" });
 
-    res.json(colab);''
+    res.json(colab); ''
   } catch (err) {
     console.error("Erro ao buscar colaborador:", err);
     res.status(500).json({ error: "Erro interno ao buscar colaborador" });
@@ -393,6 +397,25 @@ app.put("/api/atendimentos/:id/encerrar", async (req, res) => {
   }
 });
 
+// Listar atendimentos do dia (ativos e concluídos)
+app.get("/api/atendimentos/hoje", async (req, res) => {
+  try {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
+    const amanha = new Date(hoje);
+    amanha.setDate(hoje.getDate() + 1);
+
+    const atendimentos = await Atendimentos.find({
+      inicio_atendimento: { $gte: hoje, $lt: amanha }
+    }).populate("colaborador_id");
+
+    res.json(atendimentos);
+  } catch (err) {
+    console.error("Erro ao buscar atendimentos do dia:", err);
+    res.status(500).json({ error: "Erro ao buscar atendimentos do dia" });
+  }
+});
 
 // --- INICIA SERVIDOR ---
 app.listen(port, () => {

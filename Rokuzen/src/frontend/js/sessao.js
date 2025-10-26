@@ -44,7 +44,7 @@ const btnReiniciar = document.getElementById("btnReiniciar");
 // Carrega timers do banco
 async function loadTimersFromDB() {
     try {
-        const res = await fetch("/api/atendimentos/ativos");
+        const res = await fetch("/api/atendimentos/hoje")
         if (!res.ok) throw new Error("Erro ao carregar timers do banco");
 
         const atendimentos = await res.json();
@@ -429,7 +429,7 @@ setInterval(() => {
                 }
 
                 if (selectedTid === tid) {
-                    btnIniciar.classList.add('d-none');
+                    btnIniciar.classList.remove('d-none');
                     btnPausar.classList.add('d-none');
                     btnReiniciar.classList.add('d-none');
                 }
@@ -506,7 +506,7 @@ async function carregarAgendamentos() {
             return;
         }
 
-        // Remove duplicatas por _id (ou por chave composta se _id ausente)
+        // Remove duplicatas por _id
         const vistos = new Set();
         const unicos = [];
         agendamentos.forEach(a => {
@@ -517,18 +517,32 @@ async function carregarAgendamentos() {
             }
         });
 
-        // Renderiza exatamente como antes, usando a lista filtrada
-        unicos.forEach((a) => {
-            console.log("🔹 Agendamento _id:", a._id);
-            console.log("🔹 Colaborador:", a.colaborador);
+        // Divide por status
+        const concluidos = [];
+        const outros = [];
+
+        unicos.forEach(a => {
+            if (a.fim_real) concluidos.push(a);
+            else outros.push(a);
+        });
+
+        const ordenarPorInicio = arr => arr.sort((x, y) => new Date(x.inicio_atendimento) - new Date(y.inicio_atendimento));
+
+        const listaFinal = [
+            ...ordenarPorInicio(concluidos),
+            ...ordenarPorInicio(outros)
+        ];
+
+        // Renderiza
+        listaFinal.forEach(a => {
             const inicio = new Date(a.inicio_atendimento);
             const fim = new Date(a.fim_atendimento);
 
             // Calcula tempo em segundos
             const tempoSegundos = Math.round((fim - inicio) / 1000);
-            a.tempoRestante = tempoSegundos;
+            a.tempoRestante = a.tempoRestante ?? 0; // garante valor
 
-            // Cria horaFormatada para exibir exatamente o horário do banco (UTC)
+            // Formata horário UTC
             const horas = String(inicio.getUTCHours()).padStart(2, '0');
             const minutos = String(inicio.getUTCMinutes()).padStart(2, '0');
             const horaFormatada = `${horas}:${minutos}`;
@@ -537,7 +551,10 @@ async function carregarAgendamentos() {
             bloco.classList.add("card", "card-agendamento", "p-3", "mb-2", "shadow-sm");
             bloco.dataset.serverId = a._id;
 
-            // protege o nome contra apóstrofos que quebram o onclick
+            // Cores: verde para concluído, branco para outros
+            bloco.style.backgroundColor = a.fim_real ? "#d4edda" : "#ffffff";
+
+            // Protege o nome contra apóstrofos
             const nomeCol = (a.colaborador && a.colaborador.nome_colaborador) ? a.colaborador.nome_colaborador : (a.colaborador || '');
             const nomeEscaped = String(nomeCol).replace(/'/g, "\\'").replace(/\n/g, ' ').replace(/\r/g, '');
 
@@ -574,6 +591,7 @@ async function carregarAgendamentos() {
         if (container) container.innerHTML = `<p class="text-center text-danger small">Erro ao carregar agendamentos do dia.</p>`;
     }
 }
+
 
 // Função chamada ao clicar em "Selecionar"
 function selecionarAgendamento(id, tempoSegundos, colaboradorNome = null, colaboradorId = null) {
@@ -636,15 +654,20 @@ function selecionarAgendamento(id, tempoSegundos, colaboradorNome = null, colabo
 document.addEventListener("DOMContentLoaded", carregarAgendamentos);
 
 
-// Final de sessão  abre modal de feedback
+// Final de sessão abre modal de feedback
 document.getElementById("confirmarEncerramento").addEventListener("click", async () => {
     const encerrarModalEl = document.getElementById("encerrarSessaoModal");
     const encerrarModal = bootstrap.Modal.getInstance(encerrarModalEl);
     encerrarModal.hide();
 
-    // Remove o atendimento da tela (sem excluir do banco)
+    // Marca o atendimento como concluído (verde) sem remover do DOM
     const atendimentoEl = document.querySelector(`[data-server-id="${window.sessaoEncerrarId}"]`);
-    if (atendimentoEl) atendimentoEl.remove();
+    if (atendimentoEl) {
+        atendimentoEl.style.backgroundColor = "#d4edda"; // verde
+        // Esconde o botão Selecionar
+        const btnSelecionar = atendimentoEl.querySelector("button");
+        if (btnSelecionar) btnSelecionar.style.display = "none";
+    }
 
     // Exibe o modal de feedback
     const fbModalEl = document.getElementById("fbModal");
@@ -656,38 +679,25 @@ document.getElementById("confirmarEncerramento").addEventListener("click", async
         t => t.serverId === window.sessaoEncerrarId
     );
 
-    console.log("Timers completos:", window.__timers__);
-    console.log("Sessão a encerrar:", window.sessaoEncerrarId);
-
     const fbNomeEl = document.getElementById("fb-nomeTerapeuta");
     const fbHorarioEl = document.getElementById("fb-horarioSessao");
 
     if (state) {
-        // Preenche horário com base no tempo do timer
         const tempoRestanteSegundos = state.tempo ?? 0;
         const horas = Math.floor(tempoRestanteSegundos / 3600).toString().padStart(2, '0');
         const minutos = Math.floor((tempoRestanteSegundos % 3600) / 60).toString().padStart(2, '0');
         const segundos = (tempoRestanteSegundos % 60).toString().padStart(2, '0');
         fbHorarioEl.textContent = `⏰ ${horas}:${minutos}:${segundos}`;
 
-        // Se já temos nome no state, usa direto
         if (state.nome_colaborador) {
             fbNomeEl.textContent = `👤 ${state.nome_colaborador}`;
-        }
-        // Se não tiver, tenta buscar pelo ID
-        else if (state.colaborador_id) {
+        } else if (state.colaborador_id) {
             fetch(`/api/colaboradores/${state.colaborador_id}`)
-                .then(res => {
-                    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                    return res.json();
-                })
+                .then(res => res.json())
                 .then(colaborador => {
                     fbNomeEl.textContent = `👤 ${colaborador.nome_colaborador || 'Desconhecido'}`;
                 })
-                .catch(err => {
-                    console.error("Erro ao buscar colaborador:", err);
-                    fbNomeEl.textContent = '👤 Desconhecido';
-                });
+                .catch(() => fbNomeEl.textContent = '👤 Desconhecido');
         } else {
             fbNomeEl.textContent = '👤 Desconhecido';
         }
@@ -696,6 +706,7 @@ document.getElementById("confirmarEncerramento").addEventListener("click", async
         fbHorarioEl.textContent = `⏰ 00:00:00`;
     }
 });
+
 
 // Quando clicar em "Salvar" no modal de feedback
 document.getElementById("fb-salvar").addEventListener("click", async () => {
@@ -706,7 +717,6 @@ document.getElementById("fb-salvar").addEventListener("click", async () => {
     }
 
     const sessaoId = window.sessaoEncerrarId;
-    console.log(sessaoId)// ID do atendimento encerrado
     if (!sessaoId) {
         alert("Não foi possível identificar a sessão.");
         return;
@@ -725,7 +735,31 @@ document.getElementById("fb-salvar").addEventListener("click", async () => {
             return;
         }
 
-        alert("Feedback salvo com sucesso ✅");
+        alert("Feedback salvo com sucesso");
+
+        // Reset da pagina e marcado como concluído
+        const tid = selectedTid;
+        const state = window.__timers__[tid];
+        if (state) {
+            // Reseta timer para 10 minutos
+            state.tempo = 10 * 60;
+            state.pausado = true;
+            state.encerrado = true;
+
+            await syncTimerToServer(tid);
+            atualizarDisplays(tid);
+            atualizarTimersModal();
+
+            // Atualiza o card visual da sessão iniciada
+            const bloco = document.querySelector(`[data-server-id="${state.serverId}"]`);
+            if (bloco) {
+
+                const status = document.createElement("span");
+                status.className = "badge bg-success mt-2";
+                status.textContent = "Concluída";
+                bloco.appendChild(status);
+            }
+        }
 
         // Fecha modal
         const fbModalEl = document.getElementById("fbModal");
