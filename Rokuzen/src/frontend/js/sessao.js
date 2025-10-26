@@ -4,12 +4,23 @@ function abrirMenu() {
     const dropcnt = document.getElementById("dropcnt");
     dropcnt.classList.toggle("d-none");
 }
-function formatSeconds(sec) {
+
+// formata segundos em horas, minutos e segundos
+function formataSegundos(sec) {
     if (typeof sec !== 'number' || isNaN(sec)) return '00:00';
-    const m = Math.floor(sec / 60).toString().padStart(2, '0');
-    const s = Math.floor(sec % 60).toString().padStart(2, '0');
-    return `${m}:${s}`;
+    const horas = Math.floor(sec / 3600);
+    const minutos = Math.floor((sec % 3600) / 60);
+    const segundos = sec % 60;
+
+    if (horas > 0) {
+        // Formato H:MM:SS
+        return `${horas}:${minutos.toString().padStart(2,'0')}:${segundos.toString().padStart(2,'0')}`;
+    } else {
+        // Formato MM:SS
+        return `${minutos.toString().padStart(2,'0')}:${segundos.toString().padStart(2,'0')}`;
+    }
 }
+
 
 // --- Sincroniza o timer com o servidor ---
 async function syncTimerToServer(tid) {
@@ -314,7 +325,7 @@ async function carregarTerapeutas() {
                 <div class="text-end flex-shrink-0">
                     <div class="fw-semibold text-secondary small">Timer:</div>
                     <div class="fw-bold fs-5 ${state.pausado ? 'text-secondary' : 'text-success'}" id="timer-display-${tid}">
-                        ${formatSeconds(state.tempo)}
+                        ${formataSegundos(state.tempo)}
                     </div>
                     <button class="btn btn-success btn-sm mt-2 px-3" id="select-${tid}">Selecionar</button>
                 </div>
@@ -366,14 +377,14 @@ function atualizarDisplays(tid) {
     if (selectedTid === tid) {
         const timerDisplay = document.getElementById("timer");
         if (timerDisplay) {
-            timerDisplay.textContent = formatSeconds(state.tempo);
+            timerDisplay.textContent = formataSegundos(state.tempo);
         }
     }
 
     // Atualiza o display no modal (mantém estilo original)
     const displayModal = document.getElementById(`timer-display-${tid}`);
     if (displayModal) {
-        displayModal.textContent = formatSeconds(state.tempo);
+        displayModal.textContent = formataSegundos(state.tempo);
         displayModal.className = `fw-bold fs-5 ${state.pausado ? 'text-secondary' : 'text-success'}`;
     }
 }
@@ -389,7 +400,7 @@ function atualizarTimersModal() {
         // Atualiza o display de cada terapeuta no modal
         const display = document.getElementById(`timer-display-${tid}`);
         if (display) {
-            display.textContent = formatSeconds(state.tempo);
+            display.textContent = formataSegundos(state.tempo);
             display.className = `fw-bold fs-5 ${state.pausado ? 'text-secondary' : 'text-success'}`;
         }
     });
@@ -490,6 +501,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+// Função para carregar agendamentos do dia para o terapeuta atual
 async function carregarAgendamentos() {
     if (!id) return alert("ID do terapeuta não encontrado!");
 
@@ -505,39 +517,24 @@ async function carregarAgendamentos() {
             return;
         }
 
-        // Remove duplicatas por _id
-        const vistos = new Set();
-        const unicos = [];
+        // Ordena do mais cedo para o mais tarde
+        agendamentos.sort((a, b) => new Date(a.inicio_atendimento) - new Date(b.inicio_atendimento));
+
         agendamentos.forEach(a => {
-            if (!vistos.has(a._id)) {
-                vistos.add(a._id);
-                unicos.push(a);
-            }
-        });
+            // Pega a string exata do banco
+            const inicioISO = a.inicio_atendimento; // ex: "2025-10-26T19:00:00.000+00:00"
+            const fimISO = a.fim_atendimento;
 
-        // Ordena por hora de início (mais cedo primeiro)
-        unicos.sort((a, b) => new Date(a.inicio_atendimento) - new Date(b.inicio_atendimento));
-
-        // Renderiza cada agendamento
-        unicos.forEach(a => {
-            const inicioStr = a.inicio_atendimento; // string ISO do banco
-            const fimStr = a.fim_atendimento;
-
-            // Pega horas e minutos exatamente do banco
-            const inicio = new Date(inicioStr);
-            const fim = new Date(fimStr);
-
-            const [horaBanco, minutoBanco] = inicioStr.slice(11, 16).split(":");
-            const horaFormatada = `${horaBanco}:${minutoBanco}`;
-
-            const tempoSegundos = Math.round((fim - inicio) / 1000);
+            // Extrai apenas hora e minuto da string ISO
+            const horaFormatada = inicioISO.slice(11, 16); // pega "HH:MM"
+            const tempoSegundos = Math.round((new Date(fimISO) - new Date(inicioISO)) / 1000);
 
             const bloco = document.createElement("div");
             bloco.classList.add("card", "card-agendamento", "p-3", "mb-2", "shadow-sm");
             bloco.dataset.serverId = a._id;
 
-            const encerrado = !!a.encerrado;
-            bloco.style.backgroundColor = encerrado ? "#d4edda" : "#ffffff";
+            // Cor de fundo: verde se concluído
+            bloco.style.backgroundColor = a.encerrado ? "#d4edda" : "#ffffff";
 
             bloco.innerHTML = `
 <div class="d-flex justify-content-between align-items-start">
@@ -548,15 +545,21 @@ async function carregarAgendamentos() {
     </div>
     <div class="ms-3">
         <button class="btn btn-success btn-sm" 
-        onclick="selecionarAgendamento('${a._id}', ${tempoSegundos}, '${a.colaborador}', '${a.colaborador_id || ""}')">
-        Selecionar
+            onclick="selecionarAgendamento(
+                '${a._id}', 
+                ${tempoSegundos}, 
+                '${a.colaborador}', 
+                '${a.colaborador_id || ''}'
+            )">
+            Selecionar
         </button>
     </div>
 </div>
 <div id="timer-${a._id}" class="fs-5 fw-bold mt-2 text-success"></div>
 `;
 
-            if (encerrado) {
+            // Se já estiver encerrado, adiciona badge e esconde botão
+            if (a.encerrado) {
                 const status = document.createElement("span");
                 status.className = "badge bg-success mt-2";
                 status.textContent = "Concluída";
@@ -576,9 +579,6 @@ async function carregarAgendamentos() {
     }
 }
 
-
-
-
 // Função chamada ao clicar em "Selecionar"
 function selecionarAgendamento(id, tempoSegundos, colaboradorNome = null, colaboradorId = null) {
     let tid = colaboradorId ? String(colaboradorId) : `temp-${Date.now()}`;
@@ -592,7 +592,7 @@ function selecionarAgendamento(id, tempoSegundos, colaboradorNome = null, colabo
         state.serverId = id;
         state.nome_colaborador = colaboradorNome || state.nome_colaborador || "Desconhecido";
 
-        // 🔹 reset de flag de encerramento
+        //  reset de flag de encerramento
         state.encerrado = false;
         state.em_andamento = true;
     } else {
@@ -631,7 +631,7 @@ function selecionarAgendamento(id, tempoSegundos, colaboradorNome = null, colabo
 
     // Atualiza display central
     const timerDisplay = document.getElementById("timer");
-    if (timerDisplay) timerDisplay.textContent = formatSeconds(state.tempo);
+    if (timerDisplay) timerDisplay.textContent = formataSegundos(state.tempo);
 
     // Sincroniza com o servidor
     syncTimerToServer(tid);
@@ -640,60 +640,70 @@ function selecionarAgendamento(id, tempoSegundos, colaboradorNome = null, colabo
 document.addEventListener("DOMContentLoaded", carregarAgendamentos);
 
 
-// Final de sessão abre modal de feedback
+// Final de sessão abre modal de encerramento
 document.getElementById("confirmarEncerramento").addEventListener("click", async () => {
     const encerrarModalEl = document.getElementById("encerrarSessaoModal");
     const encerrarModal = bootstrap.Modal.getInstance(encerrarModalEl);
     encerrarModal.hide();
 
-    // Marca o atendimento como concluído (verde) sem remover do DOM
     const atendimentoEl = document.querySelector(`[data-server-id="${window.sessaoEncerrarId}"]`);
     if (atendimentoEl) {
-        atendimentoEl.style.backgroundColor = "#d4edda"; // verde
-        // Esconde o botão Selecionar
+        atendimentoEl.style.backgroundColor = "#d4edda";
         const btnSelecionar = atendimentoEl.querySelector("button");
         if (btnSelecionar) btnSelecionar.style.display = "none";
     }
 
-    // Exibe o modal de feedback
     const fbModalEl = document.getElementById("fbModal");
     const fbModal = new bootstrap.Modal(fbModalEl);
     fbModal.show();
 
-    // Preenche nome e horário no feedback automaticamente
+    const fbNomeEl = document.getElementById("fb-nomeTerapeuta");
+    const fbHorarioEl = document.getElementById("fb-horarioSessao");
+
+    // Obtém o estado do timer
     const state = Object.values(window.__timers__ || {}).find(
         t => t.serverId === window.sessaoEncerrarId
     );
 
-    const fbNomeEl = document.getElementById("fb-nomeTerapeuta");
-    const fbHorarioEl = document.getElementById("fb-horarioSessao");
-
-    if (state) {
-        const tempoRestanteSegundos = state.tempo ?? 0;
-        const horas = Math.floor(tempoRestanteSegundos / 3600).toString().padStart(2, '0');
-        const minutos = Math.floor((tempoRestanteSegundos % 3600) / 60).toString().padStart(2, '0');
-        const segundos = (tempoRestanteSegundos % 60).toString().padStart(2, '0');
-        fbHorarioEl.textContent = `⏰ ${horas}:${minutos}:${segundos}`;
-
-        if (state.nome_colaborador) {
-            fbNomeEl.textContent = `👤 ${state.nome_colaborador}`;
-        } else if (state.colaborador_id) {
-            fetch(`/api/colaboradores/${state.colaborador_id}`)
-                .then(res => res.json())
-                .then(colaborador => {
-                    fbNomeEl.textContent = `👤 ${colaborador.nome_colaborador || 'Desconhecido'}`;
-                })
-                .catch(() => fbNomeEl.textContent = '👤 Desconhecido');
-        } else {
+    // Nome do colaborador
+    if (state && state.nome_colaborador) {
+        fbNomeEl.textContent = `👤 ${state.nome_colaborador}`;
+    } else {
+        fbNomeEl.textContent = '👤 Carregando...';
+        try {
+            const resCol = await fetch(`/api/colaboradores/${state.colaborador_id}`);
+            const colaborador = await resCol.json();
+            fbNomeEl.textContent = `👤 ${colaborador.nome_colaborador || 'Desconhecido'}`;
+        } catch {
             fbNomeEl.textContent = '👤 Desconhecido';
         }
-    } else {
-        fbNomeEl.textContent = '👤 Desconhecido';
-        fbHorarioEl.textContent = `⏰ 00:00:00`;
     }
+
+    // Buscando informações reais do atendimento
+    try {
+    const res = await fetch(`/api/atendimentos/${window.sessaoEncerrarId}`);
+    const atendimento = await res.json();
+
+    const inicio = new Date(atendimento.inicio_atendimento);
+    const fim = atendimento.fim_real
+        ? new Date(atendimento.fim_real)
+        : new Date(atendimento.fim_atendimento);
+
+    // Formatação para horário local (Brasil)
+    const horas = String(fim.getHours()).padStart(2, '0');
+    const minutos = String(fim.getMinutes()).padStart(2, '0');
+    const segundos = String(fim.getSeconds()).padStart(2, '0');
+
+    fbHorarioEl.textContent = `⏰ ${horas}:${minutos}:${segundos}`;
+} catch (err) {
+    console.error("Erro ao buscar atendimento:", err);
+    fbHorarioEl.textContent = `⏰ 00:00:00`;
+}
 });
 
 
+
+// Salvar feedback e encerrar sessão
 document.getElementById("fb-salvar").addEventListener("click", async () => {
     const texto = document.getElementById("fb-texto").value.trim();
     if (!texto) {

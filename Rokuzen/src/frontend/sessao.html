@@ -86,10 +86,10 @@
 
 				</button>
 
-				<!-- Círculo com timer -->
+				<!-- Retangulo com timer -->
 				<div class="d-flex flex-column justify-content-center align-items-center w-100">
 
-					<!-- Círculo -->
+					<!-- Retangulo -->
 					<div
 						class="timer-circle d-flex flex-column justify-content-center align-items-center text-center mb-4">
 						<h2 id="timer" class="timer-title display-1 fw-bold">10:00</h2>
@@ -144,12 +144,15 @@
 	</div>
 	</div>
 
-	<!-- Modal Selecionar Terapeuta  -->
+	<!-- Modal Selecionar Terapeuta -->
 	<div class="modal fade" id="popupTerapeuta" tabindex="-1" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
+				<div class="modal-header p-3">
+					<h5 class="modal-title fs-5 fw-semibold text-dark mb-0">Selecionar Terapeuta</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
 				<div class="modal-body p-3">
-					<h3 class="fs-5 fw-semibold text-dark mb-4">Selecionar Terapeuta</h3>
 					<div id="listaTerapeutas"></div> <!-- Lista de terapeutas será inserida aqui no JavaScript -->
 				</div>
 			</div>
@@ -163,7 +166,6 @@
 			<div class="modal-content border-0 shadow">
 				<div class="modal-header bg-light">
 					<h5 class="modal-title" id="encerrarSessaoLabel">Encerrar Sessão</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
 				</div>
 				<div class="modal-body">
 					O tempo da sessão acabou. Deseja encerrar a sessão agora?
@@ -189,7 +191,8 @@
 					</div>
 
 					<div class="mb-3">
-						<label class="form-label fw-medium small text-secondary">Horário da Sessão</label>
+						<label class="form-label fw-medium small text-secondary">Horário de Encerramento da
+							Sessão</label>
 						<span id="fb-horarioSessao" class="small d-block mb-1">⏰ </span>
 					</div>
 

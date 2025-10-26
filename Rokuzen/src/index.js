@@ -266,18 +266,13 @@ app.get("/api/agendamentos", async (req, res) => {
     const amanha = new Date(hoje);
     amanha.setDate(hoje.getDate() + 1);
 
-    // Filtro para todos os atendimentos do dia, independentemente do estado
     const filtro = {
       inicio_atendimento: { $gte: hoje, $lt: amanha },
     };
 
     const agendamentos = await Atendimentos.find(filtro)
       .populate("colaborador_id", "nome_colaborador")
-      .sort({
-        fim_real: -1,         // Concluídos primeiro
-        em_andamento: -1,     // Depois os em andamento
-        inicio_atendimento: 1 // Mais cedo primeiro
-      })
+      .sort({ inicio_atendimento: 1 }) // Ordena do mais cedo para o mais tarde
       .lean();
 
     const dados = agendamentos.map(a => ({
@@ -285,12 +280,12 @@ app.get("/api/agendamentos", async (req, res) => {
       colaborador: a.colaborador_id?.nome_colaborador || "Desconhecido",
       colaborador_id: a.colaborador_id?._id || null,
       tipo: a.tipo_colaborador || "Serviço",
-      inicio_atendimento: a.inicio_atendimento?.toISOString(),
-      fim_atendimento: a.fim_atendimento?.toISOString(),
+      inicio_atendimento: a.inicio_atendimento, // envia exatamente do banco
+      fim_atendimento: a.fim_atendimento,       // envia exatamente do banco
       tempo: Math.round((new Date(a.fim_atendimento) - new Date(a.inicio_atendimento)) / 60000),
       observacao: a.observacao_cliente || "-",
-      em_andamento: !!a.em_andamento,    // true se ainda ativo
-      encerrado: !a.em_andamento         // true se encerrado
+      em_andamento: !!a.em_andamento,
+      encerrado: !!a.encerrado // usa valor real do banco
     }));
 
     res.json(dados);
@@ -301,6 +296,29 @@ app.get("/api/agendamentos", async (req, res) => {
   }
 });
 
+// Obter um atendimento específico pelo ID
+app.get("/api/atendimentos/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "ID inválido" });
+    }
+
+    const atendimento = await Atendimentos.findById(id)
+      .populate("colaborador_id", "nome_colaborador")
+      .lean();
+
+    if (!atendimento) {
+      return res.status(404).json({ error: "Atendimento não encontrado" });
+    }
+
+    res.json(atendimento);
+  } catch (err) {
+    console.error("Erro ao buscar atendimento:", err);
+    res.status(500).json({ error: "Erro interno ao buscar atendimento" });
+  }
+});
 
 
 //  FEEDBACK DOS AGENDAMENTOS
