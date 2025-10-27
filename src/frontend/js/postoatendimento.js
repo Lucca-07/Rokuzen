@@ -171,14 +171,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                     });
 
                     const result = await response.json();
-                    console.log("🟢 Resultado atualização:", result);
+                    console.log(" Resultado atualização:", result);
                 }
 
                 // Alerta quando salvar
                 alert("Status alterado com sucesso");
                 popup.parentElement.style.display = "none";
             } catch (error) {
-                console.error("❌ Erro ao atualizar status:", error);
+                console.error(" Erro ao atualizar status:", error);
                 alert("Erro ao salvar as alterações!");
             }
         });

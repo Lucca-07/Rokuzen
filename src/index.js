@@ -205,7 +205,7 @@ app.post("/atualizarStatus", async (req, res) => {
 
         res.status(200).json({ msg: "Status atualizado com sucesso!" });
     } catch (error) {
-        console.error("❌ Erro ao atualizar status:", error);
+        console.error(" Erro ao atualizar status:", error);
         res.status(500).json({ msg: "Erro no servidor" });
     }
 });
