@@ -128,7 +128,7 @@ app.get("/api/terapeutas", async (req, res) => {
     // Busca todos os terapeutas ativos
     const terapeutas = await Colaboradores.find(
       { /* ... suas condições */ },
-      { nome_colaborador: 1, tipo_colaborador: 1, unidade_id: 1, imagem: 1 }
+      { nome_colaborador: 1, tipo_colaborador: 1, unidades_trabalha: 1, imagem: 1 }
     ).lean();
 
     // Coleta os IDs dos terapeutas

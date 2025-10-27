@@ -14,10 +14,10 @@ function formataSegundos(sec) {
 
     if (horas > 0) {
         // Formato H:MM:SS
-        return `${horas}:${minutos.toString().padStart(2,'0')}:${segundos.toString().padStart(2,'0')}`;
+        return `${horas}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
     } else {
         // Formato MM:SS
-        return `${minutos.toString().padStart(2,'0')}:${segundos.toString().padStart(2,'0')}`;
+        return `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
     }
 }
 
@@ -98,7 +98,7 @@ async function loadTimersFromDB() {
                     serverId: a._id,
                     nome_colaborador: a.nome_colaborador || "Desconhecido",
                     colaborador_id: a.colaborador_id,
-                    encerrado: false 
+                    encerrado: false
                 };
 
                 // Se o atendimento estava em andamento, inicia o cronômetro localmente
@@ -245,7 +245,7 @@ async function carregarTerapeutas() {
     const container = document.getElementById("listaTerapeutas");
     container.innerHTML = "Carregando...";
 
-    // FORÇA sincronização com o servidor antes de carregar
+    //  sincronização com o servidor antes de carregar
     await loadTimersFromDB();
 
     try {
@@ -291,12 +291,17 @@ async function carregarTerapeutas() {
             if (!state || !atendimentoAtivo) {
                 const card = document.createElement("div");
                 card.className = "card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2 mb-3";
+
+                const unidades = t.unidades_trabalha && t.unidades_trabalha.length > 0
+                    ? t.unidades_trabalha.join(', ') + '.'
+                    : 'Não informada.';
+
                 card.innerHTML = `
                     <div class="d-flex align-items-center flex-grow-1 gap-2">
-                       <img src="/frontend/img/account-outline.svg" class="avatar border">
+                        <img src="/api/colaboradores/${t._id}/imagem" class="avatar border">
                         <div class="d-flex flex-column">
                             <span class="fw-semibold text-dark">${t.nome_colaborador}</span>
-                            <small class="text-muted mb-0">Unidade: ${t.unidade_id || 'Não informada'}</small>
+                            <small class="text-muted mb-0">Unidade: ${unidades}</small>
                             <small class="text-muted">Tipo: ${t.tipo_colaborador}</small>
                         </div>
                     </div>
@@ -306,6 +311,7 @@ async function carregarTerapeutas() {
                         <button class="btn btn-outline-secondary btn-sm mt-2 px-3" disabled>Selecionar</button>
                     </div>
                 `;
+
                 container.appendChild(card);
                 return;
             }
@@ -313,23 +319,28 @@ async function carregarTerapeutas() {
             // Terapeuta COM atendimento ativo - USA O TEMPO SINCORNIZADO DO SERVIDOR
             const card = document.createElement("div");
             card.className = "card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2 mb-3";
+
+            const unidades = t.unidades_trabalha && t.unidades_trabalha.length > 0
+                ? t.unidades_trabalha.join(', ') + '.'
+                : 'Não informada.';
+
             card.innerHTML = `
-                <div class="d-flex align-items-center flex-grow-1 gap-2">
-                    <img src="/frontend/img/account-outline.svg" class="avatar border">
-                    <div class="d-flex flex-column">
-                        <span class="fw-semibold text-dark">${t.nome_colaborador}</span>
-                        <small class="text-muted mb-0">Unidade: ${t.unidade_id || 'Não informada'}</small>
-                        <small class="text-muted">Tipo: ${t.tipo_colaborador}</small>
-                    </div>
-                </div>
-                <div class="text-end flex-shrink-0">
-                    <div class="fw-semibold text-secondary small">Timer:</div>
-                    <div class="fw-bold fs-5 ${state.pausado ? 'text-secondary' : 'text-success'}" id="timer-display-${tid}">
-                        ${formataSegundos(state.tempo)}
-                    </div>
-                    <button class="btn btn-success btn-sm mt-2 px-3" id="select-${tid}">Selecionar</button>
-                </div>
-            `;
+    <div class="d-flex align-items-center flex-grow-1 gap-2">
+        <img src="/api/colaboradores/${t._id}/imagem" class="avatar border">
+        <div class="d-flex flex-column">
+            <span class="fw-semibold text-dark">${t.nome_colaborador}</span>
+            <small class="text-muted mb-0">Unidade: ${unidades}</small>
+            <small class="text-muted">Tipo: ${t.tipo_colaborador}</small>
+        </div>
+    </div>
+    <div class="text-end flex-shrink-0">
+        <div class="fw-semibold text-secondary small">Timer:</div>
+        <div class="fw-bold fs-5 ${state.pausado ? 'text-secondary' : 'text-success'}" id="timer-display-${tid}">
+            ${formataSegundos(state.tempo)}
+        </div>
+        <button class="btn btn-success btn-sm mt-2 px-3" id="select-${tid}">Selecionar</button>
+    </div>
+`;
 
             container.appendChild(card);
 
@@ -524,7 +535,7 @@ async function carregarAgendamentos() {
         agendamentos.sort((a, b) => new Date(a.inicio_atendimento) - new Date(b.inicio_atendimento));
         agendamentos.sort((a, b) => {
             if (a.encerrado !== b.encerrado) {
-                return a.encerrado ? 1 : -1; 
+                return a.encerrado ? 1 : -1;
             }
             return new Date(a.inicio_atendimento) - new Date(b.inicio_atendimento);
         });
@@ -665,12 +676,10 @@ document.getElementById("confirmarEncerramento").addEventListener("click", async
     const fbNomeEl = document.getElementById("fb-nomeTerapeuta");
     const fbHorarioEl = document.getElementById("fb-horarioSessao");
 
-    // Obtém o estado do timer
     const state = Object.values(window.__timers__ || {}).find(
         t => t.serverId === window.sessaoEncerrarId
     );
 
-    // Nome do colaborador
     if (state && state.nome_colaborador) {
         fbNomeEl.textContent = `👤 ${state.nome_colaborador}`;
     } else {
@@ -684,28 +693,14 @@ document.getElementById("confirmarEncerramento").addEventListener("click", async
         }
     }
 
-    // Buscando informações reais do atendimento
-    try {
-    const res = await fetch(`/api/atendimentos/${window.sessaoEncerrarId}`);
-    const atendimento = await res.json();
-
-    const inicio = new Date(atendimento.inicio_atendimento);
-    const fim = atendimento.fim_real
-        ? new Date(atendimento.fim_real)
-        : new Date(atendimento.fim_atendimento);
-
-    // Formatação para horário local (Brasil)
-    const horas = String(fim.getHours()).padStart(2, '0');
-    const minutos = String(fim.getMinutes()).padStart(2, '0');
-    const segundos = String(fim.getSeconds()).padStart(2, '0');
+    // Horário real do encerramento
+    const agora = new Date();
+    const horas = String(agora.getHours()).padStart(2, '0');
+    const minutos = String(agora.getMinutes()).padStart(2, '0');
+    const segundos = String(agora.getSeconds()).padStart(2, '0');
 
     fbHorarioEl.textContent = `⏰ ${horas}:${minutos}:${segundos}`;
-} catch (err) {
-    console.error("Erro ao buscar atendimento:", err);
-    fbHorarioEl.textContent = `⏰ 00:00:00`;
-}
 });
-
 
 
 // Salvar feedback e encerrar sessão
