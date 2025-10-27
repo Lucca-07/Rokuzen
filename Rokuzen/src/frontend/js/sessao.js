@@ -522,6 +522,12 @@ async function carregarAgendamentos() {
 
         // Ordena do mais cedo para o mais tarde
         agendamentos.sort((a, b) => new Date(a.inicio_atendimento) - new Date(b.inicio_atendimento));
+        agendamentos.sort((a, b) => {
+            if (a.encerrado !== b.encerrado) {
+                return a.encerrado ? 1 : -1; 
+            }
+            return new Date(a.inicio_atendimento) - new Date(b.inicio_atendimento);
+        });
 
         agendamentos.forEach(a => {
             const inicioISO = a.inicio_atendimento;
