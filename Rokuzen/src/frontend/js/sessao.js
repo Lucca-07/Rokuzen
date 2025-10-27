@@ -98,7 +98,7 @@ async function loadTimersFromDB() {
                     serverId: a._id,
                     nome_colaborador: a.nome_colaborador || "Desconhecido",
                     colaborador_id: a.colaborador_id,
-                    encerrado: false // ✅ adiciona flag inicial
+                    encerrado: false 
                 };
 
                 // Se o atendimento estava em andamento, inicia o cronômetro localmente
@@ -486,10 +486,11 @@ if (btnAbrirTerapeuta) {
 
 // id 
 const id = localStorage.getItem("idUser");
+const perfis = localStorage.getItem("perfis_usuario"); // ex: "Master" ou "Terapeuta"
+const tipoUser = localStorage.getItem("tipoUser"); // ex: "admin"
 
+// Mostra botão de abrir modal SelecionarTerapeuta só se for admin
 document.addEventListener("DOMContentLoaded", () => {
-    // mostra o botão de abrir modal SelecionarTerapeuta só se for admin
-    const tipoUser = localStorage.getItem("tipoUser");
     const btnAbrirModal = document.getElementById("btnAbrirModal");
     if (tipoUser === "admin" && btnAbrirModal) {
         btnAbrirModal.classList.remove("d-none");
@@ -497,16 +498,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // carrega timers do banco uma vez na inicialização
     loadTimersFromDB().then(() => {
+        carregarAgendamentos();
         carregarTerapeutas();
     });
 });
 
-// Função para carregar agendamentos do dia para o terapeuta atual
+// Função para carregar agendamentos do dia
 async function carregarAgendamentos() {
-    if (!id) return alert("ID do terapeuta não encontrado!");
+    if (!id) return alert("ID do usuário não encontrado!");
 
     try {
-        const resposta = await fetch(`/api/agendamentos?id=${id}`);
+        const query = `idUser=${id}&perfis_usuario=${encodeURIComponent(perfis)}`;
+        const resposta = await fetch(`/api/agendamentos?${query}`);
         const agendamentos = await resposta.json();
 
         const container = document.getElementById("agendamentos");
@@ -521,20 +524,27 @@ async function carregarAgendamentos() {
         agendamentos.sort((a, b) => new Date(a.inicio_atendimento) - new Date(b.inicio_atendimento));
 
         agendamentos.forEach(a => {
-            // Pega a string exata do banco
-            const inicioISO = a.inicio_atendimento; // ex: "2025-10-26T19:00:00.000+00:00"
+            const inicioISO = a.inicio_atendimento;
             const fimISO = a.fim_atendimento;
-
-            // Extrai apenas hora e minuto da string ISO
-            const horaFormatada = inicioISO.slice(11, 16); // pega "HH:MM"
+            const horaFormatada = inicioISO.slice(11, 16);
             const tempoSegundos = Math.round((new Date(fimISO) - new Date(inicioISO)) / 1000);
 
             const bloco = document.createElement("div");
             bloco.classList.add("card", "card-agendamento", "p-3", "mb-2", "shadow-sm");
             bloco.dataset.serverId = a._id;
-
-            // Cor de fundo: verde se concluído
             bloco.style.backgroundColor = a.encerrado ? "#d4edda" : "#ffffff";
+
+            // Botão Selecionar só aparece se a sessão NÃO estiver encerrada
+            const btnSelecionarHTML = (!a.encerrado) ? `
+                <button class="btn btn-success btn-sm" 
+                    onclick="selecionarAgendamento(
+                        '${a._id}', 
+                        ${tempoSegundos}, 
+                        '${a.colaborador}', 
+                        '${a.colaborador_id || ''}'
+                    )">
+                    Selecionar
+                </button>` : "";
 
             bloco.innerHTML = `
 <div class="d-flex justify-content-between align-items-start">
@@ -544,29 +554,18 @@ async function carregarAgendamentos() {
         <small class="text-muted d-block">Duração: ${Math.round(tempoSegundos / 60)} min</small>
     </div>
     <div class="ms-3">
-        <button class="btn btn-success btn-sm" 
-            onclick="selecionarAgendamento(
-                '${a._id}', 
-                ${tempoSegundos}, 
-                '${a.colaborador}', 
-                '${a.colaborador_id || ''}'
-            )">
-            Selecionar
-        </button>
+        ${btnSelecionarHTML}
     </div>
 </div>
 <div id="timer-${a._id}" class="fs-5 fw-bold mt-2 text-success"></div>
 `;
 
-            // Se já estiver encerrado, adiciona badge e esconde botão
+            // Se a sessão estiver encerrada, adiciona badge "Concluída"
             if (a.encerrado) {
                 const status = document.createElement("span");
                 status.className = "badge bg-success mt-2";
                 status.textContent = "Concluída";
                 bloco.appendChild(status);
-
-                const btnSelecionar = bloco.querySelector("button");
-                if (btnSelecionar) btnSelecionar.style.display = "none";
             }
 
             container.appendChild(bloco);

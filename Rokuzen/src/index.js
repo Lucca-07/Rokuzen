@@ -4,7 +4,6 @@ import path from "path";
 import { fileURLToPath } from "node:url";
 import fs from "fs";
 import mongoose from "mongoose";
-
 import connectDB from "./modules/connect.js";
 import recuperarSenha from "./modules/recuperarSenha.js";
 import Colaboradores from "./models/Colaboradores.js";
@@ -258,7 +257,6 @@ app.delete("/api/atendimentos/:id", async (req, res) => {
   }
 });
 
-// Agendamentos do dia (mantendo sessões encerradas)
 app.get("/api/agendamentos", async (req, res) => {
   try {
     const hoje = new Date();
@@ -266,13 +264,23 @@ app.get("/api/agendamentos", async (req, res) => {
     const amanha = new Date(hoje);
     amanha.setDate(hoje.getDate() + 1);
 
-    const filtro = {
+    // Pegando dados simulados do localStorage (no front você envia via headers ou query)
+    const idUser = req.query.idUser; // ou via header
+    const perfisUsuario = req.query.perfis_usuario?.split(",") || [];
+
+    let filtro = {
       inicio_atendimento: { $gte: hoje, $lt: amanha },
     };
 
+    // Se NÃO tiver perfil Master/Gerente/Recepcionista, só vê os próprios
+    const temAcessoTotal = perfisUsuario.some(p => ["Master", "Gerente", "Recepcionista"].includes(p));
+    if (!temAcessoTotal) {
+      filtro.colaborador_id = idUser;
+    }
+
     const agendamentos = await Atendimentos.find(filtro)
       .populate("colaborador_id", "nome_colaborador")
-      .sort({ inicio_atendimento: 1 }) // Ordena do mais cedo para o mais tarde
+      .sort({ inicio_atendimento: 1 })
       .lean();
 
     const dados = agendamentos.map(a => ({
@@ -280,12 +288,12 @@ app.get("/api/agendamentos", async (req, res) => {
       colaborador: a.colaborador_id?.nome_colaborador || "Desconhecido",
       colaborador_id: a.colaborador_id?._id || null,
       tipo: a.tipo_colaborador || "Serviço",
-      inicio_atendimento: a.inicio_atendimento, // envia exatamente do banco
-      fim_atendimento: a.fim_atendimento,       // envia exatamente do banco
+      inicio_atendimento: a.inicio_atendimento, 
+      fim_atendimento: a.fim_atendimento,      
       tempo: Math.round((new Date(a.fim_atendimento) - new Date(a.inicio_atendimento)) / 60000),
       observacao: a.observacao_cliente || "-",
       em_andamento: !!a.em_andamento,
-      encerrado: !!a.encerrado // usa valor real do banco
+      encerrado: !!a.encerrado
     }));
 
     res.json(dados);
@@ -415,9 +423,6 @@ app.put("/api/atendimentos/:id/encerrar", async (req, res) => {
     res.status(500).json({ error: "Erro ao encerrar atendimento" });
   }
 });
-
-
-
 
 // --- INICIA SERVIDOR ---
 app.listen(port, () => {
