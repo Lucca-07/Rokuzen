@@ -58,7 +58,15 @@
     </div>
 
     <main class="josefin-sans">
-        <div id="selectUsuario" class="container-lg w-100 mt-2 d-flex align-items-center" style="height: 75px;">
+        <div id="selectUsuario" class="container-lg w-100 mt-2 d-flex align-items-center flex-column" style="height: 75px;">
+            <div class="row justify-content-center w-100 position-absolute">
+                <div class="col-md-8">
+                    <div class="alert alert-success alert-dismissible text-center d-none">
+                        Colaborador criado com sucesso
+                        <button type="button" class="btn-close"></button>
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-12">
                     <select name="usuarioselect" id="usuarioselect" class="p-2 fs-4" style="cursor: pointer;">
