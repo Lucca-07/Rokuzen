@@ -83,6 +83,7 @@
 }
 
 .popup {
+    position: relative;
     background: #fff;
     border-radius: 20px;
     padding: 32px;
@@ -213,4 +214,21 @@
 }
 .btn:active {
     transform: translateY(1px);
+}
+
+.fechar-popup {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.fechar-popup:hover {
+    color: #ff4d4d;
 }
