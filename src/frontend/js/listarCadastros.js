@@ -1,3 +1,39 @@
+// Função para compressão de imagem
+function compressImage(file, maxSize = 800, quality = 0.7) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const img = new Image();
+            img.onload = function () {
+                let width = img.width;
+                let height = img.height;
+                if (width > height) {
+                    if (width > maxSize) {
+                        height = Math.round((height * maxSize) / width);
+                        width = maxSize;
+                    }
+                } else {
+                    if (height > maxSize) {
+                        width = Math.round((width * maxSize) / height);
+                        height = maxSize;
+                    }
+                }
+                const canvas = document.createElement("canvas");
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+                const dataUrl = canvas.toDataURL("image/jpeg", quality);
+                resolve(dataUrl);
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
 async function listarColaboradores() {
     const main = document.getElementById("main");
     main.innerHTML = "";
@@ -89,9 +125,8 @@ async function popupEdit(id) {
                 id: id,
             }),
         });
-
         const data = await response.json();
-        let { nome, email, perfis, unidades } = data;
+        let { nome, email, perfis, unidades, imagem } = data;
         if (perfis[1] == null) {
             perfis = perfis[0];
         } else {
@@ -111,9 +146,13 @@ async function popupEdit(id) {
             <div>
                     <button type="button" class="btn-close" aria-label="close" data-bs-dismiss="button" onclick="document.getElementById('editar').remove(); document.getElementById('overlay').remove();"></button>
                 </div>
-            <div class="col-12 col-lg-3 d-flex align-self-center align-items-center justify-content-center h-50">
-                <img src="/frontend/img/account-outline.svg" alt=""
-                    style="border-radius: 25px; border: 1px solid black; height: 100px; width: 100px;">
+            <div class="col-12 col-lg-3 d-flex align-self-center align-items-center justify-content-center h-50 flex-column">
+                <img id="previewImagem" src="${
+                    imagem || "/frontend/img/account-outline.svg"
+                }" alt=""
+                    style="border-radius: 25px; border: 1px solid black; height: 100px; width: 100px; object-fit: cover;">
+                    <input type="file" name="imagemUsuario" class="d-none" id="imagemUsuarioEdit" accept="image/*">
+                    <label for="imagemUsuarioEdit" class="btn btn-outline-success mt-2">Selecionar Imagem</label>
             </div>
             <div class="col-12 col-lg-9 d-flex align-items-center justify-content-center h-50 text-center gap-4">
                 <div class="w-50 d-flex flex-column align-items-center justify-content-center mb-3 mb-md-0 text-center">
@@ -177,6 +216,27 @@ async function popupEdit(id) {
             document.querySelectorAll("input[name='unidades']:checked")
         ).map((input) => input.value);
 
+        // Configurar preview de imagem
+        const imagemInput = document.getElementById("imagemUsuarioEdit");
+        const previewImg = document.getElementById("previewImagem");
+
+        // Inicializar o dataset com a imagem existente se houver
+        if (imagem) {
+            imagemInput.dataset.preview = imagem;
+        }
+
+        imagemInput.addEventListener("change", async (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            try {
+                const compressed = await compressImage(file, 800, 0.7);
+                previewImg.src = compressed;
+                imagemInput.dataset.preview = compressed;
+            } catch (err) {
+                console.error("Erro ao processar imagem:", err);
+            }
+        });
+
         document
             .getElementById("salvarEdicaoColaborador")
             .addEventListener("click", async () => {
@@ -193,12 +253,21 @@ async function popupEdit(id) {
                         )
                     ).map((input) => input.value);
 
+                    // Pega a imagem comprimida do dataset se existir
+                    const imagemInput =
+                        document.getElementById("imagemUsuarioEdit");
+                    const imagemBase64 =
+                        imagemInput && imagemInput.dataset.preview
+                            ? imagemInput.dataset.preview
+                            : null;
+
                     const body = {
                         id: id,
                         nome: nomeinput,
                         email: emailinput,
                         perfis: novosPerfis,
                         unidades: novasUnidades,
+                        imagem: imagemBase64,
                     };
 
                     const response = await fetch("/api/user/update", {
@@ -213,10 +282,24 @@ async function popupEdit(id) {
                             result.msg || "Erro ao atualizar usuário"
                         );
                     }
-
-                    console.log("Usuário atualizado:", result);
                     document.getElementById("editar").remove(); // fecha popup
                     listarColaboradores(); // atualizar lista
+                    setTimeout(() => {
+                        document
+                            .getElementById("alertEdit")
+                            .classList.add("show");
+                        document
+                            .getElementById("alertEdit")
+                            .classList.remove("d-none");
+                        setTimeout(() => {
+                            document
+                                .getElementById("alertEdit")
+                                .classList.remove("show");
+                            document
+                                .getElementById("alertEdit")
+                                .classList.add("d-none");
+                        }, 2500);
+                    }, 500);
                 } catch (err) {
                     console.error("Erro ao salvar alterações:", err);
                 }
@@ -254,8 +337,24 @@ async function deleteColaborador(id) {
         const result = await response.json();
 
         if (response.ok) {
-            alert(result.msg);
+            
             listarColaboradores(); // atualiza a lista na tela
+            setTimeout(() => {
+                        document
+                            .getElementById("alertDel")
+                            .classList.add("show");
+                        document
+                            .getElementById("alertDel")
+                            .classList.remove("d-none");
+                        setTimeout(() => {
+                            document
+                                .getElementById("alertDel")
+                                .classList.remove("show");
+                            document
+                                .getElementById("alertDel")
+                                .classList.add("d-none");
+                        }, 2500);
+                    }, 500);
         } else {
             alert(result.msg || "Erro ao deletar usuário");
         }

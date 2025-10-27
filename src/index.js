@@ -43,6 +43,8 @@ app.get("/cadastrar/:id", async (req, res) => {
 });
 // Rota para a Página de Cadastro
 app.get("/user/listar/", async (req, res) => {
+    const id = req.params.id;
+    if (!id) return res.redirect("/");
     res.sendFile(path.join(dirname, "frontend", "listarCadastros.html"));
 });
 // Rota da página de inicio
@@ -145,9 +147,10 @@ app.post("/auth/user/register", async (req, res) => {
             .json({ criado: false, msg: "A senha é obrigatória!" });
     }
     if (pass.length < 8) {
-        return res
-            .status(422)
-            .json({ criado: false, msg: "A senha deve ter pelo menos 8 caracteres!" });
+        return res.status(422).json({
+            criado: false,
+            msg: "A senha deve ter pelo menos 8 caracteres!",
+        });
     }
     if (perfis_usuario[0] == null) {
         return res.status(422).json({
@@ -414,6 +417,7 @@ app.post("/api/user/edit", async (req, res) => {
             email: user.login.email,
             perfis: user.perfis_usuario,
             unidades: user.unidades_trabalha,
+            imagem: user.imagem,
         });
     } catch (error) {
         console.error(error);
@@ -421,7 +425,7 @@ app.post("/api/user/edit", async (req, res) => {
     }
 });
 app.put("/api/user/update", async (req, res) => {
-    const { id, nome, email, perfis, unidades } = req.body;
+    const { id, nome, email, perfis, unidades, imagem } = req.body;
 
     if (!id) {
         return res.status(400).json({ msg: "ID do usuário é obrigatório" });
@@ -441,6 +445,7 @@ app.put("/api/user/update", async (req, res) => {
                 "login.email": email,
                 perfis_usuario: perfis,
                 unidades_trabalha: unidades,
+                imagem: imagem,
             },
             { new: true } // retorna o documento atualizado
         );
