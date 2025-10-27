@@ -133,26 +133,27 @@ async function salvarColaborador(event) {
     event.preventDefault();
 
     const nome = document.getElementById("nomeinput").value;
-    const email = document.getElementById("emailinput").value;
-    const senha = document.getElementById("senhainput").value;
+    let email = document.getElementById("emailinput").value;
+    let senha = document.getElementById("senhainput").value;
     const cargo = document.getElementById("cargoselect");
-
     let tipo_colaborador = "user";
     let setor = null;
-
-    const cargoSelecionado = cargo.options[cargo.selectedIndex].text;
-
+    let cargoSelecionado = cargo.options[cargo.selectedIndex].text;
+    if (cargoSelecionado === "Selecionar:") {
+        cargoSelecionado = null;
+    }
     if (cargoSelecionado === "Gerente") {
         tipo_colaborador = "admin";
         const setorSelect = document.getElementById("setorgerente");
         setor = setorSelect.options[setorSelect.selectedIndex].text;
     }
-
     const checkboxes = document.querySelectorAll(
         "input[name='unidades']:checked"
     );
-    const unidadesTrabalha = Array.from(checkboxes).map((cb) => cb.value);
-
+    let unidadesTrabalha = Array.from(checkboxes).map((cb) => cb.value);
+    if (!unidadesTrabalha[0]) {
+        unidadesTrabalha = null;
+    }
     // pega imagem (preview) se existir
     const imagemInputEl = document.getElementById("imagemUsuario");
     const imagemPreviewBase64 =
@@ -176,7 +177,37 @@ async function salvarColaborador(event) {
         });
 
         const data = await response.json();
-        alert(data.msg);
+        if (data.msg !== "Usuário criado com sucesso!") {
+            setTimeout(() => {
+                document.getElementById("alertErro").classList.add("show");
+                document.getElementById("alertErro").classList.remove("d-none");
+                document.getElementById("pAlertErro").innerHTML = data.msg;
+                setTimeout(() => {
+                    document
+                        .getElementById("alertErro")
+                        .classList.remove("show");
+                    document
+                        .getElementById("alertErro")
+                        .classList.add("d-none");
+                }, 2500);
+            }, 500);
+        } else {
+            setTimeout(() => {
+                document.getElementById("alertSucesso").classList.add("show");
+                document
+                    .getElementById("alertSucesso")
+                    .classList.remove("d-none");
+                document.getElementById("pAlertSucesso").innerHTML = data.msg;
+                setTimeout(() => {
+                    document
+                        .getElementById("alertSucesso")
+                        .classList.remove("show");
+                    document
+                        .getElementById("alertSucesso")
+                        .classList.add("d-none");
+                }, 2500);
+            }, 500);
+        }
     } catch (error) {
         console.error("Erro:", error);
         alert("Erro ao tentar salvar colaborador.");
@@ -186,9 +217,9 @@ async function salvarCliente(event) {
     event.preventDefault();
 
     const nome = document.getElementById("nomeinput2").value;
-    const email = document.getElementById("emailinput2").value;
-    const tel = document.getElementById("telinput2").value;
-    const nascto = document.getElementById("nasctoinput").value;
+    let email = document.getElementById("emailinput2").value;
+    let tel = document.getElementById("telinput2").value;
+    let nascto = document.getElementById("nasctoinput").value;
     const respostasSaude = [
         document.getElementById("pressao").checked,
         document.getElementById("gravida").checked,
@@ -211,7 +242,37 @@ async function salvarCliente(event) {
         });
 
         const data = await response.json();
-        alert(data.msg);
+        if (data.msg !== "Cliente criado com sucesso!") {
+            setTimeout(() => {
+                document.getElementById("alertErro").classList.add("show");
+                document.getElementById("alertErro").classList.remove("d-none");
+                document.getElementById("pAlertErro").innerHTML = data.msg;
+                setTimeout(() => {
+                    document
+                        .getElementById("alertErro")
+                        .classList.remove("show");
+                    document
+                        .getElementById("alertErro")
+                        .classList.add("d-none");
+                }, 2500);
+            }, 500);
+        } else {
+            setTimeout(() => {
+                document.getElementById("alertSucesso").classList.add("show");
+                document
+                    .getElementById("alertSucesso")
+                    .classList.remove("d-none");
+                document.getElementById("pAlertSucesso").innerHTML = data.msg;
+                setTimeout(() => {
+                    document
+                        .getElementById("alertSucesso")
+                        .classList.remove("show");
+                    document
+                        .getElementById("alertSucesso")
+                        .classList.add("d-none");
+                }, 2500);
+            }, 500);
+        }
     } catch (error) {
         console.error("Erro:", error);
         alert("Erro ao tentar salvar cliente.");

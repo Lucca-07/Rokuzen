@@ -127,22 +127,38 @@ app.post("/auth/user/register", async (req, res) => {
     if (!nome_colaborador) {
         return res
             .status(422)
-            .json({ criado: false, msg: "O nome é obrigatório" });
+            .json({ criado: false, msg: "O nome é obrigatório!" });
     }
     if (!email) {
         return res
             .status(422)
-            .json({ criado: false, msg: "O email é obrigatório" });
+            .json({ criado: false, msg: "O email é obrigatório!" });
+    }
+    if (!email.includes("@")) {
+        return res
+            .status(422)
+            .json({ criado: false, msg: "Insira um email válido!" });
     }
     if (!pass) {
         return res
             .status(422)
-            .json({ criado: false, msg: "A senha é obrigatório" });
+            .json({ criado: false, msg: "A senha é obrigatória!" });
     }
-    if (!perfis_usuario) {
+    if (pass.length < 8) {
+        return res
+            .status(422)
+            .json({ criado: false, msg: "A senha deve ter pelo menos 8 caracteres!" });
+    }
+    if (perfis_usuario[0] == null) {
         return res.status(422).json({
             criado: false,
-            msg: "O usuário deve ter pelo menos 1 perfil",
+            msg: "O usuário deve ter pelo menos 1 cargo!",
+        });
+    }
+    if (unidades_trabalha == null) {
+        return res.status(422).json({
+            criado: false,
+            msg: "O usuário deve ter pelo menos 1 unidade!",
         });
     }
     // Checa se ja existe um user com o email
@@ -197,6 +213,11 @@ app.post("/auth/client/register", async (req, res) => {
         return res
             .status(422)
             .json({ criado: false, msg: "O email é obrigatório" });
+    }
+    if (!email_cliente.includes("@")) {
+        return res
+            .status(422)
+            .json({ criado: false, msg: "Insira um email válido!" });
     }
     if (!telefone_cliente) {
         return res

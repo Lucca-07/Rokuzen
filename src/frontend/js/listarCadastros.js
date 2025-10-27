@@ -108,6 +108,9 @@ async function popupEdit(id) {
         style="border-radius: 20px;">
         <div class="cardtera row w-100 p-3 h-100 d-flex justify-content-center align-items-center"
             style="border-radius: 30px;">
+            <div>
+                    <button type="button" class="btn-close" aria-label="close" data-bs-dismiss="button" onclick="document.getElementById('editar').remove(); document.getElementById('overlay').remove();"></button>
+                </div>
             <div class="col-12 col-lg-3 d-flex align-self-center align-items-center justify-content-center h-50">
                 <img src="/frontend/img/account-outline.svg" alt=""
                     style="border-radius: 25px; border: 1px solid black; height: 100px; width: 100px;">

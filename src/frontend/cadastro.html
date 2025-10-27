@@ -58,7 +58,20 @@
     </div>
 
     <main class="josefin-sans">
-        <div id="selectUsuario" class="container-lg w-100 mt-2 d-flex align-items-center flex-column" style="height: 75px;">
+        <div class="row justify-content-center">
+            <div class="col-md-8 d-flex justify-content-center">
+                <div id="alertErro" class="alert alert-danger alert-dismissible fade position-absolute mt-2 d-none text-center" role="alert">
+                    <span id="pAlertErro" class="fs-3 px-3 text-center"></span>
+                </div>
+            </div>
+            <div class="col-md-8 d-flex justify-content-center">
+                <div id="alertSucesso" class="alert alert-success alert-dismissible fade position-absolute mt-2 d-none text-center" role="alert">
+                    <span id="pAlertSucesso" class="fs-3 px-3 text-center"></span>
+                </div>
+            </div>
+        </div>
+        <div id="selectUsuario" class="container-lg w-100 mt-3 d-flex align-items-center flex-column"
+            style="height: 75px;">
             <div class="row justify-content-center w-100 position-absolute">
                 <div class="col-md-8">
                     <div class="alert alert-success alert-dismissible text-center d-none">
@@ -77,7 +90,7 @@
             </div>
         </div>
         <div id="containerColaborador"
-            class="container-lg mt-2 bg-light d-flex p-4 border d-flex flex-column mb-5 card-cadastro"
+            class="container-lg bg-light d-flex p-4 border d-flex flex-column mb-5 card-cadastro"
             style="border-radius: 30px;">
             <form>
                 <div class="row align-content-start">
@@ -107,7 +120,7 @@
                         <label for="cargoinput" class="campos h-100 align-content-center">Cargo: </label>
                         <select class="mx-2 align-self-center w-auto" id="cargoselect"
                             style="border-radius: 5px; cursor: pointer; height: 30px;">
-                            <option value="" disabled selected>Selecionar:</option>
+                            <option value="selecionar" disabled selected>Selecionar:</option>
                             <option value="master">Master</option>
                             <option value="gerente">Gerente</option>
                             <option value="recepcao">Recepção</option>
@@ -154,7 +167,7 @@
             </form>
         </div>
         <div id="containerCliente"
-            class="container-lg mt-2 bg-light d-flex p-4 border d-flex flex-column mb-5 d-none card-cadastro"
+            class="container-lg bg-light d-flex p-4 border d-flex flex-column mb-5 d-none card-cadastro"
             style="border-radius: 30px;">
             <div class="row align-content-start">
                 <div id="logo" class="col-12 d-flex justify-content-center mb-0 mb-md-3">
