@@ -25,22 +25,23 @@ const atendimentoSchema = new mongoose.Schema(
     inicio_atendimento: { type: Date, required: true },
     fim_atendimento: { type: Date, required: true },
     valor_servico: { type: Number, required: true },
-    observacao_cliente: { type: String, default: null }, 
+    observacao_cliente: { type: String, default: null },
     foi_marcado_online: { type: Boolean, default: true },
     pacote_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Pacotes",
       default: null,
     },
-  
+
     em_andamento: { type: Boolean, default: false },
     inicio_real: { type: Date, default: null },
     fim_real: { type: Date, default: null },
     tempoRestante: { type: Number },
+    encerrado: { type: Boolean, default: false },
   },
-  { 
+  {
     collection: "atendimentos",
-    timestamps: true 
+    timestamps: true,
   }
 );
 
