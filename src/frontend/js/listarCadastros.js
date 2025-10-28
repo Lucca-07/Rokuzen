@@ -48,14 +48,26 @@ async function listarColaboradores() {
 
         let contador = 1;
         users.forEach((user) => {
-            const nome = user.nome_colaborador; // nome correto do campo
-            let perfis = user.perfis_usuario; // nome correto do campo
-            if (perfis[1] == null) {
+            const nome = user.nome_colaborador;
+            let perfis = user.perfis_usuario;
+            console.log("Perfis antes:", perfis);
+            
+            // Garante que perfis é um array e remove valores vazios/null/undefined
+            perfis = Array.isArray(perfis) ? perfis.filter(p => p && p.trim()) : [];
+            
+            // Se não houver perfis válidos, mostra mensagem padrão
+            if (perfis.length === 0) {
+                perfis = "Sem perfil";
+            } 
+            // Se houver apenas um perfil, usa ele
+            else if (perfis.length === 1) {
                 perfis = perfis[0];
-            } else {
+            } 
+            // Se houver mais de um perfil, junta com vírgula
+            else {
                 perfis = perfis.join(", ");
             }
-            console.log(perfis);
+            console.log("Perfis depois:", perfis);
             // console.log(perfisOrganizados)
 
             const card = `
@@ -127,13 +139,7 @@ async function popupEdit(id) {
         });
         const data = await response.json();
         let { nome, email, perfis, unidades, imagem } = data;
-        if (perfis[1] == null) {
-            perfis = perfis[0];
-        } else {
-            perfis = perfis.join(", ");
-        }
 
-        console.log(data);
         if (!data) {
             console.log("Erro ao enviar o usuário ao front");
         }
@@ -162,8 +168,24 @@ async function popupEdit(id) {
                 <div class="w-50 d-flex flex-column align-items-center justify-content-center mb-3 mb-md-0 text-center">
                     <label for="email" class="fs-4">Email:</label>
                     <input id="email" type="text" class="fs-5 w-75 mb-2" value="${email}">
-                    <label for="cargos" class="fs-4">Cargos:</label>
-                    <input id="cargos" type="text" class="fs-5 w-75" value="${perfis}">
+                    <div>
+                        <label for="cargos" class="fs-4">Cargos:</label>
+                        <select class="mx-2 align-self-center w-auto" id="cargos"
+                            style="border-radius: 5px; cursor: pointer; height: 30px;">
+                            <option value="selecionar" disabled selected>Selecionar:</option>
+                            <option value="Master">Master</option>
+                            <option value="Gerente">Gerente</option>
+                            <option value="Recepção">Recepção</option>
+                            <option value="Terapeuta">Terapeuta</option>
+                        </select>
+                        <div id="setorcargo" class="d-none">
+                                <label for="setorgerente" class="campos h-100 align-content-center">Setor: </label>
+                                <select class="mx-2 align-self-center w-auto" id="setorgerente" style="border-radius: 5px; cursor: pointer; height: 30px;">
+                                    <option value="Recepção" selected>Recepção</option>
+                                    <option value="Terapeuta">Terapeuta</option>
+                                </select>
+                            </div>
+                    </div>
                 </div>
             </div>
             <div id="unidades"
@@ -202,19 +224,47 @@ async function popupEdit(id) {
 
         main.insertAdjacentHTML("beforeend", editpopup);
         main.insertAdjacentHTML("beforeend", overylay);
+
+        // Adiciona o event listener depois que os elementos existem no DOM
+        let setorcargo = document.getElementById("setorcargo");
+        let cargoselect = document.getElementById("cargos");
+        cargoselect.addEventListener("change", () => {
+            if (
+                cargoselect.options[cargoselect.selectedIndex].text ===
+                    "Gerente" ||
+                cargoselect.options[cargoselect.selectedIndex].text === "Master"
+            ) {
+                setorcargo.classList.remove("d-none"); // Mostra o setor
+            } else {
+                setorcargo.classList.add("d-none"); // Esconde o setor
+                setorgerente.value = null;
+                perfis[1] = null;
+            }
+        });
+
+        console.log(perfis);
+        for (let i = 0; i < cargoselect.options.length; i++) {
+            console.log(cargoselect.options.length);
+            console.log(cargoselect.options[i].text);
+            if (cargoselect.options[i].text == perfis[0]) {
+                cargoselect.selectedIndex = i;
+                if (
+                    cargoselect.options[i].text == "Gerente" ||
+                    cargoselect.options[i].text == "Master"
+                ) {
+                    const setorgerente =
+                        document.getElementById("setorgerente");
+                    setorgerente.value = perfis[1];
+                    setorcargo.classList.remove("d-none");
+                }
+            }
+        }
+
         const unidadesdiv = document.querySelector(`#unidadesdiv`);
         unidades.forEach((unidade) => {
             const checkbox = unidadesdiv.querySelector(`#${unidade}`);
             checkbox.checked = true;
         });
-
-        const nomeinput = document.getElementById("nome").value;
-        const emailinput = document.getElementById("email").value;
-        const perfisinput = document.getElementById("cargos").value;
-        const novosPerfis = perfis.split(", ");
-        const novasUnidades = Array.from(
-            document.querySelectorAll("input[name='unidades']:checked")
-        ).map((input) => input.value);
 
         // Configurar preview de imagem
         const imagemInput = document.getElementById("imagemUsuarioEdit");
@@ -243,16 +293,15 @@ async function popupEdit(id) {
                 try {
                     const nomeinput = document.getElementById("nome").value;
                     const emailinput = document.getElementById("email").value;
-                    const perfisinput = document.getElementById("cargos").value;
-                    const novosPerfis = perfisinput
-                        .split(",")
-                        .map((p) => p.trim());
+                    const cargoinput = document.getElementById("cargos").value;
+                    const setorinput =
+                        document.getElementById("setorgerente").value;
+                    const novosPerfis = Array(cargoinput, setorinput);
                     const novasUnidades = Array.from(
                         document.querySelectorAll(
                             "input[name='unidades']:checked"
                         )
                     ).map((input) => input.value);
-
                     // Pega a imagem comprimida do dataset se existir
                     const imagemInput =
                         document.getElementById("imagemUsuarioEdit");
@@ -337,24 +386,17 @@ async function deleteColaborador(id) {
         const result = await response.json();
 
         if (response.ok) {
-            
             listarColaboradores(); // atualiza a lista na tela
             setTimeout(() => {
-                        document
-                            .getElementById("alertDel")
-                            .classList.add("show");
-                        document
-                            .getElementById("alertDel")
-                            .classList.remove("d-none");
-                        setTimeout(() => {
-                            document
-                                .getElementById("alertDel")
-                                .classList.remove("show");
-                            document
-                                .getElementById("alertDel")
-                                .classList.add("d-none");
-                        }, 2500);
-                    }, 500);
+                document.getElementById("alertDel").classList.add("show");
+                document.getElementById("alertDel").classList.remove("d-none");
+                setTimeout(() => {
+                    document
+                        .getElementById("alertDel")
+                        .classList.remove("show");
+                    document.getElementById("alertDel").classList.add("d-none");
+                }, 2500);
+            }, 500);
         } else {
             alert(result.msg || "Erro ao deletar usuário");
         }

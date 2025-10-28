@@ -42,7 +42,7 @@ app.get("/cadastrar/:id", async (req, res) => {
     res.sendFile(path.join(dirname, "frontend", "cadastro.html"));
 });
 // Rota para a Página de Cadastro
-app.get("/user/listar/", async (req, res) => {
+app.get("/user/listar/:id", async (req, res) => {
     const id = req.params.id;
     if (!id) return res.redirect("/");
     res.sendFile(path.join(dirname, "frontend", "listarCadastros.html"));
