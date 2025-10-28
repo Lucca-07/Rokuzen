@@ -147,11 +147,6 @@ async function carregarEquipamentos(unidadeId, equipamentoAtualId = null) {
     '<option value="selecao">Carregando...</option>';
   selectEquipamento.disabled = true;
 
-  if (!unidadeId || unidadeId === "selecao") {
-    selectEquipamento.innerHTML =
-      '<option value="selecao">Selecione uma unidade primeiro</option>';
-    return;
-  }
 
   try {
     // Constrói a URL da API dinamicamente
@@ -187,21 +182,25 @@ async function carregarEquipamentos(unidadeId, equipamentoAtualId = null) {
   }
 }
 
-async function carregarOpcoesDoFormulario() {
+// SUBSTITUA PELA VERSÃO QUE ACEITA UM PARÂMETRO
+async function carregarOpcoesDoFormulario(unidadePredefinida = null) {
   const selectFuncionario = document.getElementById("funcionario");
   const selectServico = document.getElementById("tipo-trabalho");
   const selectUnidade = document.getElementById("unidade");
 
-  selectFuncionario.innerHTML =
-    '<option value="selecao">Selecione o colaborador</option>';
-  selectServico.innerHTML =
-    '<option value="selecao">Selecione o serviço</option>';
-  selectUnidade.innerHTML =
-    '<option value="selecao">Selecione a unidade</option>';
+  // Limpa tudo
+  selectFuncionario.innerHTML = '<option value="selecao">Selecione o colaborador</option>';
+  selectServico.innerHTML = '<option value="selecao">Selecione o serviço</option>';
+  selectUnidade.innerHTML = '<option value="selecao">Selecione a unidade</option>';
 
   try {
-    const responseColaboradores = await fetch("/api/colaboradores");
-    const colaboradores = await responseColaboradores.json();
+    // Busca colaboradores e serviços em paralelo
+    const [resColaboradores, resServicos] = await Promise.all([
+      fetch("/api/colaboradores"),
+      fetch("/api/servicos")
+    ]);
+
+    const colaboradores = await resColaboradores.json();
     colaboradores.forEach((colab) => {
       const option = document.createElement("option");
       option.value = colab._id;
@@ -209,8 +208,7 @@ async function carregarOpcoesDoFormulario() {
       selectFuncionario.appendChild(option);
     });
 
-    const responseServicos = await fetch("/api/servicos");
-    const servicos = await responseServicos.json();
+    const servicos = await resServicos.json();
     servicos.forEach((servico) => {
       const option = document.createElement("option");
       option.value = servico._id;
@@ -218,19 +216,74 @@ async function carregarOpcoesDoFormulario() {
       selectServico.appendChild(option);
     });
 
-    const responseUnidades = await fetch("/api/unidades");
-    const unidades = await responseUnidades.json();
-    unidades.forEach((unidade) => {
+    // LÓGICA DA UNIDADE ATUALIZADA
+    if (unidadePredefinida) {
+      // Se recebemos uma unidade, só adicionamos essa opção
       const option = document.createElement("option");
-      option.value = unidade._id;
-      option.textContent = unidade.nome_unidade;
+      option.value = unidadePredefinida._id;
+      option.textContent = unidadePredefinida.nome_unidade;
       selectUnidade.appendChild(option);
-    });
+    } else {
+      // Se não, busca todas (comportamento antigo)
+      const resUnidades = await fetch("/api/unidades");
+      const unidades = await resUnidades.json();
+      unidades.forEach((unidade) => {
+        const option = document.createElement("option");
+        option.value = unidade._id;
+        option.textContent = unidade.nome_unidade;
+        selectUnidade.appendChild(option);
+      });
+    }
   } catch (error) {
     console.error("Erro ao carregar opções do formulário:", error);
-    alert(
-      "Não foi possível carregar os dados para agendamento. Tente recarregar a página."
-    );
+    alert("Não foi possível carregar os dados para agendamento.");
+  }
+}
+
+async function inicializarFormularioEUnidade() {
+  const nomeUnidadeSalva = localStorage.getItem("unidade");
+
+  // CASO 1: Não há unidade no localStorage (o utilizador precisa de escolher)
+  if (!nomeUnidadeSalva) {
+    console.log("Nenhuma unidade no localStorage. Carregando formulário para seleção manual.");
+    // Carrega todos os formulários normalmente
+    await carregarOpcoesDoFormulario(); 
+    // E adiciona o listener para o utilizador poder escolher
+    document.getElementById("unidade").addEventListener("change", (evento) => {
+      carregarEquipamentos(evento.target.value);
+    });
+    return; // Termina a função aqui
+  }
+
+  // CASO 2: Encontrámos uma unidade no localStorage!
+  try {
+    console.log(`Unidade encontrada no localStorage: ${nomeUnidadeSalva}. A configurar automaticamente...`);
+    
+    // 1. PRIMEIRO: Busca os dados da unidade pelo nome
+    const response = await fetch(`/api/unidade-por-nome?nome=${encodeURIComponent(nomeUnidadeSalva)}`);
+    if (!response.ok) {
+      throw new Error("Unidade do localStorage não foi encontrada na base de dados.");
+    }
+    const unidade = await response.json();
+
+    // 2. SEGUNDO: Manda carregar os formulários, JÁ PASSANDO a unidade que encontrámos
+    await carregarOpcoesDoFormulario(unidade);
+
+    // 3. TERCEIRO: Define o valor do dropdown (que agora já tem a opção certa) e desativa-o
+    const selectUnidade = document.getElementById("unidade");
+    selectUnidade.value = unidade._id;
+    selectUnidade.disabled = true;
+
+    // 4. QUARTO E ÚLTIMO: Manda carregar os equipamentos para esta unidade
+    await carregarEquipamentos(unidade._id);
+    console.log("Configuração automática da unidade concluída com sucesso!");
+
+  } catch (error) {
+    console.error("Erro ao configurar unidade do localStorage:", error);
+    alert("A unidade guardada é inválida ou não foi encontrada. Por favor, verifique o nome no localStorage ou faça login novamente.");
+    localStorage.removeItem("unidade");
+    // Em caso de erro, carrega o formulário normal para seleção manual
+    await carregarOpcoesDoFormulario();
   }
 }
 
@@ -309,14 +362,18 @@ function adicionarListenersCelulas() {
     });
   });
 }
-function abrirModalCriacao(dataHoraKey) {
+async function abrirModalCriacao(dataHoraKey) {
   eventoEmEdicao = null;
+
+  const unidadeId = document.getElementById("unidade").value;
   formAgendamento.reset();
 
-  const selectEquipamento = document.getElementById("equipamento");
-  selectEquipamento.innerHTML =
-    '<option value="selecao">Selecione uma unidade primeiro</option>';
-  selectEquipamento.disabled = true;
+  await carregarEquipamentos(unidadeId);
+
+  // const selectEquipamento = document.getElementById("equipamento");
+  // selectEquipamento.innerHTML =
+  //   '<option value="selecao">Selecione uma unidade primeiro</option>';
+  // selectEquipamento.disabled = true;
 
   document.getElementById("horario-selecionado").textContent = new Date(
     dataHoraKey
@@ -376,14 +433,14 @@ formAgendamento.addEventListener("submit", async function (e) {
   const dadosParaEnviar = {
     colaborador_id: document.getElementById("funcionario").value,
     servico_id: document.getElementById("tipo-trabalho").value,
-    unidade_id: document.getElementById("unidade").value,
+    // unidade_id: document.getElementById("unidade").value,
     posto_id: document.getElementById("equipamento").value,
   };
 
   if (
     (dadosParaEnviar.colaborador_id === "selecao" ||
       dadosParaEnviar.servico_id === "selecao" ||
-      dadosParaEnviar.unidade_id === "selecao",
+      dadosParaEnviar.unidade_id === "selecao" ||
     dadosParaEnviar.posto_id === "selecao")
   ) {
     alert("Por favor, selecione todos os tópicos");
@@ -489,13 +546,14 @@ document.getElementById("btn-proximo").addEventListener("click", () => {
 
 document.addEventListener("DOMContentLoaded", () => {
   renderizarCalendario();
-  carregarOpcoesDoFormulario();
+  // Esta função agora orquestra todo o carregamento do formulário
+  inicializarFormularioEUnidade(); 
 });
 
-document.getElementById("unidade").addEventListener("change", (evento) => {
-  const unidadeId = evento.target.value;
-  carregarEquipamentos(unidadeId);
-});
+// document.getElementById("unidade").addEventListener("change", (evento) => {
+//   const unidadeId = evento.target.value;
+//   carregarEquipamentos(unidadeId);
+// });
 
 async function teste() {
   try {

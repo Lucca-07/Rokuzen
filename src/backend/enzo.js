@@ -184,6 +184,30 @@ app.get("/api/unidades", async (req, res) => {
   }
 });
 
+app.get("/api/unidade-por-nome", async (req, res) => {
+  const { nome } = req.query; // Recebe o nome via query parameter
+
+  if (!nome) {
+    return res
+      .status(400)
+      .json({ mensagem: "O nome da unidade é obrigatório." });
+  }
+
+  try {
+    // Procura no banco de dados pela unidade com o nome exato
+    const unidade = await Unidades.findOne({ nome_unidade: nome });
+
+    if (!unidade) {
+      return res.status(404).json({ mensagem: "Unidade não encontrada." });
+    }
+
+    // Retorna o objeto completo da unidade (que inclui o _id)
+    res.json(unidade);
+  } catch (error) {
+    console.error("Erro ao buscar unidade por nome:", error);
+    res.status(500).json({ mensagem: "Erro no servidor." });
+  }
+});
 app.get("/api/atendimentos", async (req, res) => {
   const { inicio, fim } = req.query;
 
