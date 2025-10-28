@@ -32,7 +32,11 @@ const atendimentoSchema = new mongoose.Schema(
       ref: "Pacotes",
       default: null,
     },
-
+    posto_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'PostosAtendimento', 
+      default: null
+    },
     em_andamento: { type: Boolean, default: false },
     inicio_real: { type: Date, default: null },
     fim_real: { type: Date, default: null },

@@ -17,7 +17,7 @@ import Colaboradores from "../models/Colaboradores.js";
 import Servicos from "../models/Servicos.js";
 import Atendimentos from "../models/Atendimentos.js";
 import Unidades from "../models/Unidades.js";
-
+import PostosAtendimento from "../models/PostosAtendimento.js";
 
 app.use(express.json());
 
@@ -108,6 +108,32 @@ app.post("/atualizarSenha", async (req, res) => {
   }
 });
 
+app.get("/api/postos", async (req, res) => {
+  // Agora também podemos receber 'incluir_posto_id'
+  const { unidade_id, status, incluir_posto_id } = req.query;
+
+  if (!unidade_id) {
+    return res.status(400).json({ mensagem: "O ID da unidade é obrigatório." });
+  }
+
+  try {
+    const filtro = { unidade_id: unidade_id };
+
+    // Lógica para incluir o posto atual E os disponíveis
+    if (status === "Disponível" && incluir_posto_id) {
+      filtro["$or"] = [{ status: "Disponível" }, { _id: incluir_posto_id }];
+    } else if (status) {
+      filtro.status = status;
+    }
+
+    const postos = await PostosAtendimento.find(filtro);
+    res.json(postos);
+  } catch (error) {
+    console.error("Erro ao buscar postos de atendimento:", error);
+    res.status(500).json({ mensagem: "Erro no servidor." });
+  }
+});
+
 // Rota da página de inicio
 app.get("/inicio", (req, res) => {
   res.sendFile(path.join(dirname, "frontend", "paginaInicio.html"));
@@ -125,7 +151,9 @@ app.get("/escala", (req, res) => {
 app.get("/api/colaboradores", async (req, res) => {
   try {
     // Usa .select("nome_colaborador") para buscar o campo correto
-    const colaboradores = await Colaboradores.find({ ativo: true }).select("nome_colaborador");
+    const colaboradores = await Colaboradores.find({ ativo: true }).select(
+      "nome_colaborador"
+    );
     res.json(colaboradores);
   } catch (error) {
     console.error("Erro ao buscar colaboradores:", error);
@@ -136,7 +164,9 @@ app.get("/api/colaboradores", async (req, res) => {
 // ROTA PARA BUSCAR TODOS OS SERVIÇOS
 app.get("/api/servicos", async (req, res) => {
   try {
-    const servicos = await Servicos.find({ ativo: true }).select("nome_servico");
+    const servicos = await Servicos.find({ ativo: true }).select(
+      "nome_servico"
+    );
     res.json(servicos);
   } catch (error) {
     console.error("Erro ao buscar serviços:", error);
@@ -146,7 +176,6 @@ app.get("/api/servicos", async (req, res) => {
 
 app.get("/api/unidades", async (req, res) => {
   try {
-    
     const unidades = await Unidades.find({}).select("nome_unidade");
     res.json(unidades);
   } catch (error) {
@@ -156,21 +185,23 @@ app.get("/api/unidades", async (req, res) => {
 });
 
 app.get("/api/atendimentos", async (req, res) => {
-  const { inicio, fim } = req.query; 
+  const { inicio, fim } = req.query;
 
   if (!inicio || !fim) {
-    return res.status(400).json({ mensagem: "As datas de início e fim são obrigatórias." });
+    return res
+      .status(400)
+      .json({ mensagem: "As datas de início e fim são obrigatórias." });
   }
 
   try {
     const atendimentos = await Atendimentos.find({
       inicio_atendimento: {
-        $gte: new Date(inicio), 
-        $lte: new Date(fim),     
+        $gte: new Date(inicio),
+        $lte: new Date(fim),
       },
     })
-    .populate("colaborador_id", "nome_colaborador") 
-    .populate("servico_id", "nome_servico");       
+      .populate("colaborador_id", "nome_colaborador")
+      .populate("servico_id", "nome_servico");
 
     res.json(atendimentos);
   } catch (error) {
@@ -191,10 +222,10 @@ app.put("/api/atendimentos/:id", async (req, res) => {
         servico_id,
         unidade_id,
       },
-      { new: true } 
+      { new: true }
     )
-    .populate("colaborador_id", "nome_colaborador") 
-    .populate("servico_id", "nome_servico");       
+      .populate("colaborador_id", "nome_colaborador")
+      .populate("servico_id", "nome_servico");
 
     if (!atendimentoAtualizado) {
       return res.status(404).json({ mensagem: "Agendamento não encontrado." });
@@ -211,25 +242,44 @@ app.put("/api/atendimentos/:id", async (req, res) => {
 });
 
 app.delete("/api/atendimentos/:id", async (req, res) => {
-  const { id } = req.params; 
+  const { id } = req.params;
 
   try {
-    const atendimentoExcluido = await Atendimentos.findByIdAndDelete(id);
+    // 1. Encontra o agendamento ANTES de apagar
+    const atendimento = await Atendimentos.findById(id);
 
-    if (!atendimentoExcluido) {
+    if (!atendimento) {
       return res.status(404).json({ mensagem: "Agendamento não encontrado." });
     }
 
-    res.json({ mensagem: "Agendamento excluído!" });
+    // 2. Se usava um posto, liberta-o
+    if (atendimento.posto_id) {
+      await PostosAtendimento.findByIdAndUpdate(atendimento.posto_id, {
+        status: "Disponivel",
+      });
+    }
+
+    // 3. Agora sim, apaga o agendamento
+    await Atendimentos.findByIdAndDelete(id);
+
+    res.json({ mensagem: "Agendamento excluído com sucesso!" });
   } catch (error) {
     console.error("Erro ao excluir agendamento:", error);
     res.status(500).json({ mensagem: "Erro no servidor." });
   }
 });
 
-
 app.post("/escala/atendimento", async (req, res) => {
-  const { dataHora, colaborador_id, servico_id, unidade_id, inicio_real, fim_real, tempo_restante } = req.body;
+  const {
+    dataHora,
+    colaborador_id,
+    servico_id,
+    unidade_id,
+    inicio_real,
+    fim_real,
+    tempo_restante,
+    posto_id,
+  } = req.body;
 
   try {
     const inicioAtendimento = new Date(dataHora + "Z");
@@ -237,9 +287,7 @@ app.post("/escala/atendimento", async (req, res) => {
     fimAtendimento.setMinutes(fimAtendimento.getMinutes() + 60);
 
     const novoAtendimento = new Atendimentos({
-      inicio_real,
-      fim_real,
-      tempo_restante,
+      posto_id,
       colaborador_id,
       servico_id,
       unidade_id,
@@ -247,33 +295,33 @@ app.post("/escala/atendimento", async (req, res) => {
       fim_atendimento: fimAtendimento,
       valor_servico: 53,
       cliente_id: null,
-      observacao_cliente: null,
+      observacao_cliente: ".", // Apenas a versão correta
       foi_marcado_online: true,
       pacote_id: null,
-      cliente_id: null,
-      observacao_cliente: ".",
-      foi_marcado_online: true,
-      pacote_id: null,
-      em_andamento: false,      
-      inicio_real: null,        
-      fim_real: null,           
+      em_andamento: false,
+      inicio_real: null,
+      fim_real: null,
       tempoRestante: 120,
-      encerrado: false      
+      encerrado: false,
     });
 
     await novoAtendimento.save();
 
-    
+    if (posto_id) {
+      await PostosAtendimento.findByIdAndUpdate(posto_id, {
+        status: "Ocupado",
+      });
+    }
+
     await novoAtendimento.populate([
-        { path: 'colaborador_id', select: 'nome_colaborador' },
-        { path: 'servico_id', select: 'nome_servico' }
+      { path: "colaborador_id", select: "nome_colaborador" },
+      { path: "servico_id", select: "nome_servico" },
     ]);
 
     res.status(201).json({
       mensagem: "Agendamento salvo com sucesso!",
-      atendimento: novoAtendimento, 
+      atendimento: novoAtendimento,
     });
-
   } catch (error) {
     console.error("Erro ao salvar agendamento:", error);
     res.status(500).json({

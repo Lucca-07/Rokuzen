@@ -1,5 +1,5 @@
-let dataAtual = new Date(); 
-let eventos = []; 
+let dataAtual = new Date();
+let eventos = [];
 let celulaSelecionada = null;
 let eventoEmEdicao = null;
 
@@ -19,7 +19,7 @@ const btnExcluir = document.getElementById("btn-excluir");
 const modalAlterElementosPopUp = document.querySelector(".modal-conteudo");
 
 function getInicioSemana(data) {
-  const dia = data.getDay(); 
+  const dia = data.getDay();
   const inicio = new Date(data);
   inicio.setDate(data.getDate() - dia);
   inicio.setHours(0, 0, 0, 0);
@@ -41,32 +41,39 @@ async function carregarEventosDaSemana() {
   const fimISO = fimSemana.toISOString();
 
   try {
-    const response = await fetch(`/api/atendimentos?inicio=${inicioISO}&fim=${fimISO}`);
+    const response = await fetch(
+      `/api/atendimentos?inicio=${inicioISO}&fim=${fimISO}`
+    );
     if (!response.ok) {
       throw new Error("Falha ao buscar agendamentos.");
     }
     const eventosDoServidor = await response.json();
-    
-    
-    eventos = eventosDoServidor.map(evento => {
-      
-      const nomeColaborador = evento.colaborador_id ? evento.colaborador_id.nome_colaborador : "N/D";
-      const idColaborador = evento.colaborador_id ? evento.colaborador_id._id : null;
-      const nomeServico = evento.servico_id ? evento.servico_id.nome_servico : "N/D";
+
+    eventos = eventosDoServidor.map((evento) => {
+      const nomeColaborador = evento.colaborador_id
+        ? evento.colaborador_id.nome_colaborador
+        : "N/D";
+      const idColaborador = evento.colaborador_id
+        ? evento.colaborador_id._id
+        : null;
+      const nomeServico = evento.servico_id
+        ? evento.servico_id.nome_servico
+        : "N/D";
       const idServico = evento.servico_id ? evento.servico_id._id : null;
 
       return {
-        id: evento._id, 
-        dataHora: evento.inicio_atendimento.slice(0, 16), 
+        id: evento._id,
+        dataHora: evento.inicio_atendimento.slice(0, 16),
         funcionario: nomeColaborador,
         funcionarioId: idColaborador,
         tipoTrabalho: nomeServico,
         tipoTrabalhoId: idServico,
         unidadeId: evento.unidade_id,
+        postoId: evento.posto_id,
       };
     });
 
-    exibirEventos(); 
+    exibirEventos();
   } catch (error) {
     console.error("Erro ao carregar eventos:", error);
     alert("Não foi possível carregar os agendamentos.");
@@ -118,7 +125,7 @@ async function renderizarCalendario() {
         const dia = String(dataHoraLocal.getDate()).padStart(2, "0");
         const hora = String(dataHoraLocal.getHours()).padStart(2, "0");
         const minuto = String(dataHoraLocal.getMinutes()).padStart(2, "0");
-        const dataKey = `${ano}-${mes}-${dia}T${hora}:${minuto}`; 
+        const dataKey = `${ano}-${mes}-${dia}T${hora}:${minuto}`;
         let classeHoje =
           data.toDateString() === hoje.toDateString() ? "hoje" : "";
         linha += `<td class="horario-celula ${classeHoje}" data-time="${dataKey}"></td>`;
@@ -130,20 +137,61 @@ async function renderizarCalendario() {
   }
   tabelaCalendario.querySelector("tbody").innerHTML = tbodyHTML;
 
-  await carregarEventosDaSemana(); 
+  await carregarEventosDaSemana();
   adicionarListenersCelulas();
-
 }
 
+async function carregarEquipamentos(unidadeId, equipamentoAtualId = null) {
+  const selectEquipamento = document.getElementById("equipamento");
+  selectEquipamento.innerHTML =
+    '<option value="selecao">Carregando...</option>';
+  selectEquipamento.disabled = true;
 
+  if (!unidadeId || unidadeId === "selecao") {
+    selectEquipamento.innerHTML =
+      '<option value="selecao">Selecione uma unidade primeiro</option>';
+    return;
+  }
 
+  try {
+    // Constrói a URL da API dinamicamente
+    let apiUrl = `/api/postos?unidade_id=${unidadeId}&status=Disponível`;
+    if (equipamentoAtualId) {
+      apiUrl += `&incluir_posto_id=${equipamentoAtualId}`;
+    }
+
+    const response = await fetch(apiUrl);
+    const equipamentos = await response.json();
+
+    selectEquipamento.innerHTML =
+      '<option value="selecao" selected disabled>Selecione o equipamento</option>';
+
+    if (equipamentos.length === 0) {
+      selectEquipamento.innerHTML =
+        '<option value="selecao">Nenhum equipamento disponível</option>';
+      return;
+    }
+
+    equipamentos.forEach((eq) => {
+      const option = document.createElement("option");
+      option.value = eq._id;
+      option.textContent = eq.nome_posto;
+      selectEquipamento.appendChild(option);
+    });
+
+    selectEquipamento.disabled = false;
+  } catch (error) {
+    console.error("Erro ao carregar equipamentos:", error);
+    selectEquipamento.innerHTML =
+      '<option value="selecao">Erro ao carregar</option>';
+  }
+}
 
 async function carregarOpcoesDoFormulario() {
   const selectFuncionario = document.getElementById("funcionario");
   const selectServico = document.getElementById("tipo-trabalho");
   const selectUnidade = document.getElementById("unidade");
 
-  
   selectFuncionario.innerHTML =
     '<option value="selecao">Selecione o colaborador</option>';
   selectServico.innerHTML =
@@ -152,33 +200,30 @@ async function carregarOpcoesDoFormulario() {
     '<option value="selecao">Selecione a unidade</option>';
 
   try {
-    
     const responseColaboradores = await fetch("/api/colaboradores");
     const colaboradores = await responseColaboradores.json();
     colaboradores.forEach((colab) => {
       const option = document.createElement("option");
       option.value = colab._id;
-      option.textContent = colab.nome_colaborador; 
+      option.textContent = colab.nome_colaborador;
       selectFuncionario.appendChild(option);
     });
 
-    
     const responseServicos = await fetch("/api/servicos");
     const servicos = await responseServicos.json();
     servicos.forEach((servico) => {
       const option = document.createElement("option");
       option.value = servico._id;
-      option.textContent = servico.nome_servico; 
+      option.textContent = servico.nome_servico;
       selectServico.appendChild(option);
     });
 
-    
     const responseUnidades = await fetch("/api/unidades");
     const unidades = await responseUnidades.json();
     unidades.forEach((unidade) => {
       const option = document.createElement("option");
       option.value = unidade._id;
-      option.textContent = unidade.nome_unidade; 
+      option.textContent = unidade.nome_unidade;
       selectUnidade.appendChild(option);
     });
   } catch (error) {
@@ -190,7 +235,6 @@ async function carregarOpcoesDoFormulario() {
 }
 
 function exibirEventos() {
-
   document.querySelectorAll(".evento").forEach((el) => el.remove());
 
   const eventosPorCelula = eventos.reduce((acc, evento) => {
@@ -207,7 +251,7 @@ function exibirEventos() {
     const celula = document.querySelector(`[data-time="${dataHoraKey}"]`);
 
     if (celula) {
-      celula.innerHTML = ""; 
+      celula.innerHTML = "";
 
       if (eventosDaCelula.length >= 5) {
         celula.classList.add("limite-atingido");
@@ -219,8 +263,8 @@ function exibirEventos() {
         const divEvento = document.createElement("div");
         divEvento.classList.add("evento");
 
-        divEvento.dataset.eventoId = eventoDetalhe.id; 
-        
+        divEvento.dataset.eventoId = eventoDetalhe.id;
+
         divEvento.title = `${eventoDetalhe.funcionario} - ${eventoDetalhe.tipoTrabalho}`;
         divEvento.textContent = `${eventoDetalhe.funcionario.split(" ")[0]}`;
 
@@ -230,9 +274,7 @@ function exibirEventos() {
   });
 }
 
-
 function adicionarListenersCelulas() {
-  
   document.querySelectorAll(".horario-celula").forEach((celula) => {
     const newCelula = celula.cloneNode(true);
     celula.parentNode.replaceChild(newCelula, celula);
@@ -244,17 +286,14 @@ function adicionarListenersCelulas() {
       const eventoDiv = e.target.closest(".evento");
 
       if (eventoDiv) {
-        
-        const eventoId = eventoDiv.dataset.eventoId; 
-        
-        const eventoCompleto = eventos.find(evt => evt.id === eventoId); 
-        
-        if(eventoCompleto) {
-            abrirModalEdicao(eventoCompleto);
-        }
+        const eventoId = eventoDiv.dataset.eventoId;
 
+        const eventoCompleto = eventos.find((evt) => evt.id === eventoId);
+
+        if (eventoCompleto) {
+          abrirModalEdicao(eventoCompleto);
+        }
       } else {
-        
         const eventosAtuais = eventos.filter(
           (ev) => ev.dataHora === dataHoraKey
         ).length;
@@ -273,6 +312,11 @@ function adicionarListenersCelulas() {
 function abrirModalCriacao(dataHoraKey) {
   eventoEmEdicao = null;
   formAgendamento.reset();
+
+  const selectEquipamento = document.getElementById("equipamento");
+  selectEquipamento.innerHTML =
+    '<option value="selecao">Selecione uma unidade primeiro</option>';
+  selectEquipamento.disabled = true;
 
   document.getElementById("horario-selecionado").textContent = new Date(
     dataHoraKey
@@ -295,17 +339,21 @@ function abrirModalCriacao(dataHoraKey) {
   modalAlterElementosPopUp.style.borderRadius = "10px";
 }
 
-function abrirModalEdicao(evento) {
-  eventoEmEdicao = evento; 
+async function abrirModalEdicao(evento) {
+  eventoEmEdicao = evento;
   celulaSelecionada = document.querySelector(
     `[data-time="${evento.dataHora}"]`
   );
 
-  
+  await carregarEquipamentos(evento.unidadeId, evento.postoId);
+
+  if (evento.postoId) {
+    document.getElementById("equipamento").value = evento.postoId;
+  }
+
   document.getElementById("funcionario").value = evento.funcionarioId;
   document.getElementById("tipo-trabalho").value = evento.tipoTrabalhoId;
   document.getElementById("unidade").value = evento.unidadeId;
-
 
   document.getElementById("horario-selecionado").textContent = new Date(
     evento.dataHora
@@ -318,9 +366,8 @@ function abrirModalEdicao(evento) {
   });
 
   btnSalvar.textContent = "Salvar Alterações";
-  btnExcluir.style.display = "block"; 
+  btnExcluir.style.display = "block";
   modal.style.display = "flex";
-  
 }
 
 formAgendamento.addEventListener("submit", async function (e) {
@@ -330,27 +377,26 @@ formAgendamento.addEventListener("submit", async function (e) {
     colaborador_id: document.getElementById("funcionario").value,
     servico_id: document.getElementById("tipo-trabalho").value,
     unidade_id: document.getElementById("unidade").value,
+    posto_id: document.getElementById("equipamento").value,
   };
 
-  
   if (
-    dadosParaEnviar.colaborador_id === "selecao" ||
-    dadosParaEnviar.servico_id === "selecao" ||
-    dadosParaEnviar.unidade_id === "selecao"
+    (dadosParaEnviar.colaborador_id === "selecao" ||
+      dadosParaEnviar.servico_id === "selecao" ||
+      dadosParaEnviar.unidade_id === "selecao",
+    dadosParaEnviar.posto_id === "selecao")
   ) {
-    alert("Por favor, selecione o profissional, o serviço e a unidade.");
+    alert("Por favor, selecione todos os tópicos");
     return;
   }
 
   let urlAPI = "/escala/atendimento";
   let metodoHTTP = "POST";
 
-  
   if (eventoEmEdicao) {
-    urlAPI = `/api/atendimentos/${eventoEmEdicao.id}`; 
+    urlAPI = `/api/atendimentos/${eventoEmEdicao.id}`;
     metodoHTTP = "PUT";
   } else {
-    
     dadosParaEnviar.dataHora = celulaSelecionada.dataset.time;
   }
 
@@ -365,7 +411,7 @@ formAgendamento.addEventListener("submit", async function (e) {
 
     if (response.ok) {
       alert(resultado.mensagem);
-      await carregarEventosDaSemana(); 
+      await carregarEventosDaSemana();
     } else {
       alert(`Erro: ${resultado.mensagem}`);
     }
@@ -374,7 +420,6 @@ formAgendamento.addEventListener("submit", async function (e) {
     console.error("Erro no fetch:", error);
   }
 
-  
   modal.style.display = "none";
   formAgendamento.reset();
   celulaSelecionada = null;
@@ -382,7 +427,10 @@ formAgendamento.addEventListener("submit", async function (e) {
 });
 
 btnExcluir.addEventListener("click", async () => {
-  if (eventoEmEdicao && confirm("Tem certeza que deseja excluir esta reserva?")) {
+  if (
+    eventoEmEdicao &&
+    confirm("Tem certeza que deseja excluir esta reserva?")
+  ) {
     try {
       const urlAPI = `/api/atendimentos/${eventoEmEdicao.id}`;
       const response = await fetch(urlAPI, {
@@ -393,7 +441,7 @@ btnExcluir.addEventListener("click", async () => {
 
       if (response.ok) {
         alert(resultado.mensagem);
-        await carregarEventosDaSemana(); 
+        await carregarEventosDaSemana();
       } else {
         alert(`Erro ao excluir: ${resultado.mensagem}`);
       }
@@ -402,7 +450,6 @@ btnExcluir.addEventListener("click", async () => {
       alert("Houve um erro de conexão ao tentar excluir o agendamento.");
     }
 
-    
     modal.style.display = "none";
     celulaSelecionada = null;
     eventoEmEdicao = null;
@@ -440,10 +487,14 @@ document.getElementById("btn-proximo").addEventListener("click", () => {
   renderizarCalendario();
 });
 
-
 document.addEventListener("DOMContentLoaded", () => {
-  renderizarCalendario(); 
+  renderizarCalendario();
   carregarOpcoesDoFormulario();
+});
+
+document.getElementById("unidade").addEventListener("change", (evento) => {
+  const unidadeId = evento.target.value;
+  carregarEquipamentos(unidadeId);
 });
 
 async function teste() {
