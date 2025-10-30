@@ -321,16 +321,16 @@ a.text-decoration-none:hover h3 {
 .horario-celula {
     cursor: pointer;
     transition: background-color 0.2s;
-    position: relative; /* Para posicionar o evento dentro */
+    position: relative; 
+    padding: 10px;
 }
 
 .horario-celula:hover {
-    background-color: #ffe8cc; /* Cor suave ao passar o mouse */
+    background-color: #ffe8cc; 
 }
 
-/* Estilo dos Eventos Agendados */
 .evento {
-    background-color: #28a745; /* Verde para agendamentos */
+    background-color: #28a745;
     color: white;
     border-radius: 3px;
     padding: 5px;
@@ -339,18 +339,18 @@ a.text-decoration-none:hover h3 {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
+    margin-bottom: 5px; 
+    position: static; 
+    width: 100%; 
+    min-height: 20px; 
+    cursor: pointer; 
 }
 
-/* Estilos do Modal de Agendamento */
+
 .modalescala {
     display: none; /* Escondido por padrão */
     position: fixed;
