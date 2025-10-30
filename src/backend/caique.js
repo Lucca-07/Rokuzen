@@ -2,12 +2,14 @@ import express from "express";
 const app = express();
 const port = 8080;
 
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+app.use(express.static(dirname));
+
 import dotenv from "dotenv";
 dotenv.config();
 
 import path from "path";
 import { fileURLToPath } from "node:url";
-const dirname = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 
 import connectDB from "./modules/connect.js";
 connectDB();
@@ -15,6 +17,9 @@ connectDB();
 import recuperarSenha from "./modules/recuperarSenha.js";
 import Clientes from "../src/models/Clientes.js";
 import Colaboradores from "../src/models/Colaboradores.js";
+import PostosAtendimento from "./models/PostosAtendimento.js";
+import Unidades from "./models/Unidades.js";
+import mongoose from "mongoose";
 
 app.use(express.json());
 
@@ -25,16 +30,16 @@ app.use(express.static(path.join(dirname, "src")));
 
 // Rota da Página de Login
 app.get("/", (req, res) => {
-    res.sendFile(path.join(dirname, "src", "frontend", "index.html"));
+    res.sendFile(path.join(dirname, "frontend", "index.html"));
 });
 
 // Rota da Página de Recuperação de senha
 app.get("/recuperar", (req, res) => {
-    res.sendFile(path.join(dirname, "src", "frontend", "recuperarSenha.html"));
+    res.sendFile(path.join(dirname, "frontend", "recuperarSenha.html"));
 });
 
 app.get("/cadastrar", (req, res) => {
-    res.sendFile(path.join(dirname, "src", "frontend", "cadastro.html"));
+    res.sendFile(path.join(dirname, "frontend", "cadastro.html"));
 });
 
 // Verifica o Login
@@ -109,11 +114,11 @@ app.post("/atualizarSenha", async (req, res) => {
 
 // Rota da página de inicio
 app.get("/inicio", (req, res) => {
-    res.sendFile(path.join(dirname, "src", "frontend", "paginaInicio.html"));
+    res.sendFile(path.join(dirname, "frontend", "paginaInicio.html"));
 });
 
 app.get("/postosatendimento", (req, res) => {
-    res.sendFile(path.join(dirname, "src", "frontend", "postoatendimento.html"));
+    res.sendFile(path.join(dirname, "frontend", "postoatendimento.html"));
 });
 
 app.get("/escala", (req, res) => {
@@ -122,6 +127,87 @@ app.get("/escala", (req, res) => {
 
 app.get("/sessao", (req, res) => {
     res.sendFile(path.join(dirname, "src", "frontend", "sessao.html"));
+});
+
+app.post("/postoatendimento", async (req, res) => {
+    const { unidade } = req.body;
+    try {
+        const unidadeId = await Unidades.findOne({
+            nome_unidade: unidade,
+        });
+        if (!unidadeId) {
+            res.status(404).json({
+                msg: "Unidade não encontrada",
+            });
+        }
+        const postos = await PostosAtendimento.find({
+            unidade_id: unidadeId._id,
+        });
+        if (!postos) {
+            res.status(404).json({
+                msg: "Postos não encontrados",
+            });
+        }
+        let quick = [];
+        let poltrona = [];
+        let maca = [];
+        postos.forEach((posto) => {
+            switch (posto.nome_posto) {
+                case "Cadeira Quick":
+                    quick.push(posto);
+                    break;
+                case "Poltrona de Reflexologia":
+                    poltrona.push(posto);
+                    break;
+                case "Sala de Maca":
+                    maca.push(posto);
+                    break;
+                default:
+                    console.log("Erro");
+            }
+        });
+        console.log(quick, poltrona, maca);
+        res.status(200).json({
+            quick: quick,
+            poltrona: poltrona,
+            maca: maca,
+        });
+    } catch (error) {}
+});
+
+// Atualiza o status de um posto (cadeira, maca, poltrona) pelo ID
+app.post("/atualizarStatus", async (req, res) => {
+    const { id, status } = req.body;
+
+    console.log("📩 Dados recebidos para atualizar:", { id, status });
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ msg: "ID inválido" });
+    }
+
+    try {
+        const resultado = await PostosAtendimento.updateOne(
+            { _id: id },
+            { $set: { status: status } }
+        );
+
+        console.log("🧾 Resultado do update:", resultado);
+
+        if (resultado.matchedCount === 0) {
+            return res.status(404).json({ msg: "Posto não encontrado" });
+        }
+
+        if (resultado.modifiedCount === 0) {
+            return res.status(200).json({
+                msg: "Nenhuma modificação feita (status igual ao atual).",
+            });
+        }
+
+        res.status(200).json({ msg: "Status atualizado com sucesso!" });
+    } catch (error) {
+        console.error(" Erro ao atualizar status:", error);
+        res.status(500).json({ msg: "Erro no servidor" });
+    }
 });
 
 app.listen(8080, () => {
