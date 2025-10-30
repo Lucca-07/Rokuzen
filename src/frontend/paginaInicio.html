@@ -15,16 +15,19 @@
   <nav class=" navbar container-fluid josefin-sans" style="background: #FFF;">
     <div class="row m-0 w-100 justify-content-center justify-content-lg-start">
       <div class="logo col-sm-12 col-lg-3 mb-1 mb-lg-0 text-center align-self-center"> <!-- ! LOGO-->
-        <a href="/inicio"><img src="https://rokuzen.com.br/wp-content/uploads/2021/09/cropped-logomarca_pequena2.png"
+        <a href="/inicio/:id"><img src="https://rokuzen.com.br/wp-content/uploads/2021/09/cropped-logomarca_pequena2.png"
             alt="" height="80px"></a>
       </div>
       <div class="menu col-sm-12 col-lg-9 text-center d-flex align-items-center"> <!-- ! MENU DA NAVBAR-->
         <ul class="list-unstyled d-none d-lg-flex w-100 m-0 justify-content-around align-items-center flex-wrap">
-          <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="/escala">Visualizar escala</a>
+          <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="/escala/:id"><i class="mdi mdi-calendar fs-3"></i></a>
           </li>
-          <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="/postosatendimento">Postos de
-              atendimento</a></li>
-          <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="/sessao">Gerenciar sessão</a>
+          <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="/postosatendimento/:id"><i class="mdi mdi-chair-rolling fs-3"></i></a></li>
+          <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="/sessao/:id"><i class="mdi mdi-clock fs-3"></i></a>
+          </li>
+          <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="/sessao/:id"><i class="mdi mdi-account-plus fs-3"></i></a>
+          </li>
+          <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="/sessao/:id"><i class="mdi mdi-account fs-3"></i></a>
           </li>
           <li><button class="sair px-4 fs my-2 align-self-center">Sair</button></li>
         </ul>
