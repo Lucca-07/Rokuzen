@@ -108,8 +108,8 @@
     background-color: #c7ed79;
 }
 
-#containerUserInterno,
-#containerUserExterno {
+#containerColaborador,
+#containerCliente {
     animation: aparecer 0.3s ease-in forwards;
 }
 
@@ -453,4 +453,12 @@ a.text-decoration-none:hover h3 {
 
 .btn-excluir:hover {
     background-color: #c82333;
+}
+
+
+.card-cadastro {
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.76);
+}
+.card-editar {
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.356);
 }
