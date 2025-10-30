@@ -59,7 +59,28 @@
     </div>
 
     <main class="josefin-sans">
-        <div id="selectUsuario" class="container-lg w-100 mt-2 d-flex align-items-center" style="height: 75px;">
+        <div class="row justify-content-center">
+            <div class="col-md-8 d-flex justify-content-center">
+                <div id="alertErro" class="alert alert-danger alert-dismissible fade position-absolute mt-2 d-none text-center" role="alert">
+                    <span id="pAlertErro" class="fs-3 px-3 text-center"></span>
+                </div>
+            </div>
+            <div class="col-md-8 d-flex justify-content-center">
+                <div id="alertSucesso" class="alert alert-success alert-dismissible fade position-absolute mt-2 d-none text-center" role="alert">
+                    <span id="pAlertSucesso" class="fs-3 px-3 text-center"></span>
+                </div>
+            </div>
+        </div>
+        <div id="selectUsuario" class="container-lg w-100 mt-3 d-flex align-items-center flex-column"
+            style="height: 75px;">
+            <div class="row justify-content-center w-100 position-absolute">
+                <div class="col-md-8">
+                    <div class="alert alert-success alert-dismissible text-center d-none">
+                        Colaborador criado com sucesso
+                        <button type="button" class="btn-close"></button>
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-12">
                     <select name="usuarioselect" id="usuarioselect" class="p-2 fs-4" style="cursor: pointer;">
@@ -70,9 +91,9 @@
             </div>
         </div>
         <div id="containerColaborador"
-            class="container-lg mt-2 bg-light d-flex p-4 border d-flex flex-column mb-5 card-cadastro"
+            class="container-lg bg-light d-flex p-4 border d-flex flex-column mb-5 card-cadastro"
             style="border-radius: 30px;">
-            <form action="">
+            <form>
                 <div class="row align-content-start">
                     <div id="foto"
                         class="col-12 col-md-6 col-lg-4  d-flex align-self-start align-items-center gap-2 flex-column">
@@ -100,7 +121,7 @@
                         <label for="cargoinput" class="campos h-100 align-content-center">Cargo: </label>
                         <select class="mx-2 align-self-center w-auto" id="cargoselect"
                             style="border-radius: 5px; cursor: pointer; height: 30px;">
-                            <option value="" disabled selected>Selecionar:</option>
+                            <option value="selecionar" disabled selected>Selecionar:</option>
                             <option value="master">Master</option>
                             <option value="gerente">Gerente</option>
                             <option value="recepcao">Recepção</option>
@@ -120,86 +141,89 @@
                         <div id="unidadesdiv" class="d-flex justify-content-around align-items-center w-100">
                             <div class="w-25 d-flex flex-fill">
                                 <label for="golden">Golden Square</label>
-                                <input class="me-5 me-lg-0" type="checkbox" name="" id="golden">
+                                <input class="me-5 me-lg-0" type="checkbox" name="unidades" id="golden"
+                                    value="GoldenSquare">
                             </div>
                             <div class="w-25 d-flex flex-fill">
                                 <label for="mooca">Mooca Plaza</label>
-                                <input class="me-5 me-lg-0" type="checkbox" name="" id="mooca">
+                                <input class="me-5 me-lg-0" type="checkbox" name="unidades" id="mooca"
+                                    value="MoocaPlaza">
                             </div>
                             <div class="w-25 d-flex flex-fill">
                                 <label for="grand">Grand Plaza</label>
-                                <input class="me-5 me-lg-0" type="checkbox" name="" id="grand">
+                                <input class="me-5 me-lg-0" type="checkbox" name="unidades" id="grand"
+                                    value="GrandPlaza">
                             </div>
                             <div class="w-25 d-flex flex-fill">
                                 <label for="west">West Plaza</label>
-                                <input class="me-5 me-lg-0" type="checkbox" name="" id="west">
+                                <input class="me-5 me-lg-0" type="checkbox" name="unidades" id="west" value="WestPlaza">
                             </div>
                         </div>
                     </div>
                     <div class="col-12 text-center">
-                        <button type="submit" class="enviar mt-4 px-4 py-2 fs-3">Salvar</button>
+                        <button id="enviarColaborador" type="submit" class="enviar mt-4 px-4 py-2 fs-3"
+                            onclick="salvarColaborador(event)">Salvar</button>
                     </div>
                 </div>
             </form>
         </div>
         <div id="containerCliente"
-            class="container-lg mt-2 bg-light d-flex p-4 border d-flex flex-column mb-5 d-none card-cadastro"
+            class="container-lg bg-light d-flex p-4 border d-flex flex-column mb-5 d-none card-cadastro"
             style="border-radius: 30px;">
-            <form action="">
-                <div class="row align-content-start">
-                    <div id="logo" class="col-12 d-flex justify-content-center mb-0 mb-md-3">
-                        <img src="/frontend/img/logo.png" alt="" width="40%">
+            <div class="row align-content-start">
+                <div id="logo" class="col-12 d-flex justify-content-center mb-0 mb-md-3">
+                    <img src="/frontend/img/logo.png" alt="" width="40%">
+                </div>
+            </div>
+            <div class="row bg-light p-4 mt-3 d-flex align-content-start justify-content-between ">
+                <div id="nome" class="col-sm-12 col-md-6 d-flex justify-content-start">
+                    <label for="nomeinput2" class="campos h-100 align-items-center">Nome:</label>
+                    <input class="h-75 mx-2 align-self-center w-50" type="text" id="nomeinput2">
+                </div>
+                <div id="email" class="col-sm-12 col-md-6 d-flex justify-content-start">
+                    <label for="emailinput2" class="campos h-100 align-content-center">Email: </label>
+                    <input class="h-75 mx-2 align-self-center w-50" id="emailinput2" type="text">
+                </div>
+                <div id="tel" class="col-sm-12 col-md-6 d-flex justify-content-start mt-0 mt-md-4">
+                    <label for="telinput2" class="campos h-100 align-content-center">Telefone: </label>
+                    <input class="h-75 mx-2 align-self-center w-50" id="telinput2" type="text">
+                </div>
+                <div id="nascto" class="col-sm-12 col-md-6 d-flex justify-content-start mt-0 mt-md-4">
+                    <label for="nasctoinput" class="campos h-100 align-content-center">Data de nascimento: </label>
+                    <input class="mx-2 align-self-center" id="nasctoinput" type="date" style="height: 30px;">
+                </div>
+                <div id="saude" class="col-sm-12 col-md-6 d-flex justify-content-start mt-md-3 mt-0 flex-column gap-0">
+                    <p class="campos h-100 align-content-center m-0">Saúde: </p>
+                    <div id="saudediv"
+                        class="d-flex justify-content-md-evenly align-items-md-center w-100 flex-column flex-md-row">
+                        <div class="d-flex flex-wrap">
+                            <label for="pressao">Pressão alta: </label>
+                            <input class="me-5 me-lg-0" type="checkbox" name="saude" value="pressao" id="pressao">
+                        </div>
+                        <div class="d-flex flex-wrap">
+                            <label for="gravida">Grávida: </label>
+                            <input class="me-5 me-lg-0" type="checkbox" name="saude" value="gravida" id="gravida">
+                        </div>
+                        <div class="d-flex flex-wrap">
+                            <label for="dores" class="align-self-center">Dores: </label>
+                            <textarea rows="2" name="" id="dores"></textarea>
+                        </div>
                     </div>
                 </div>
-                <div class="row bg-light p-4 mt-3 d-flex align-content-start justify-content-between ">
-                    <div id="nome" class="col-sm-12 col-md-6 d-flex justify-content-start">
-                        <label for="nomeinput2" class="campos h-100 align-items-center">Nome:</label>
-                        <input class="h-75 mx-2 align-self-center w-50" type="text" id="nomeinput2">
+                <div id="observacoes" class="col-sm-12 col-md-6 d-flex justify-content-start mt-md-3 mt-0 gap-0">
+                    <p class="campos h-100 align-content-center m-0">Observações: </p>
+                    <div id="obserdiv"
+                        class="d-flex justify-content-md-evenly align-items-md-center w-100 flex-column flex-md-row">
+                        <textarea name="" id="textobservacoes" class="w-100"></textarea>
                     </div>
-                    <div id="email" class="col-sm-12 col-md-6 d-flex justify-content-start">
-                        <label for="emailinput2" class="campos h-100 align-content-center">Email: </label>
-                        <input class="h-75 mx-2 align-self-center w-50" id="emailinput2" type="text">
-                    </div>
-                    <div id="tel" class="col-sm-12 col-md-6 d-flex justify-content-start mt-0 mt-md-4">
-                        <label for="telinput2" class="campos h-100 align-content-center">Telefone: </label>
-                        <input class="h-75 mx-2 align-self-center w-50" id="telinput2" type="text">
-                    </div>
-                    <div id="nascto" class="col-sm-12 col-md-6 d-flex justify-content-start mt-0 mt-md-4">
-                        <label for="nasctoinput" class="campos h-100 align-content-center">Data de nascimento: </label>
-                        <input class="mx-2 align-self-center" id="nasctoinput" type="date" style="height: 30px;">
-                    </div>
-                    <div id="saude"
-                        class="col-sm-12 col-md-6 d-flex justify-content-start mt-md-3 mt-0 flex-column gap-0">
-                        <p class="campos h-100 align-content-center m-0">Saúde: </p>
-                        <div id="saudediv"
-                            class="d-flex justify-content-md-evenly align-items-md-center w-100 flex-column flex-md-row">
-                            <div class="d-flex flex-wrap">
-                                <label for="pressao">Pressão alta: </label>
-                                <input class="me-5 me-lg-0" type="checkbox" name="" id="pressao">
-                            </div>
-                            <div class="d-flex flex-wrap">
-                                <label for="gravida">Grávida: </label>
-                                <input class="me-5 me-lg-0" type="checkbox" name="" id="gravida">
-                            </div>
-                            <div class="d-flex flex-wrap">
-                                <label for="dores" class="align-self-center">Dores: </label>
-                                <textarea rows="2" name="" id=""></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="observacoes" class="col-sm-12 col-md-6 d-flex justify-content-start mt-md-3 mt-0 gap-0">
-                        <p class="campos h-100 align-content-center m-0">Observações: </p>
-                        <div id="obserdiv"
-                            class="d-flex justify-content-md-evenly align-items-md-center w-100 flex-column flex-md-row">
-                            <textarea name="" id="textobservacoes" class="w-100"></textarea>
-                        </div>
-                    </div>
+                </div>
 
-                    <div class="col-12 text-center">
-                        <button type="submit" class="enviar mt-4 px-4 py-2 fs-3">Salvar</button>
-                    </div>
+                <div class="col-12 text-center">
+                    <button type="submit" class="enviar mt-4 px-4 py-2 fs-3"
+                        onclick="salvarCliente(event)">Salvar</button>
                 </div>
-            </form>
+            </div>
+
         </div>
     </main>
 

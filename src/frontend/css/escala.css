@@ -1,15 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap");
-
-.sair {
-    background-color: #c7ed79;
-    height: 40px;
-    border-radius: 10px;
-}
-
-.sair:hover {
-    background: #cbff63;
-}
-
 .navbar {
     border-top: 5px solid #9db668;
     border-bottom: 5px solid #e9eaee;
@@ -20,17 +8,11 @@
     color: #9db668 !important;
 }
 
-.josefin-sans {
-    font-family: "Josefin Sans", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 400;
-    font-style: normal;
-}
-
 .dropcnt {
     border: 5px solid #e9eaee;
     border-top: none;
     height: 305px;
+    /* position: fixed; */
     top: 150px;
     z-index: 999 !important;
 }
@@ -45,6 +27,34 @@
     color: #9db668 !important;
 }
 
+
+.btncustom {
+    background: #a0af68;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 6px 14px;
+    margin-top: 5px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btncustom:hover {
+    background: #8fa25d;
+}
+
+.fechar {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+}
+
 .header-escala {
     text-align: center;
     margin-bottom: 25px;
@@ -54,7 +64,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 20px;
+    gap: 15px;
     margin-top: 15px;
 }
 
@@ -71,7 +81,7 @@
 
 #btn-anterior:hover,
 #btn-proximo:hover {
-    background-color: #0056b3;
+    background-color: darkgreen;
 }
 
 /* Estilo da Tabela do Calendário */
@@ -108,16 +118,16 @@
 .horario-celula {
     cursor: pointer;
     transition: background-color 0.2s;
-    position: relative; /* Para posicionar o evento dentro */
+    position: relative; 
+    padding: 10px;
 }
 
 .horario-celula:hover {
-    background-color: #ffe8cc; /* Cor suave ao passar o mouse */
+    background-color: #ffe8cc; 
 }
 
-/* Estilo dos Eventos Agendados */
 .evento {
-    background-color: #28a745; /* Verde para agendamentos */
+    background-color: #28a745;
     color: white;
     border-radius: 3px;
     padding: 5px;
@@ -126,18 +136,18 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
+    margin-bottom: 5px; 
+    position: static; 
+    width: 100%; 
+    min-height: 20px; 
+    cursor: pointer; 
 }
 
-/* Estilos do Modal de Agendamento */
+
 .modalescala {
     display: none; /* Escondido por padrão */
     position: fixed;

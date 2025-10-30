@@ -69,135 +69,162 @@
 		</div>
 	</div>
 
-	<!-- Botões superiores -->
+	<!-- Conteudo da pagina divido em 2 partes -->
 	<div class="container my-4">
-		<div class="row">
-			<div class="col-12 col-md-6 text-md-start text-center mb-2 mb-md-0">
-				<!-- Botão abre modal Selecionar Terapeuta -->
-				<button class="btn btn-light border rounded-3 px-4 py-3 fs-5" style="background-color: #F6F6F6;"
-					data-bs-toggle="modal" data-bs-target="#popupTerapeuta">
+		<div class="row gy-4">
+
+			<!-- LADO ESQUERDO: Terapeuta e Timer -->
+			<div
+				class="col-12 col-lg-6 d-flex flex-column align-items-center align-items-lg-start text-center text-lg-start px-3">
+
+
+				<!-- Botão Selecionar Terapeuta -->
+				<button id="btnAbrirModal"
+					class="btn btn-light border rounded-3 px-4 py-3 fs-5 mb-4 w-100 w-md-auto d-none"
+					style="background-color: #F6F6F6;" data-bs-toggle="modal" data-bs-target="#popupTerapeuta">
 					Selecionar Terapeuta
 				</button>
-			</div>
-			<div class="col-12 col-md-6 text-md-end text-center">
-				<!-- Botão abre modal Próximos Agendamentos -->
-				<button class="btn btn-light border rounded-3 px-4 py-3 fs-5" style="background-color: #F6F6F6;"
-					data-bs-toggle="modal" data-bs-target="#popupAgendamentos">
-					Próximos Agendamentos
+
 				</button>
+
+				<!-- Retangulo com timer -->
+				<div class="d-flex flex-column justify-content-center align-items-center w-100">
+
+					<!-- Retangulo -->
+					<div
+						class="timer-circle d-flex flex-column justify-content-center align-items-center text-center mb-4">
+						<h2 id="timer" class="timer-title display-1 fw-bold">10:00</h2>
+
+						<!-- Botões de adicionar tempo -->
+						<div class="d-flex flex-wrap justify-content-center w-75 mt-3">
+							<div class="d-flex gap-2 justify-content-center w-100">
+								<button id="Adicionar1min"
+									class="btn btn-outline-success rounded-pill px-3 fw-bold">+1:00</button>
+								<button id="Adicionar5min"
+									class="btn btn-outline-success rounded-pill px-3 fw-bold">+5:00</button>
+							</div>
+							<div class="d-flex justify-content-center w-100 mt-2">
+								<button id="Adicionar10min"
+									class="btn btn-outline-success rounded-pill px-3 fw-bold">+10:00</button>
+							</div>
+						</div>
+					</div>
+
+					<!-- Botões de controle -->
+					<div class="text-center">
+						<button id="btnIniciar" onclick="iniciarTimer()"
+							class="btn btn-success btn-lg rounded-pill px-5 py-3 fw-bold">
+							Iniciar
+						</button>
+						<button id="btnPausar" onclick="pausarOuContinuar()"
+							class="btn btn-lg rounded-pill px-5 py-3 fw-bold d-none"
+							style="background-color:#8ABB00; border-color:#8ABB00; color:white;">
+							Pausar
+						</button>
+						<button id="btnReiniciar" onclick="reiniciarTimer()"
+							class="btn btn-lg rounded-pill px-5 py-3 fw-bold d-none"
+							style="background-color:#8ABB00; border-color:#8ABB00; color:white;">
+							Reiniciar
+						</button>
+					</div>
+
+				</div>
+			</div>
+
+			<!-- LADO DIREITO : Agendamentos do dia -->
+			<div class="col-12 col-lg-6 d-flex flex-column align-items-center align-items-lg-end px-3">
+				<div class="border rounded-3 shadow-sm bg-white p-3 w-100" style="max-width: 100%;">
+					<h3 class="fs-5 fw-semibold text-dark mb-4 text-center text-center">
+						Próximos Agendamentos do Dia
+					</h3>
+					<!-- Agendamentos do dia que virão através do Javascript -->
+					<div id="agendamentos"></div>
+				</div>
 			</div>
 		</div>
 	</div>
-	<!-- Círculo com timer -->
-	<div class="d-flex flex-column justify-content-center align-items-center">
+	</div>
 
-		<!-- Círculo -->
-		<div class="timer-circle d-flex flex-column justify-content-center align-items-center text-center mb-4">
-			<h2 id="timer" class="timer-title display-1 fw-bold">10:00</h2>
-
-			<!-- Botões de adicionar tempo -->
-			<div class="d-flex flex-wrap justify-content-center w-75 mt-3">
-				<div class="d-flex gap-2 justify-content-center w-100">
-					<button id="Adicionar1min" class="btn btn-outline-success rounded-pill px-3 fw-bold">+1:00</button>
-					<button id="Adicionar5min" class="btn btn-outline-success rounded-pill px-3 fw-bold">+5:00</button>
+	<!-- Modal Selecionar Terapeuta -->
+	<div class="modal fade" id="popupTerapeuta" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header p-3">
+					<h5 class="modal-title fs-5 fw-semibold text-dark mb-0">Selecionar Terapeuta</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
-				<div class="d-flex justify-content-center w-100 mt-2">
-					<button id="Adicionar10min"
-						class="btn btn-outline-success rounded-pill px-3 fw-bold">+10:00</button>
+				<div class="modal-body p-3">
+					<div id="listaTerapeutas"></div> <!-- Lista de terapeutas será inserida aqui no JavaScript -->
 				</div>
 			</div>
 		</div>
+	</div>
 
-		<!-- Botão iniciar (fora do círculo) -->
-		<div class="text-center">
-			<!-- Botão Iniciar -->
-			<button id="btnIniciar" onclick="iniciarTimer()"
-				class="btn btn-success btn-lg rounded-pill px-5 py-3 fw-bold">
-				Iniciar
-			</button>
-			<!-- Botão Pausar/Continuar (começa escondido) -->
-			<button id="btnPausar" onclick="pausarOuContinuar()"
-				class="btn btn-lg rounded-pill px-5 py-3 fw-bold d-none"
-				style="background-color:#8ABB00; border-color:#8ABB00; color:white;">
-				Pausar
-			</button>
-
-			<!-- Botão Reiniciar (começa escondido) -->
-			<button id="btnReiniciar" onclick="reiniciarTimer()"
-				class="btn btn-lg rounded-pill px-5 py-3 fw-bold d-none"
-				style="background-color:#8ABB00; border-color:#8ABB00; color:white;">
-				Reiniciar
-			</button>
-
+	<!-- Modal Encerrar Sessão -->
+	<div class="modal fade" id="encerrarSessaoModal" tabindex="-1" aria-labelledby="encerrarSessaoLabel"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content border-0 shadow">
+				<div class="modal-header bg-light">
+					<h5 class="modal-title" id="encerrarSessaoLabel">Encerrar Sessão</h5>
+				</div>
+				<div class="modal-body">
+					O tempo da sessão acabou. Deseja encerrar a sessão agora?
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+					<button type="button" class="btn btn-danger" id="confirmarEncerramento">Encerrar Sessão</button>
+				</div>
+			</div>
 		</div>
+	</div>
 
+	<!-- Modal Feedback da Sessão -->
+	<div class="modal fade" id="fbModal" tabindex="-1" aria-labelledby="fbLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content fb-frame border-0 shadow rounded-3">
+				<div class="modal-body p-4">
+					<h3 class="fs-5 fw-semibold text-dark mb-4 text-center">Feedback da Sessão</h3>
 
-		<!-- Modal Selecionar Terapeuta CORRIGIDO -->
-		<div class="modal fade" id="popupTerapeuta" tabindex="-1" aria-hidden="true">
-			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content">
-					<div class="modal-body p-3">
-						<h3 class="fs-5 fw-semibold text-dark mb-4">Selecionar Terapeuta</h3>
+					<div class="mb-3">
+						<label class="form-label fw-medium small text-secondary">Nome do Terapeuta</label>
+						<span id="fb-nomeTerapeuta" class="small d-block mb-1">👤 </span>
+					</div>
 
-						<div
-							class="card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2 mb-3">
-							<img src="image.png" alt="Foto Terapeuta" class="avatar">
-							<span class="fw-medium small">Terapeuta 1</span>
-						</div>
+					<div class="mb-3">
+						<label class="form-label fw-medium small text-secondary">Horário de Encerramento da
+							Sessão</label>
+						<span id="fb-horarioSessao" class="small d-block mb-1">⏰ </span>
+					</div>
 
-						<div
-							class="card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2 mb-3">
-							<img src="image.png" alt="Foto Terapeuta" class="avatar">
-							<span class="fw-medium small">Terapeuta 2</span>
-						</div>
+					<div class="mb-3">
+						<label class="form-label fw-medium small text-secondary">Feedback</label>
+						<textarea id="fb-texto" class="form-control form-control-sm border-2" rows="3"
+							placeholder="Escreva o feedback sobre a sessão"></textarea>
+					</div>
 
-						<div
-							class="card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2 mb-3">
-							<img src="image.png" alt="Foto Terapeuta" class="avatar">
-							<span class="fw-medium small">Terapeuta 3</span>
-						</div>
-
-						<div
-							class="card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2">
-							<img src="image.png" alt="Foto Terapeuta" class="avatar">
-							<span class="fw-medium small">Terapeuta 4</span>
-						</div>
+					<div class="d-grid">
+						<button id="fb-salvar" class="btn fb-btn-salvar rounded-3">Salvar</button>
 					</div>
 				</div>
 			</div>
 		</div>
+	</div>
 
-		<!-- Modal Próximos Agendamentos CORRIGIDO -->
-		<div class="modal fade" id="popupAgendamentos" tabindex="-1" aria-hidden="true">
-			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content">
-					<div class="modal-body p-3 text-center">
-						<h3 class="fs-5 fw-semibold text-dark mb-4">Próximos Agendamentos</h3>
-
-						<div class="border border-2 rounded-3 bg-light-subtle p-2 mb-3">
-							<span class="d-block small mb-1">⏰ 10:50</span>
-							<p class="fw-semibold mb-0 small">Sessão 1</p>
-						</div>
-
-						<div class="border border-2 rounded-3 bg-light-subtle p-2 mb-3">
-							<span class="d-block small mb-1">⏰ 11:30</span>
-							<p class="fw-semibold mb-0 small">Sessão 2</p>
-						</div>
-
-						<div class="border border-2 rounded-3 bg-light-subtle p-2">
-							<span class="d-block small mb-1">⏰ 12:20</span>
-							<p class="fw-semibold mb-0 small">Sessão 3</p>
-						</div>
-					</div>
-				</div>
-			</div>
+	<div vw class="enabled">
+		<div vw-access-button class="active"></div>
+		<div vw-plugin-wrapper>
+			<div class="vw-plugin-topwrapper"></div>
 		</div>
+	</div>
+	<!-- Bootstrap JS -->
+	<script src="https://vlibras.gov.br/app/vlibras-plugin.js"> </script>
+	<script>new window.VLibras.Widget('https://vlibras.gov.br/app')</script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+		crossorigin="anonymous"></script>
+	<script src="/frontend/js/sessao.js"></script>
 
-		<!-- Bootstrap JS -->
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
-			integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
-			crossorigin="anonymous"></script>
-		<script src="/frontend/js/sessao.js"></script>
 </body>
 
 </html>
