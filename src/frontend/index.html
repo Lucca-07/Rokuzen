@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
     <link rel="stylesheet" type="text/css" href="/frontend/css/style.css">
     <title>Login</title>
 </head>
@@ -14,27 +15,40 @@
     <div class="back container-fluid">
         <img class="imglogo mb-3" src="/frontend/img/logo.png" alt="">
         <div class="anima row d-flex align-items-center justify-content-center">
-            <div id="cardLogin" class="card d-flex justify-content-center gap-3 ">
-                <input id="email" class="p-2 px-3 mt-3" type="text" placeholder="Email">
-                <input id="pass" class="p-2 px-3" type="text" placeholder="Senha">
-                <button id="acessar" class="acessar align-self-center p-2 px-3 border-1">ACESSAR</button>
-                <a id="esqueci" class="fs-6 fst-italic d-flex align-self-center p-0 mb-2"
+            <div id="cardLogin" class="card d-flex justify-content-center h-100 gap-2">
+                <input id="email" class="p-2 px-3 mt-3 w-100" type="text" placeholder="Email">
+                <input id="pass" class="p-2 px-3 mt-2 w-100" type="text" placeholder="Senha">
+                <p id="erroLogin" class="text-danger text-center mt-1 mb-1"></p>
+                <button id="proximo" class="acessar align-self-center p-2 px-3 border-1">UNIDADES<i
+                        class="mdi mdi-arrow-right"></i></button>
+                <a id="esqueci" class="fs-6 fst-italic d-flex align-self-center p-0 mb-3 mt-1"
                     style="cursor: pointer;">Esqueci a senha</a>
             </div>
-            <div id="cardSenha" class="card senha d-flex justify-content-center gap-3 d-none">
+            <div id="cardSenha" class="card senha d-flex justify-content-center h-100 gap-2 d-none">
+                <p id="sucessoRecuperacao" class="text-success text-center mt-1 mb-1"></p>
                 <input id="emailRecuperacao" class="p-2 px-3" type="text" placeholder="Email">
+                <p id="erroRecuperacao" class="text-danger text-center mt-1 mb-1"></p>
                 <button id="recuperarButton" class="acessar align-self-center p-2 px-3 border-1">Recuperar
                     senha</button>
                 <a id="voltarLogin" class="fs-6 fst-italic d-flex align-self-center p-0 mb-0"
                     style="cursor: pointer;">Voltar</a>
+            </div>
+            <div id="cardUnidades" class="card d-flex justify-content-center h-100 gap-2 p-3 d-none">
+                <p class="fs-4 text-center">Em qual unidade você quer logar?</p>
+                <select name="" id="unidades" class="p-2">
+                    <option value="" selected disabled>Selecionar</option>
+                </select>
+                <p id="erroUnidade" class="text-danger text-center mt-1 mb-1"></p>
+                <button id="acessar" class="acessar align-self-center p-2 px-3 border-1">ACESSAR</button>
             </div>
         </div>
     </div>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
-      crossorigin="anonymous"></script>
+        integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+        crossorigin="anonymous"></script>
+
     <script src="/frontend/js/login.js"></script>
     
 
