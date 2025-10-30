@@ -1,0 +1,381 @@
+// IMPORTS
+import express from "express";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+import Colaboradores from "./models/Colaboradores.js";
+import Atendimentos from "./models/Atendimentos.js";
+dotenv.config();
+import connectDB from "./modules/connect.js";
+connectDB();
+
+import recuperarSenha from "./modules/recuperarSenha.js";
+import Clientes from "../src/models/Clientes.js";
+
+// CONSTANTS IMPORTANTES
+const dirname = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+const app = express();
+const port = 8080;
+
+// Middleware para o express entender JSON
+app.use(express.json());
+
+// Servir os arquivos estáticos do projeto (CSS, IMG ...)
+app.use("/vendor", express.static(path.join(dirname, "../node_modules")));
+app.use(express.static(path.join(dirname, "src")));
+
+// GETS
+// Rota da Página de Login
+app.get("/", (req, res) => {
+    res.sendFile(path.join(dirname, "src", "frontend", "index.html"));
+});
+// Rota da Página de Recuperação de senha
+app.get("/recuperar", (req, res) => {
+    res.sendFile(path.join(dirname, "src", "frontend", "recuperarSenha.html"));
+});
+// Rota para a Página de Cadastro
+app.get("/cadastrar/:id", async (req, res) => {
+    const id = req.params.id;
+    if (!id) return res.redirect("/");
+    res.sendFile(path.join(dirname, "src", "frontend", "cadastro.html"));
+});
+// Rota da página de inicio
+app.get("/inicio/:id", async (req, res) => {
+    const id = req.params.id;
+    if (!id) return res.redirect("/");
+    res.sendFile(path.join(dirname, "src", "frontend", "paginaInicio.html"));
+});
+//Rota da página de postoatendimento
+app.get("/postosatendimento/:id", async (req, res) => {
+    const id = req.params.id;
+    if (!id) return res.redirect("/");
+    res.sendFile(
+        path.join(dirname, "src", "frontend", "postoatendimento.html")
+    );
+});
+//Rota da página de escala
+app.get("/escala/:id", async (req, res) => {
+    const id = req.params.id;
+    if (!id) return res.redirect("/");
+    res.sendFile(path.join(dirname, "src", "frontend", "escala.html"));
+});
+//Rota da página de sessoes
+app.get("/sessao/:id", async (req, res) => {
+    const id = req.params.id;
+    if (!id) return res.redirect("/");
+    res.sendFile(path.join(dirname, "src", "frontend", "sessao.html"));
+});
+app.get("/listarterapeutas", async (req, res) => {
+    res.sendFile(
+        path.join(dirname, "src", "frontend", "listarTerapeutas.html")
+    );
+});
+
+//Rota da api de listar Terapeutas
+app.get("/api/listarterapeutas", async (req, res) => {
+    try {
+        console.log("Recebida requisição para listar terapeutas");
+        console.log("Hora atual:", new Date().toLocaleString());
+
+        // Busca os terapeutas
+        const terapeutas = await Colaboradores.find({
+            perfis_usuario: "Terapeuta",
+        });
+        console.log("Terapeutas encontrados:", terapeutas.length);
+
+        const result = [];
+        // Ajusta a data atual para UTC
+        const agora = new Date();
+        const agoraUTC = new Date(
+            agora.getTime() - agora.getTimezoneOffset() * 60000
+        );
+        console.log("Hora atual (local):", agora.toLocaleString());
+        console.log("Hora atual (UTC):", agoraUTC.toISOString());
+
+        for (const terapeuta of terapeutas) {
+            console.log(
+                `\nVerificando atendimentos para ${terapeuta.nome_colaborador}`
+            );
+
+            // Busca atendimento atual (entre início e fim programados)
+            const atendimentoAtual = await Atendimentos.findOne({
+                colaborador_id: terapeuta._id,
+                inicio_atendimento: { $lte: agoraUTC },
+                fim_atendimento: { $gt: agoraUTC },
+                encerrado: false,
+            });
+
+            // Busca atendimento em andamento (mesmo que fora do horário programado)
+            const atendimentoEmAndamento = await Atendimentos.findOne({
+                colaborador_id: terapeuta._id,
+                em_andamento: true,
+                encerrado: false,
+            });
+
+            // Busca próximo atendimento
+            const proximoAtendimento = await Atendimentos.findOne({
+                colaborador_id: terapeuta._id,
+                inicio_atendimento: { $gt: agoraUTC },
+                encerrado: false,
+            }).sort({ inicio_atendimento: 1 });
+
+            console.log("ID do terapeuta:", terapeuta._id.toString());
+            console.log("Atendimento atual encontrado:", atendimentoAtual);
+            console.log("Atendimento em andamento:", atendimentoEmAndamento);
+            console.log("Próximo atendimento:", proximoAtendimento);
+
+            console.log("Atual:", atendimentoAtual);
+            console.log("Em andamento:", atendimentoEmAndamento);
+            console.log("Próximo:", proximoAtendimento);
+
+            // Prepara os dados do terapeuta
+            const terapeutaInfo = {
+                colaborador_id: terapeuta._id,
+                nome: terapeuta.nome_colaborador,
+                imagem: terapeuta.imagem || "/frontend/img/account-outline.svg",
+                status: "Disponível",
+                inicio_atendimento: null,
+                fim_atendimento: null,
+                em_andamento: false,
+            };
+
+            // Determina o status e horários
+            if (atendimentoEmAndamento) {
+                // Se tem atendimento marcado como em_andamento = true
+                terapeutaInfo.status = "Em sessão";
+                terapeutaInfo.inicio_atendimento =
+                    atendimentoEmAndamento.inicio_atendimento;
+                terapeutaInfo.fim_atendimento =
+                    atendimentoEmAndamento.fim_atendimento;
+                terapeutaInfo.em_andamento = true;
+            } else if (atendimentoAtual) {
+                // Se está no horário de um atendimento
+                terapeutaInfo.status = "Em sessão";
+                terapeutaInfo.inicio_atendimento =
+                    atendimentoAtual.inicio_atendimento;
+                terapeutaInfo.fim_atendimento =
+                    atendimentoAtual.fim_atendimento;
+                terapeutaInfo.em_andamento = false;
+            } else if (proximoAtendimento) {
+                // Se tem próximo atendimento agendado
+                terapeutaInfo.status = "Disponível";
+                terapeutaInfo.inicio_atendimento =
+                    proximoAtendimento.inicio_atendimento;
+                terapeutaInfo.fim_atendimento =
+                    proximoAtendimento.fim_atendimento;
+                terapeutaInfo.em_andamento = false;
+            }
+
+            result.push(terapeutaInfo);
+        }
+
+        // Retorna o resultado
+        console.log("Enviando resultado:", result);
+        res.json({ terapeutas: result });
+    } catch (error) {
+        console.error("Erro:", error);
+        res.status(500).json({
+            error: "Erro ao listar terapeutas e atendimentos",
+        });
+    }
+});
+
+// Rota de API
+app.get("/api/colaboradores/:id", checkToken, async (req, res) => {
+    const id = req.params.id;
+    try {
+        // Opcional: garantir que o id do token bate com o id pedido (ou tratar roles/admin)
+        if (req.userId !== id) {
+            return res.status(403).json({ msg: "Acesso proibido." });
+        }
+
+        const user = await Colaboradores.findById(id, "-login.pass");
+        if (!user)
+            return res.status(404).json({ msg: "Usuário não encontrado." });
+
+        res.json({ user });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ msg: "Erro no servidor." });
+    }
+});
+function checkToken(req, res, next) {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+
+    if (!token) {
+        return res
+            .status(401)
+            .json({ msg: "Acesso negado. Token não fornecido." });
+    }
+
+    try {
+        const secret = process.env.SECRET;
+        const decoded = jwt.verify(token, secret);
+        req.userId = decoded.id; // anexa id do token
+        next();
+    } catch (error) {
+        console.log("JWT error:", error);
+        return res.status(401).json({ msg: "Token inválido." });
+    }
+}
+
+// POSTS
+// Registrar Usuário
+app.post("/auth/register", async (req, res) => {
+    const {
+        nome_colaborador,
+        ativo,
+        tipo_colaborador,
+        unidades_trabalha,
+        perfis_usuario,
+    } = req.body;
+    const { email, pass, confirmpass } = req.body.login;
+    if (!nome_colaborador) {
+        return res.status(422).json({ msg: "O nome é obrigatório" });
+    }
+    if (!email) {
+        return res.status(422).json({ msg: "O email é obrigatório" });
+    }
+    if (!pass) {
+        return res.status(422).json({ msg: "A senha é obrigatório" });
+    }
+    if (pass !== confirmpass) {
+        return res.status(422).json({ msg: "As senhas não conferem" });
+    }
+    if (!perfis_usuario) {
+        return res
+            .status(422)
+            .json({ msg: "O usuário deve ter pelo menos 1 perfil" });
+    }
+    // Checa se ja existe um user com o email
+    const userExist = await Colaboradores.findOne({ "login.email": email });
+    if (userExist) {
+        return res.status(422).json({ msg: "Por favor utilize outro email" });
+    }
+    // Cria a senha hash
+    const salt = await bcrypt.genSalt(12);
+    const passHash = await bcrypt.hash(pass, salt);
+    const user = new Colaboradores({
+        nome_colaborador,
+        ativo,
+        tipo_colaborador,
+        unidades_trabalha,
+        perfis_usuario,
+        login: { email, pass: passHash },
+    });
+    try {
+        const novoUser = await Colaboradores.create(user);
+        res.status(201).json({ msg: "Usuário criado com sucesso!" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: "Aconteceu um erro na aplicação!",
+        });
+    }
+});
+// Verifica o Login
+app.post("/auth/login", async (req, res) => {
+    const { email, pass } = req.body;
+    if (!email) {
+        console.log(email);
+        return res.status(422).json({ msg: "O email é obrigatório" });
+    }
+    if (!pass) {
+        return res.status(422).json({ msg: "A senha é obrigatório" });
+    }
+    // Chegar se o colaborador existe
+    const user = await Colaboradores.findOne({ "login.email": email });
+    if (!user) {
+        return res.status(404).json({ msg: "Email não encontrado" });
+    }
+    // Chega a senha do user
+    const checkPass = await bcrypt.compare(pass, user.login.pass);
+    if (!checkPass) {
+        return res.status(422).json({ msg: "Senha inválida" });
+    }
+
+    try {
+        const secret = process.env.SECRET;
+
+        const token = jwt.sign(
+            {
+                id: user._id,
+            },
+            secret
+        );
+
+        res.status(200).json({
+            msg: "Autenticação realizada com sucesso",
+            token: token,
+            validado: true,
+            redirect: `/inicio/${user._id}`,
+            id: user._id,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json("Aconteceu um erro na aplicação!");
+    }
+});
+
+// Verifica se o email a ser recuperado está no banco de dados
+app.post("/recuperar", async (req, res) => {
+    const { emailRecuperacao } = req.body;
+    try {
+        const emailUsuario = await Colaboradores.findOne({
+            "login.email": emailRecuperacao,
+        });
+        // console.log(emailRecuperacao);
+        if (emailUsuario) {
+            console.log(emailRecuperacao);
+            recuperarSenha(emailRecuperacao);
+            res.json({ msg: "Email enviado" });
+        } else {
+            res.status(401).json({
+                msg: "Email não existente",
+            });
+            console.log(
+                "Tentativa de recuperação com email não existente:",
+                emailRecuperacao
+            );
+        }
+    } catch (error) {
+        res.status(500).json({ msg: "Erro no servidor" });
+    }
+});
+// Pega os dados e atualiza a senha
+app.post("/atualizarSenha", async (req, res) => {
+    const { email, newpass } = req.body;
+
+    const salt = await bcrypt.genSalt(12);
+    const passHash = await bcrypt.hash(newpass, salt);
+    try {
+        // Sintaxe correta: findOneAndUpdate(filtro, atualização, opções)
+        const emailUsuario = await Colaboradores.findOneAndUpdate(
+            { "login.email": email }, // Filtro: encontrar o usuário por email
+            {
+                $set: {
+                    "login.pass": passHash,
+                },
+            },
+            { new: true }
+        );
+
+        if (emailUsuario) {
+            res.json({ msg: "Senha atualizada com sucesso!" });
+        } else {
+            res.status(404).json({ msg: "Usuário não encontrado." });
+        }
+    } catch (error) {
+        console.error("Erro ao atualizar senha:", error);
+        res.status(500).json({ msg: "Erro no servidor" });
+    }
+});
+
+// SERVER
+// Faz o servidor rodar
+app.listen(port, () => {
+    console.log(`Servidor rodando na porta: ${port}`);
+});

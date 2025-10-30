@@ -1,19 +1,19 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
 
-
-const AtendimentosSchema = new mongoose.Schema({
-  unidade_id: { type: Schema.Types.ObjectId, ref: "Unidades", required: true },
-  cliente_id: { type: Schema.Types.ObjectId, ref: "Clientes", required: true },
-  servico_id: { type: Schema.Types.ObjectId, ref: "Servicos", required: true },
-  colaborador_id: { type: Schema.Types.ObjectId, ref: "Colaboradores", required: true },
+const atendimentoSchema = new mongoose.Schema({
+  colaborador_id: { type: mongoose.Schema.Types.ObjectId, ref: "Colaboradores" },
+  tipo_colaborador: { type: String },
+  servico_id: { type: String, required: true },
   inicio_atendimento: { type: Date, required: true },
   fim_atendimento: { type: Date, required: true },
-  valor_servico: { type: Number, required: true },
-  tipo_pagamento: { type: String, required: true },
-  observacao_cliente: { type: String },
-  foi_marcado_online: { type: Boolean, required: true },
-  pacote_id: { type: Schema.Types.ObjectId, ref: "Pacotes", default: null },
-  pontos_gerados: { type: Number, required: true },
-});
+  observacao_cliente: { type: String, default: "" },
+  tempoRestante: { type: Number },
+  em_andamento: { type: Boolean, default: false },
+  encerrado: { type: Boolean, default: false },
+  inicio_real: { type: Date },  
+  fim_real: { type: Date }  
+  },
+  { timestamps: true } 
+);
 
-export default mongoose.model("Atendimentos", AtendimentosSchema);
+export default mongoose.model("Atendimentos", atendimentoSchema);
