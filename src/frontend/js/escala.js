@@ -543,17 +543,17 @@ btnExcluir.addEventListener("click", async () => {
 });
 
 // Listener para o botão Excluir
-btnExcluir.addEventListener("click", () => {
-    if (
-        eventoEmEdicao &&
-        confirm("Tem certeza que deseja excluir esta reserva?")
-    ) {
-        excluirEvento(eventoEmEdicao.dataHora);
-        modal.style.display = "none";
-        celulaSelecionada = null;
-        eventoEmEdicao = null;
-    }
-});
+// btnExcluir.addEventListener("click", () => {
+//     if (
+//         eventoEmEdicao &&
+//         confirm("Tem certeza que deseja excluir esta reserva?")
+//     ) {
+//         excluirEvento(eventoEmEdicao.dataHora);
+//         modal.style.display = "none";
+//         celulaSelecionada = null;
+//         eventoEmEdicao = null;
+//     }
+// });
 
 document.getElementById("btn-hoje").addEventListener("click", () => {
     dataAtual = new Date();
