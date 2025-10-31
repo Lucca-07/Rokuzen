@@ -12,7 +12,7 @@ const modal = document.getElementById("modal-agendamento");
 const fecharBtn = document.querySelector(".fechar-btn");
 const formAgendamento = document.getElementById("form-agendamento");
 const horarioSelecionadoDisplay = document.getElementById(
-    "horario-selecionado"
+  "horario-selecionado"
 );
 const btnSalvar = document.getElementById("btn-salvar");
 const btnExcluir = document.getElementById("btn-excluir");
@@ -134,6 +134,8 @@ async function renderizarCalendario() {
       linha += "</tr>";
       tbodyHTML += linha;
     }
+  }
+  tabelaCalendario.querySelector("tbody").innerHTML = tbodyHTML;
 
   await carregarEventosDaSemana();
   adicionarListenersCelulas();
@@ -214,7 +216,7 @@ async function carregarOpcoesDoFormulario(unidadePredefinida = null) {
       selectServico.appendChild(option);
     });
 
-    // LÓGICA DA UNIDADE ATUALIZAaaa
+    // LÓGICA DA UNIDADE ATUALIZADA
     if (unidadePredefinida) {
       // Se recebemos uma unidade, só adicionamos essa opção
       const option = document.createElement("option");
@@ -358,6 +360,7 @@ function adicionarListenersCelulas() {
         abrirModalCriacao(dataHoraKey);
       }
     });
+  });
 }
 async function abrirModalCriacao(dataHoraKey) {
   eventoEmEdicao = null;
@@ -505,23 +508,9 @@ btnExcluir.addEventListener("click", async () => {
     }
 
     modal.style.display = "none";
-    formAgendamento.reset();
     celulaSelecionada = null;
     eventoEmEdicao = null;
-    exibirEventos(); // Redesenha a tela
-});
-
-// Listener para o botão Excluir
-btnExcluir.addEventListener("click", () => {
-    if (
-        eventoEmEdicao &&
-        confirm("Tem certeza que deseja excluir esta reserva?")
-    ) {
-        excluirEvento(eventoEmEdicao.dataHora);
-        modal.style.display = "none";
-        celulaSelecionada = null;
-        eventoEmEdicao = null;
-    }
+  }
 });
 
 document.getElementById("btn-hoje").addEventListener("click", () => {
@@ -542,26 +531,17 @@ window.onclick = function (event) {
     celulaSelecionada = null;
     eventoEmEdicao = null;
     formAgendamento.reset();
-};
-
-// Fechar o modal ao clicar fora dele
-window.onclick = function (event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-        celulaSelecionada = null;
-        eventoEmEdicao = null;
-        formAgendamento.reset();
-    }
+  }
 };
 
 document.getElementById("btn-anterior").addEventListener("click", () => {
-    dataAtual.setDate(dataAtual.getDate() - 7);
-    renderizarCalendario();
+  dataAtual.setDate(dataAtual.getDate() - 7);
+  renderizarCalendario();
 });
 
 document.getElementById("btn-proximo").addEventListener("click", () => {
-    dataAtual.setDate(dataAtual.getDate() + 7);
-    renderizarCalendario();
+  dataAtual.setDate(dataAtual.getDate() + 7);
+  renderizarCalendario();
 });
 
 document.addEventListener("DOMContentLoaded", () => {
