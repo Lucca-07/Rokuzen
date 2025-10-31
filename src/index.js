@@ -210,6 +210,44 @@ app.get("/api/colaboradores/:id", checkToken, async (req, res) => {
         res.status(500).json({ msg: "Erro no servidor." });
     }
 });
+
+app.get("/api/postos", async (req, res) => {
+  // Agora também podemos receber 'incluir_posto_id'
+  const { unidade_id, status, incluir_posto_id } = req.query;
+
+  if (!unidade_id) {
+    return res.status(400).json({ mensagem: "O ID da unidade é obrigatório." });
+  }
+
+  try {
+    const filtro = { unidade_id: unidade_id };
+
+    // Lógica para incluir o posto atual E os disponíveis
+    if (status === "Disponível" && incluir_posto_id) {
+      filtro["$or"] = [{ status: "Disponível" }, { _id: incluir_posto_id }];
+    } else if (status) {
+      filtro.status = status;
+    }
+
+    const postos = await PostosAtendimento.find(filtro);
+    res.json(postos);
+  } catch (error) {
+    console.error("Erro ao buscar postos de atendimento:", error);
+    res.status(500).json({ mensagem: "Erro no servidor." });
+  }
+});
+// ROTA PARA BUSCAR TODOS OS SERVIÇOS
+app.get("/api/colaboradores", async (req, res) => {
+    try {
+        const servicos = await Colaboradores.find({ ativo: true }).select(
+            "nome_colaborador"
+        );
+        res.json(servicos);
+    } catch (error) {
+        console.error("Erro ao buscar colaboradores:", error);
+        res.status(500).json({ mensagem: "Erro no servidor." });
+    }
+});
 // ROTA PARA BUSCAR TODOS OS SERVIÇOS
 app.get("/api/servicos", async (req, res) => {
     try {

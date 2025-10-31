@@ -140,6 +140,7 @@ async function renderizarCalendario() {
             linha += "</tr>";
             tbodyHTML += linha;
         }
+        tabelaCalendario.querySelector("tbody").innerHTML = tbodyHTML;
 
         await carregarEventosDaSemana();
         adicionarListenersCelulas();
@@ -203,7 +204,7 @@ async function carregarOpcoesDoFormulario(unidadePredefinida = null) {
     try {
         // Busca colaboradores e serviços em paralelo
         const [resColaboradores, resServicos] = await Promise.all([
-            fetch(`/api/colaboradores/${localStorage.getItem("userId")}`),
+            fetch(`/api/colaboradores/`),
             fetch("/api/servicos"),
         ]);
 
