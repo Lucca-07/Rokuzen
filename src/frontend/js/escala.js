@@ -214,7 +214,7 @@ async function carregarOpcoesDoFormulario(unidadePredefinida = null) {
       selectServico.appendChild(option);
     });
 
-    // LÓGICA DA UNIDADE ATUALIZADA
+    // LÓGICA DA UNIDADE ATUALIZAaaa
     if (unidadePredefinida) {
       // Se recebemos uma unidade, só adicionamos essa opção
       const option = document.createElement("option");
