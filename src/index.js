@@ -212,29 +212,34 @@ app.get("/api/colaboradores/:id", checkToken, async (req, res) => {
 });
 
 app.get("/api/postos", async (req, res) => {
-  // Agora também podemos receber 'incluir_posto_id'
-  const { unidade_id, status, incluir_posto_id } = req.query;
+    // Agora também podemos receber 'incluir_posto_id'
+    const { unidade_id, status, incluir_posto_id } = req.query;
 
-  if (!unidade_id) {
-    return res.status(400).json({ mensagem: "O ID da unidade é obrigatório." });
-  }
-
-  try {
-    const filtro = { unidade_id: unidade_id };
-
-    // Lógica para incluir o posto atual E os disponíveis
-    if (status === "Disponível" && incluir_posto_id) {
-      filtro["$or"] = [{ status: "Disponível" }, { _id: incluir_posto_id }];
-    } else if (status) {
-      filtro.status = status;
+    if (!unidade_id) {
+        return res
+            .status(400)
+            .json({ mensagem: "O ID da unidade é obrigatório." });
     }
 
-    const postos = await PostosAtendimento.find(filtro);
-    res.json(postos);
-  } catch (error) {
-    console.error("Erro ao buscar postos de atendimento:", error);
-    res.status(500).json({ mensagem: "Erro no servidor." });
-  }
+    try {
+        const filtro = { unidade_id: unidade_id };
+
+        // Lógica para incluir o posto atual E os disponíveis
+        if (status === "Disponível" && incluir_posto_id) {
+            filtro["$or"] = [
+                { status: "Disponível" },
+                { _id: incluir_posto_id },
+            ];
+        } else if (status) {
+            filtro.status = status;
+        }
+
+        const postos = await PostosAtendimento.find(filtro);
+        res.json(postos);
+    } catch (error) {
+        console.error("Erro ao buscar postos de atendimento:", error);
+        res.status(500).json({ mensagem: "Erro no servidor." });
+    }
 });
 // ROTA PARA BUSCAR TODOS OS SERVIÇOS
 app.get("/api/colaboradores", async (req, res) => {
@@ -723,7 +728,7 @@ app.get("/api/colaboradores/:id/imagem", async (req, res) => {
 
         if (!colab || !colab.imagem) {
             return res.sendFile("account-outline.svg", {
-                root: path.join(frontendDir, "img"),
+                root: path.join(dirname, "frontend", "img"),
             });
         }
 
@@ -1085,6 +1090,8 @@ app.post("/auth/login", async (req, res) => {
             redirect: `/inicio/${user._id}`,
             id: user._id,
             unidades: user.unidades_trabalha,
+            tipoUser: user.tipo_colaborador,
+            perfis_usuario: user.perfis_usuario,
         });
     } catch (error) {
         console.log(error);

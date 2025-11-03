@@ -47,17 +47,18 @@ async function validarUsuario() {
         if (data.validado) {
             localStorage.setItem("token", data.token); // salva o token
             localStorage.setItem("userId", data.id); // Salva o id
+            console.log(data.id);
+            localStorage.setItem("tipoUser", data.tipoUser);
+            localStorage.setItem("perfis_usuario", data.perfis_usuario[0]);
             document.getElementById("cardLogin").classList.toggle("d-none");
             document.getElementById("cardUnidades").classList.toggle("d-none");
             const select = document.getElementById("unidades");
             let listaUnidades;
-            console.log(typeof localStorage.getItem("unidadesTotais"));
             if (data.unidades.includes(",")) {
                 listaUnidades = data.unidades.split(",");
             } else {
                 listaUnidades = data.unidades;
             }
-            console.log(listaUnidades);
             listaUnidades.forEach((unidade) => {
                 select.add(new Option(unidade, unidade));
             });
