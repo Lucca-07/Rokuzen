@@ -1,3 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+.roboto {
+    font-family: "Roboto", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 100;
+    font-style: normal;
+    font-variation-settings:
+        "wdth" 100;
+}
+
 .navbar {
     border-top: 5px solid #9db668;
     border-bottom: 5px solid #e9eaee;
@@ -73,7 +84,8 @@
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
-    background-color: #9db668; /* Azul primário */
+    background-color: #9db668;
+    /* Azul primário */
     color: white;
     cursor: pointer;
     transition: background-color 0.3s;
@@ -86,7 +98,8 @@
 
 /* Estilo da Tabela do Calendário */
 .calendario-container {
-    overflow-x: auto; /* Permite rolagem lateral em telas menores */
+    overflow-x: auto;
+    /* Permite rolagem lateral em telas menores */
     background-color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
@@ -96,8 +109,10 @@
 #tabela-calendario {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed; /* Ajuda a manter a largura das colunas consistente */
-    min-width: 900px; /* Garante que a tabela tenha um tamanho mínimo */
+    table-layout: fixed;
+    /* Ajuda a manter a largura das colunas consistente */
+    min-width: 900px;
+    /* Garante que a tabela tenha um tamanho mínimo */
 }
 
 #tabela-calendario th,
@@ -105,11 +120,13 @@
     border: 1px solid #ddd;
     padding: 10px;
     text-align: center;
-    height: 50px; /* Altura padrão da célula de horário */
+    height: 50px;
+    /* Altura padrão da célula de horário */
 }
 
 #tabela-calendario thead th {
-    background-color: #e9ecef; /* Cor do cabeçalho */
+    background-color: #e9ecef;
+    /* Cor do cabeçalho */
     font-weight: bold;
     color: #495057;
 }
@@ -118,12 +135,12 @@
 .horario-celula {
     cursor: pointer;
     transition: background-color 0.2s;
-    position: relative; 
+    position: relative;
     padding: 10px;
 }
 
 .horario-celula:hover {
-    background-color: #ffe8cc; 
+    background-color: #ffe8cc;
 }
 
 .evento {
@@ -140,29 +157,33 @@
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    margin-bottom: 5px; 
-    position: static; 
-    width: 100%; 
-    min-height: 20px; 
-    cursor: pointer; 
+    margin-bottom: 5px;
+    position: static;
+    width: 100%;
+    min-height: 20px;
+    cursor: pointer;
 }
 
 
 .modalescala {
-    display: none; /* Escondido por padrão */
+    display: none;
+    /* Escondido por padrão */
     position: fixed;
-    z-index: 100; /* Fica acima de tudo */
+    z-index: 100;
+    /* Fica acima de tudo */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4); /* Fundo escuro transparente */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Fundo escuro transparente */
 }
 
 .modalescala-conteudo {
     background-color: #fff;
-    margin: 10% auto; /* 10% do topo e centralizado */
+    margin: 10% auto;
+    /* 10% do topo e centralizado */
     padding: 25px;
     border: 1px solid #888;
     width: 80%;
@@ -207,7 +228,8 @@
 .btn-salvar {
     width: 100%;
     padding: 12px;
-    background-color: #ffc107; /* Amarelo/Laranja, Cor de destaque */
+    background-color: #ffc107;
+    /* Amarelo/Laranja, Cor de destaque */
     color: #333;
     border: none;
     border-radius: 5px;
@@ -220,11 +242,13 @@
 .btn-salvar:hover {
     background-color: #e0a800;
 }
+
 #btn-hoje {
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
-    background-color: #ffc107; /* Amarelo/Laranja, Cor de destaque */
+    background-color: #ffc107;
+    /* Amarelo/Laranja, Cor de destaque */
     color: #333;
     cursor: pointer;
     transition: background-color 0.3s;
@@ -234,11 +258,13 @@
 #btn-hoje:hover {
     background-color: #e0a800;
 }
+
 /* style.css (Adicione no final) */
 .btn-excluir {
     width: 100%;
     padding: 12px;
-    background-color: #dc3545; /* Vermelho para exclusão */
+    background-color: #dc3545;
+    /* Vermelho para exclusão */
     color: white;
     border: none;
     border-radius: 5px;

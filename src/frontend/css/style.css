@@ -1,4 +1,13 @@
-@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+.roboto {
+    font-family: "Roboto", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 100;
+    font-style: normal;
+    font-variation-settings:
+        "wdth" 100;
+}
 
 .back {
     height: 100vh;
@@ -33,11 +42,6 @@
     background-color: #c7ed79;
 }
 
-.josefin-sans {
-    font-family: "Josefin Sans", sans-serif;
-    font-optical-sizing: auto;
-    font-style: normal;
-}
 .senha {
     height: auto;
 }
@@ -100,6 +104,7 @@
     border: 1px solid black;
     border-radius: 10px;
 }
+
 #containerfundo {
     box-shadow: 10px 10px 10px #a8a8a879;
 }
@@ -119,6 +124,7 @@
         opacity: 0;
         transform: translateY(300px);
     }
+
     100% {
         opacity: 1;
         transform: translateY(0);
@@ -152,6 +158,7 @@ a.text-decoration-none:hover h3 {
     height: 100%;
     /* object-fit: cover; */
 }
+
 .cardposto {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -221,12 +228,15 @@ a.text-decoration-none:hover h3 {
 .verde {
     background-color: #7fff7f;
 }
+
 .amarelo {
     background-color: #ffef75;
 }
+
 .vermelho {
     background-color: #ff5959;
 }
+
 .laranja {
     background-color: #ff964f;
 }
@@ -276,7 +286,8 @@ a.text-decoration-none:hover h3 {
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
-    background-color: #9db668; /* Azul primário */
+    background-color: #9db668;
+    /* Azul primário */
     color: white;
     cursor: pointer;
     transition: background-color 0.3s;
@@ -289,7 +300,8 @@ a.text-decoration-none:hover h3 {
 
 /* Estilo da Tabela do Calendário */
 .calendario-container {
-    overflow-x: auto; /* Permite rolagem lateral em telas menores */
+    overflow-x: auto;
+    /* Permite rolagem lateral em telas menores */
     background-color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
@@ -299,8 +311,10 @@ a.text-decoration-none:hover h3 {
 #tabela-calendario {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed; /* Ajuda a manter a largura das colunas consistente */
-    min-width: 900px; /* Garante que a tabela tenha um tamanho mínimo */
+    table-layout: fixed;
+    /* Ajuda a manter a largura das colunas consistente */
+    min-width: 900px;
+    /* Garante que a tabela tenha um tamanho mínimo */
 }
 
 #tabela-calendario th,
@@ -308,11 +322,13 @@ a.text-decoration-none:hover h3 {
     border: 1px solid #ddd;
     padding: 10px;
     text-align: center;
-    height: 50px; /* Altura padrão da célula de horário */
+    height: 50px;
+    /* Altura padrão da célula de horário */
 }
 
 #tabela-calendario thead th {
-    background-color: #e9ecef; /* Cor do cabeçalho */
+    background-color: #e9ecef;
+    /* Cor do cabeçalho */
     font-weight: bold;
     color: #495057;
 }
@@ -321,12 +337,12 @@ a.text-decoration-none:hover h3 {
 .horario-celula {
     cursor: pointer;
     transition: background-color 0.2s;
-    position: relative; 
+    position: relative;
     padding: 10px;
 }
 
 .horario-celula:hover {
-    background-color: #ffe8cc; 
+    background-color: #ffe8cc;
 }
 
 .evento {
@@ -343,29 +359,33 @@ a.text-decoration-none:hover h3 {
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    margin-bottom: 5px; 
-    position: static; 
-    width: 100%; 
-    min-height: 20px; 
-    cursor: pointer; 
+    margin-bottom: 5px;
+    position: static;
+    width: 100%;
+    min-height: 20px;
+    cursor: pointer;
 }
 
 
 .modalescala {
-    display: none; /* Escondido por padrão */
+    display: none;
+    /* Escondido por padrão */
     position: fixed;
-    z-index: 100; /* Fica acima de tudo */
+    z-index: 100;
+    /* Fica acima de tudo */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4); /* Fundo escuro transparente */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Fundo escuro transparente */
 }
 
 .modalescala-conteudo {
     background-color: #fff;
-    margin: 10% auto; /* 10% do topo e centralizado */
+    margin: 10% auto;
+    /* 10% do topo e centralizado */
     padding: 25px;
     border: 1px solid #888;
     width: 80%;
@@ -410,7 +430,8 @@ a.text-decoration-none:hover h3 {
 .btn-salvar {
     width: 100%;
     padding: 12px;
-    background-color: #ffc107; /* Amarelo/Laranja, Cor de destaque */
+    background-color: #ffc107;
+    /* Amarelo/Laranja, Cor de destaque */
     color: #333;
     border: none;
     border-radius: 5px;
@@ -423,11 +444,13 @@ a.text-decoration-none:hover h3 {
 .btn-salvar:hover {
     background-color: #e0a800;
 }
+
 #btn-hoje {
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
-    background-color: #ffc107; /* Amarelo/Laranja, Cor de destaque */
+    background-color: #ffc107;
+    /* Amarelo/Laranja, Cor de destaque */
     color: #333;
     cursor: pointer;
     transition: background-color 0.3s;
@@ -437,11 +460,13 @@ a.text-decoration-none:hover h3 {
 #btn-hoje:hover {
     background-color: #e0a800;
 }
+
 /* style.css (Adicione no final) */
 .btn-excluir {
     width: 100%;
     padding: 12px;
-    background-color: #dc3545; /* Vermelho para exclusão */
+    background-color: #dc3545;
+    /* Vermelho para exclusão */
     color: white;
     border: none;
     border-radius: 5px;
@@ -459,6 +484,7 @@ a.text-decoration-none:hover h3 {
 .card-cadastro {
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.76);
 }
+
 .card-editar {
     box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.356);
 }
