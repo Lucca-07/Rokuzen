@@ -5,14 +5,14 @@ function abrirMenu() {
 }
 
 const statusMap = {
-    verde: "Disponível",
+    verde: "Disponivel",
     vermelho: "Ocupado",
     amarelo: "Manutenção",
     laranja: "Intervalo",
 };
 
 const colorMap = {
-    Disponível: "#90ee90", // Verde claro
+    Disponivel: "#90ee90", // Verde claro
     Ocupado: "#ff4d4d", // Vermelho
     Manutenção: "#ffd700", // Amarelo
     Intervalo: "#ffa500", // Laranja
@@ -73,7 +73,7 @@ function renderizarPostos(data) {
         const statusInicial =
             posto.status && posto.status.trim() !== ""
                 ? posto.status
-                : "Disponível";
+                : "Disponivel";
         const linha = criarLinha(posto._id, `Cadeira ${i + 1}`, statusInicial);
         frameCadeira.appendChild(linha);
     });
@@ -85,7 +85,7 @@ function renderizarPostos(data) {
         const statusInicial =
             posto.status && posto.status.trim() !== ""
                 ? posto.status
-                : "Disponível";
+                : "Disponivel";
         const linha = criarLinha(posto._id, `Poltrona ${i + 1}`, statusInicial);
         framePoltrona.appendChild(linha);
     });
@@ -97,7 +97,7 @@ function renderizarPostos(data) {
         const statusInicial =
             posto.status && posto.status.trim() !== ""
                 ? posto.status
-                : "Disponível";
+                : "Disponivel";
         const linha = criarLinha(posto._id, `Maca ${i + 1}`, statusInicial);
         frameMaca.appendChild(linha);
     });
@@ -128,7 +128,7 @@ function criarLinha(id, nome, statusInicial) {
     statusSelect.classList.add("status-select");
     statusSelect.style.marginRight = "10px";
 
-    ["Disponível", "Ocupado", "Manutenção", "Intervalo"].forEach((opcao) => {
+    ["Disponivel", "Ocupado", "Manutenção", "Intervalo"].forEach((opcao) => {
         const option = document.createElement("option");
         option.value = opcao;
         option.textContent = opcao;
