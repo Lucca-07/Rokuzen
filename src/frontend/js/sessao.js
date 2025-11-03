@@ -31,7 +31,7 @@ async function syncTimerToServer(tid) {
     if (!state || !state.serverId) return;
 
     try {
-        await fetch(`/api/atendimentos/${state.serverId}`, {
+        await fetch(`/api/atendimentos/${state.serverId}/timer`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -170,11 +170,11 @@ async function iniciarTimer() {
         }
     }
 
-    // Inicia o cronômetro localmente sem recarregar tudo
-    iniciarTimer(selectedTid);
+    // Use iniciarContagem em vez da chamada recursiva
+    iniciarContagem(selectedTid);
 
-    // Sincroniza em segundo plano, sem interromper a execução
-    syncTimerToServer(selectedTid);
+    // Sincroniza em segundo plano
+    await syncTimerToServer(selectedTid);
     carregarTerapeutas();
     atualizarTimersModal();
 }
@@ -257,7 +257,7 @@ async function carregarTerapeutas() {
     const container = document.getElementById("listaTerapeutas");
     container.innerHTML = "Carregando...";
 
-    //  sincronização com o servidor antes de carregar
+    // sincronização com o servidor antes de carregar
     await loadTimersFromDB();
 
     try {
@@ -265,54 +265,58 @@ async function carregarTerapeutas() {
         if (!res.ok) throw new Error("Falha ao carregar terapeutas");
         const terapeutas = await res.json();
 
-        // Buscar atendimentos ativos para verificar quais terapeutas têm sessões
-        const resAtendimentos = await fetch("/api/atendimentos/ativos");
-        const atendimentosAtivos = resAtendimentos.ok
-            ? await resAtendimentos.json()
-            : [];
+        // MUDANÇA AQUI: Buscar TODOS os atendimentos e filtrar os não encerrados
+        const resAtendimentos = await fetch("/api/atendimentos");
+        const todosAtendimentos = resAtendimentos.ok ? await resAtendimentos.json() : [];
+        
+        // Filtra apenas atendimentos NÃO ENCERRADOS do dia de hoje
+        const hoje = new Date().toISOString().split('T')[0];
+        const atendimentosNaoEncerrados = todosAtendimentos.filter(a => 
+            !a.encerrado && 
+            a.inicio_atendimento && 
+            a.inicio_atendimento.includes(hoje)
+        );
 
         container.innerHTML = "";
 
         terapeutas.forEach((t) => {
             const tid = String(t._id);
 
-            // Verificar se este terapeuta tem atendimento ativo
-            const atendimentoAtivo = atendimentosAtivos.find(
+            //  Verificar se este terapeuta tem atendimento NÃO ENCERRADO
+            const atendimentoNaoEncerrado = atendimentosNaoEncerrados.find(
                 (a) => String(a.colaborador_id) === tid
             );
 
             let state = window.__timers__[tid];
 
-            // ATUALIZAÇÃO CRÍTICA: Se existe atendimento ativo, SEMPRE sincroniza o tempo
-            if (atendimentoAtivo) {
+            //  Se existe atendimento não encerrado, SEMPRE sincroniza o tempo
+            if (atendimentoNaoEncerrado) {
                 if (!state) {
                     state = {
-                        tempo: atendimentoAtivo.tempoRestante ?? 600,
-                        pausado: !atendimentoAtivo.em_andamento,
+                        tempo: atendimentoNaoEncerrado.tempoRestante ?? 600,
+                        pausado: !atendimentoNaoEncerrado.em_andamento,
                         interval: null,
-                        serverId: atendimentoAtivo._id,
+                        serverId: atendimentoNaoEncerrado._id,
                         nome_colaborador: t.nome_colaborador,
                         colaborador_id: t._id,
                     };
                     window.__timers__[tid] = state;
                 } else {
                     // GARANTE que o tempo está sincronizado com o servidor
-                    state.tempo = atendimentoAtivo.tempoRestante ?? state.tempo;
-                    state.pausado = !atendimentoAtivo.em_andamento;
-                    state.serverId = atendimentoAtivo._id;
+                    state.tempo = atendimentoNaoEncerrado.tempoRestante ?? state.tempo;
+                    state.pausado = !atendimentoNaoEncerrado.em_andamento;
+                    state.serverId = atendimentoNaoEncerrado._id;
                 }
             }
 
-            // Se não tem state (nem atendimento ativo), mostrar como sem atendimento
-            if (!state || !atendimentoAtivo) {
+            //Só mostra "Sem atendimento" se realmente não tiver state
+            if (!state) {
                 const card = document.createElement("div");
-                card.className =
-                    "card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2 mb-3";
+                card.className = "card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2 mb-3";
 
-                const unidades =
-                    t.unidades_trabalha && t.unidades_trabalha.length > 0
-                        ? t.unidades_trabalha.join(", ") + "."
-                        : "Não informada.";
+                const unidades = t.unidades_trabalha && t.unidades_trabalha.length > 0
+                    ? t.unidades_trabalha.join(", ") + "."
+                    : "Não informada.";
 
                 card.innerHTML = `
                     <div class="d-flex align-items-center flex-grow-1 gap-2">
@@ -334,15 +338,13 @@ async function carregarTerapeutas() {
                 return;
             }
 
-            // Terapeuta COM atendimento ativo - USA O TEMPO SINCORNIZADO DO SERVIDOR
+            // Terapeuta COM atendimento (mesmo pausado) - USA O TEMPO SINCORNIZADO DO SERVIDOR
             const card = document.createElement("div");
-            card.className =
-                "card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2 mb-3";
+            card.className = "card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2 mb-3";
 
-            const unidades =
-                t.unidades_trabalha && t.unidades_trabalha.length > 0
-                    ? t.unidades_trabalha.join(", ") + "."
-                    : "Não informada.";
+            const unidades = t.unidades_trabalha && t.unidades_trabalha.length > 0
+                ? t.unidades_trabalha.join(", ") + "."
+                : "Não informada.";
 
             card.innerHTML = `
     <div class="d-flex align-items-center flex-grow-1 gap-2">
@@ -355,10 +357,11 @@ async function carregarTerapeutas() {
     </div>
     <div class="text-end flex-shrink-0">
         <div class="fw-semibold text-secondary small">Timer:</div>
-        <div class="fw-bold fs-5 ${
-            state.pausado ? "text-secondary" : "text-success"
-        }" id="timer-display-${tid}">
+        <div class="fw-bold fs-5 ${state.pausado ? "text-secondary" : "text-success"}" id="timer-display-${tid}">
             ${formataSegundos(state.tempo)}
+        </div>
+        <div class="small ${state.pausado ? "text-warning" : "text-success"}">
+            ${state.pausado ? "Pausado" : "Em andamento"}
         </div>
         <button class="btn btn-success btn-sm mt-2 px-3" id="select-${tid}">Selecionar</button>
     </div>
@@ -366,39 +369,29 @@ async function carregarTerapeutas() {
 
             container.appendChild(card);
 
-            document
-                .getElementById(`select-${tid}`)
-                .addEventListener("click", () => {
-                    selectedTid = tid;
+            document.getElementById(`select-${tid}`).addEventListener("click", () => {
+                selectedTid = tid;
+                const state = window.__timers__[tid];
 
-                    // GARANTE que usa o tempo sincronizado mais recente
-                    const state = window.__timers__[tid];
+                atualizarDisplays(tid);
+                atualizarTimersModal();
 
-                    atualizarDisplays(tid);
-                    atualizarTimersModal();
+                if (state.pausado) {
+                    btnIniciar.classList.remove("d-none");
+                    btnPausar.classList.add("d-none");
+                    btnPausar.textContent = "Pausar";
+                    btnPausar.classList.replace("btn-warning", "btn-primary");
+                } else {
+                    btnIniciar.classList.add("d-none");
+                    btnPausar.classList.remove("d-none");
+                    btnPausar.textContent = "Pausar";
+                    btnPausar.classList.replace("btn-primary", "btn-warning");
+                }
+                btnReiniciar.classList.remove("d-none");
 
-                    if (state.pausado) {
-                        btnIniciar.classList.remove("d-none");
-                        btnPausar.classList.add("d-none");
-                        btnPausar.textContent = "Pausar";
-                        btnPausar.classList.replace(
-                            "btn-warning",
-                            "btn-primary"
-                        );
-                    } else {
-                        btnIniciar.classList.add("d-none");
-                        btnPausar.classList.remove("d-none");
-                        btnPausar.textContent = "Pausar";
-                        btnPausar.classList.replace(
-                            "btn-primary",
-                            "btn-warning"
-                        );
-                    }
-                    btnReiniciar.classList.remove("d-none");
-
-                    const modalEl = document.getElementById("popupTerapeuta");
-                    bootstrap.Modal.getInstance(modalEl)?.hide();
-                });
+                const modalEl = document.getElementById("popupTerapeuta");
+                bootstrap.Modal.getInstance(modalEl)?.hide();
+            });
         });
 
         atualizarTimersModal();

@@ -190,7 +190,31 @@ app.get("/api/listarterapeutas", async (req, res) => {
         });
     }
 });
+// Atualiza um timer (tempo restante / estado)
+app.put("/api/atendimentos/:id/timer", async (req, res) => {
+  try {
+    const atendimentoId = req.params.id;
+    const update = {
+      tempoRestante: req.body.tempoRestante,
+      em_andamento: req.body.em_andamento
+    };
 
+    const atendimento = await Atendimentos.findByIdAndUpdate(
+      atendimentoId, 
+      update, 
+      { new: true }
+    );
+
+    if (!atendimento) {
+      return res.status(404).json({ error: "Atendimento não encontrado" });
+    }
+
+    res.json(atendimento);
+  } catch (err) {
+    console.error("Erro ao atualizar atendimento:", err);
+    res.status(500).json({ error: "Erro interno" });
+  }
+});
 // Rota de API
 app.get("/api/colaboradores/:id", checkToken, async (req, res) => {
     const id = req.params.id;
