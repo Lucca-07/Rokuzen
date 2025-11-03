@@ -155,7 +155,7 @@ async function carregarEquipamentos(unidadeId, equipamentoAtualId = null) {
 
     try {
         // Constrói a URL da API dinamicamente
-        let apiUrl = `/api/postos?unidade_id=${unidadeId}&status=Disponível`;
+        let apiUrl = `/api/postos?unidade_id=${unidadeId}&status=Disponivel`;
         if (equipamentoAtualId) {
             apiUrl += `&incluir_posto_id=${equipamentoAtualId}`;
         }
@@ -168,7 +168,7 @@ async function carregarEquipamentos(unidadeId, equipamentoAtualId = null) {
 
         if (equipamentos.length === 0) {
             selectEquipamento.innerHTML =
-                '<option value="selecao">Nenhum equipamento disponível</option>';
+                '<option value="selecao">Nenhum equipamento disponivel</option>';
             return;
         }
 
@@ -393,7 +393,10 @@ async function abrirModalCriacao(dataHoraKey) {
     eventoEmEdicao = null;
 
     const unidadeId = document.getElementById("unidade").value;
+
     formAgendamento.reset();
+
+    document.getElementById("unidade").value = unidadeId;
 
     await carregarEquipamentos(unidadeId);
 
@@ -460,14 +463,14 @@ formAgendamento.addEventListener("submit", async function (e) {
     const dadosParaEnviar = {
         colaborador_id: document.getElementById("funcionario").value,
         servico_id: document.getElementById("tipo-trabalho").value,
-        // unidade_id: document.getElementById("unidade").value,
+        unidade_id: document.getElementById("unidade").value,
         posto_id: document.getElementById("equipamento").value,
     };
 
     if (
         dadosParaEnviar.colaborador_id === "selecao" ||
         dadosParaEnviar.servico_id === "selecao" ||
-        dadosParaEnviar.unidade_id === "selecao" ||
+        // dadosParaEnviar.unidade_id === "selecao" ||
         dadosParaEnviar.posto_id === "selecao"
     ) {
         alert("Por favor, selecione todos os tópicos");

@@ -362,3 +362,4 @@ app.get("/sessao", (req, res) => {
 app.listen(8080, () => {
   console.log(`Servidor rodando na porta: ${port}`);
 });
+
