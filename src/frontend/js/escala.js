@@ -498,7 +498,7 @@ formAgendamento.addEventListener("submit", async function (e) {
 
         if (response.ok) {
             alert(resultado.mensagem);
-            await carregarEventosDaSemana();
+            location.reload();
         } else {
             alert(`Erro: ${resultado.mensagem}`);
         }
@@ -528,7 +528,8 @@ btnExcluir.addEventListener("click", async () => {
 
             if (response.ok) {
                 alert(resultado.mensagem);
-                await carregarEventosDaSemana();
+                // await carregarEventosDaSemana();
+                location.reload();
             } else {
                 alert(`Erro ao excluir: ${resultado.mensagem}`);
             }
