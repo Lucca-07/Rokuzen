@@ -516,7 +516,7 @@ formAgendamento.addEventListener("submit", async function (e) {
 btnExcluir.addEventListener("click", async () => {
     if (
         eventoEmEdicao &&
-        confirm("Tem certeza que deseja excluir esta reserva?")
+        confirm("Tem certeza que deseja excluir essa reserva?")
     ) {
         try {
             const urlAPI = `/api/atendimentos/${eventoEmEdicao.id}`;
