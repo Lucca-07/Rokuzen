@@ -1267,10 +1267,6 @@ app.put("/api/user/update", async (req, res) => {
     }
 });
 
-app.get("/teste", (req, res)=>{
-    res.sendFile(path.join(dirname, "frontend", "navbar.html"));
-})
-
 
 // SERVER
 // Faz o servidor rodar
