@@ -120,8 +120,8 @@ app.get("/api/postos", async (req, res) => {
     const filtro = { unidade_id: unidade_id };
 
     // Lógica para incluir o posto atual E os disponíveis
-    if (status === "Disponível" && incluir_posto_id) {
-      filtro["$or"] = [{ status: "Disponível" }, { _id: incluir_posto_id }];
+    if (status === "Disponivel" && incluir_posto_id) {
+      filtro["$or"] = [{ status: "Disponivel" }, { _id: incluir_posto_id }];
     } else if (status) {
       filtro.status = status;
     }
