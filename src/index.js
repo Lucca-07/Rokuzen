@@ -829,13 +829,34 @@ app.post("/postoatendimento", async (req, res) => {
         let maca = [];
         postos.forEach((posto) => {
             switch (posto.nome_posto) {
-                case "Cadeira Quick":
+                case "Cadeira Quick 1":
                     quick.push(posto);
                     break;
-                case "Poltrona de Reflexologia":
+                case "Cadeira Quick 2":
+                    quick.push(posto);
+                    break;
+                case "Cadeira Quick 3":
+                    quick.push(posto);
+                    break;
+                case "Cadeira Quick 4":
+                    quick.push(posto);
+                    break;
+                case "Poltrona de Reflexologia 1":
                     poltrona.push(posto);
                     break;
-                case "Sala de Maca":
+                case "Poltrona de Reflexologia 2":
+                    poltrona.push(posto);
+                    break;
+                case "Sala de Maca 1":
+                    maca.push(posto);
+                    break;
+                case "Sala de Maca 2":
+                    maca.push(posto);
+                    break;
+                case "Sala de Maca 3":
+                    maca.push(posto);
+                    break;
+                case "Sala de Maca 4":
                     maca.push(posto);
                     break;
                 default:
