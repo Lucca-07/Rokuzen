@@ -51,18 +51,20 @@ async function listarColaboradores() {
             const nome = user.nome_colaborador;
             let perfis = user.perfis_usuario;
             console.log("Perfis antes:", perfis);
-            
+
             // Garante que perfis é um array e remove valores vazios/null/undefined
-            perfis = Array.isArray(perfis) ? perfis.filter(p => p && p.trim()) : [];
-            
+            perfis = Array.isArray(perfis)
+                ? perfis.filter((p) => p && p.trim())
+                : [];
+
             // Se não houver perfis válidos, mostra mensagem padrão
             if (perfis.length === 0) {
                 perfis = "Sem perfil";
-            } 
+            }
             // Se houver apenas um perfil, usa ele
             else if (perfis.length === 1) {
                 perfis = perfis[0];
-            } 
+            }
             // Se houver mais de um perfil, junta com vírgula
             else {
                 perfis = perfis.join(", ");
@@ -405,3 +407,35 @@ async function deleteColaborador(id) {
         alert("Erro no servidor");
     }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    const pathParts = window.location.pathname.split("/");
+    const id = pathParts[pathParts.length - 1];
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+        // sem token: volta pra login
+        window.location.href = "/";
+        return;
+    }
+    const links = {
+        escala: document.querySelector('a[href^="/escala"]'),
+        postos: document.querySelector('a[href^="/postosatendimento"]'),
+        sessao: document.querySelector('a[href^="/sessao"]'),
+        cadastro: document.querySelector('a[href^="/cadastrar"]'),
+        listar: document.querySelector('a[href^="/user/listar"]'),
+        inicio: document.querySelector('a[href^="/inicio"]'),
+    };
+
+    if (links.escala) links.escala.href = `/escala/${id}`;
+    if (links.postos) links.postos.href = `/postosatendimento/${id}`;
+    if (links.sessao) links.sessao.href = `/sessao/${id}`;
+    if (links.inicio) links.inicio.href = `/inicio/${id}`;
+    if (links.cadastro) links.cadastro.href = `/cadastrar/${id}`;
+    if (links.listar) links.listar.href = `/user/listar/${id}`;
+});
+
+document.getElementById("sairbutton").addEventListener("click", () => {
+    localStorage.removeItem("token");
+    window.location.href = "/";
+});

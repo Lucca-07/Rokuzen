@@ -112,15 +112,20 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
         const links = {
-            escala: document.querySelector('a[href="#escala"]'),
-            postos: document.querySelector('a[href="#postos"]'),
-            sessao: document.querySelector('a[href="#sessao"]'),
-            inicio: document.querySelector('a[href="#inicio"'),
+            escala: document.querySelector('a[href^="/escala"]'),
+            postos: document.querySelector('a[href^="/postosatendimento"]'),
+            sessao: document.querySelector('a[href^="/sessao"]'),
+            cadastro: document.querySelector('a[href^="/cadastrar"]'),
+            listar: document.querySelector('a[href^="/user/listar"]'),
+            inicio: document.querySelector('a[href^="/inicio"]'),
         };
+
         if (links.escala) links.escala.href = `/escala/${id}`;
         if (links.postos) links.postos.href = `/postosatendimento/${id}`;
         if (links.sessao) links.sessao.href = `/sessao/${id}`;
         if (links.inicio) links.inicio.href = `/inicio/${id}`;
+        if (links.cadastro) links.cadastro.href = `/cadastrar/${id}`;
+        if (links.listar) links.listar.href = `/user/listar/${id}`;
     } catch (error) {
         console.error("Erro de rede:", error);
         alert("Erro de rede. Tente novamente.");
@@ -281,3 +286,8 @@ async function salvarCliente(event) {
         alert("Erro ao tentar salvar cliente.");
     }
 }
+
+document.getElementById("sairbutton").addEventListener("click", () => {
+    localStorage.removeItem("token");
+    window.location.href = "/";
+});

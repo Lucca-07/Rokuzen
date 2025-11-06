@@ -281,3 +281,6 @@
 .btn-excluir:hover {
     background-color: #c82333;
 }
+#sairbutton:hover{
+  background: #9DB668 !important;
+}

@@ -1101,10 +1101,9 @@ app.post("/auth/login", async (req, res) => {
         const secret = process.env.SECRET;
 
         const token = jwt.sign(
-            {
-                id: user._id,
-            },
-            secret
+            {id: user._id},
+            secret,
+            {expiresIn: "8h"}
         );
 
         res.status(200).json({
@@ -1267,6 +1266,11 @@ app.put("/api/user/update", async (req, res) => {
         res.status(500).json({ msg: "Erro no servidor", error: err.message });
     }
 });
+
+app.get("/teste", (req, res)=>{
+    res.sendFile(path.join(dirname, "frontend", "navbar.html"));
+})
+
 
 // SERVER
 // Faz o servidor rodar

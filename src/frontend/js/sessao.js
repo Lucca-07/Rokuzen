@@ -228,6 +228,30 @@ document.addEventListener("DOMContentLoaded", () => {
     btnAdicionar1?.addEventListener("click", () => adicionarTempo(60));
     btnAdicionar5?.addEventListener("click", () => adicionarTempo(5 * 60));
     btnAdicionar10?.addEventListener("click", () => adicionarTempo(10 * 60));
+    const pathParts = window.location.pathname.split("/");
+    const id = pathParts[pathParts.length - 1];
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+        // sem token: volta pra login
+        window.location.href = "/";
+        return;
+    }
+    const links = {
+        escala: document.querySelector('a[href^="/escala"]'),
+        postos: document.querySelector('a[href^="/postosatendimento"]'),
+        sessao: document.querySelector('a[href^="/sessao"]'),
+        cadastro: document.querySelector('a[href^="/cadastrar"]'),
+        listar: document.querySelector('a[href^="/user/listar"]'),
+        inicio: document.querySelector('a[href^="/inicio"]'),
+    };
+
+    if (links.escala) links.escala.href = `/escala/${id}`;
+    if (links.postos) links.postos.href = `/postosatendimento/${id}`;
+    if (links.sessao) links.sessao.href = `/sessao/${id}`;
+    if (links.inicio) links.inicio.href = `/inicio/${id}`;
+    if (links.cadastro) links.cadastro.href = `/cadastrar/${id}`;
+    if (links.listar) links.listar.href = `/user/listar/${id}`;
 });
 
 // Funções para adicionar tempo
@@ -267,14 +291,17 @@ async function carregarTerapeutas() {
 
         // MUDANÇA AQUI: Buscar TODOS os atendimentos e filtrar os não encerrados
         const resAtendimentos = await fetch("/api/atendimentos");
-        const todosAtendimentos = resAtendimentos.ok ? await resAtendimentos.json() : [];
-        
+        const todosAtendimentos = resAtendimentos.ok
+            ? await resAtendimentos.json()
+            : [];
+
         // Filtra apenas atendimentos NÃO ENCERRADOS do dia de hoje
-        const hoje = new Date().toISOString().split('T')[0];
-        const atendimentosNaoEncerrados = todosAtendimentos.filter(a => 
-            !a.encerrado && 
-            a.inicio_atendimento && 
-            a.inicio_atendimento.includes(hoje)
+        const hoje = new Date().toISOString().split("T")[0];
+        const atendimentosNaoEncerrados = todosAtendimentos.filter(
+            (a) =>
+                !a.encerrado &&
+                a.inicio_atendimento &&
+                a.inicio_atendimento.includes(hoje)
         );
 
         container.innerHTML = "";
@@ -303,7 +330,8 @@ async function carregarTerapeutas() {
                     window.__timers__[tid] = state;
                 } else {
                     // GARANTE que o tempo está sincronizado com o servidor
-                    state.tempo = atendimentoNaoEncerrado.tempoRestante ?? state.tempo;
+                    state.tempo =
+                        atendimentoNaoEncerrado.tempoRestante ?? state.tempo;
                     state.pausado = !atendimentoNaoEncerrado.em_andamento;
                     state.serverId = atendimentoNaoEncerrado._id;
                 }
@@ -312,11 +340,13 @@ async function carregarTerapeutas() {
             //Só mostra "Sem atendimento" se realmente não tiver state
             if (!state) {
                 const card = document.createElement("div");
-                card.className = "card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2 mb-3";
+                card.className =
+                    "card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2 mb-3";
 
-                const unidades = t.unidades_trabalha && t.unidades_trabalha.length > 0
-                    ? t.unidades_trabalha.join(", ") + "."
-                    : "Não informada.";
+                const unidades =
+                    t.unidades_trabalha && t.unidades_trabalha.length > 0
+                        ? t.unidades_trabalha.join(", ") + "."
+                        : "Não informada.";
 
                 card.innerHTML = `
                     <div class="d-flex align-items-center flex-grow-1 gap-2">
@@ -340,11 +370,13 @@ async function carregarTerapeutas() {
 
             // Terapeuta COM atendimento (mesmo pausado) - USA O TEMPO SINCORNIZADO DO SERVIDOR
             const card = document.createElement("div");
-            card.className = "card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2 mb-3";
+            card.className =
+                "card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2 mb-3";
 
-            const unidades = t.unidades_trabalha && t.unidades_trabalha.length > 0
-                ? t.unidades_trabalha.join(", ") + "."
-                : "Não informada.";
+            const unidades =
+                t.unidades_trabalha && t.unidades_trabalha.length > 0
+                    ? t.unidades_trabalha.join(", ") + "."
+                    : "Não informada.";
 
             card.innerHTML = `
     <div class="d-flex align-items-center flex-grow-1 gap-2">
@@ -357,7 +389,9 @@ async function carregarTerapeutas() {
     </div>
     <div class="text-end flex-shrink-0">
         <div class="fw-semibold text-secondary small">Timer:</div>
-        <div class="fw-bold fs-5 ${state.pausado ? "text-secondary" : "text-success"}" id="timer-display-${tid}">
+        <div class="fw-bold fs-5 ${
+            state.pausado ? "text-secondary" : "text-success"
+        }" id="timer-display-${tid}">
             ${formataSegundos(state.tempo)}
         </div>
         <div class="small ${state.pausado ? "text-warning" : "text-success"}">
@@ -369,29 +403,37 @@ async function carregarTerapeutas() {
 
             container.appendChild(card);
 
-            document.getElementById(`select-${tid}`).addEventListener("click", () => {
-                selectedTid = tid;
-                const state = window.__timers__[tid];
+            document
+                .getElementById(`select-${tid}`)
+                .addEventListener("click", () => {
+                    selectedTid = tid;
+                    const state = window.__timers__[tid];
 
-                atualizarDisplays(tid);
-                atualizarTimersModal();
+                    atualizarDisplays(tid);
+                    atualizarTimersModal();
 
-                if (state.pausado) {
-                    btnIniciar.classList.remove("d-none");
-                    btnPausar.classList.add("d-none");
-                    btnPausar.textContent = "Pausar";
-                    btnPausar.classList.replace("btn-warning", "btn-primary");
-                } else {
-                    btnIniciar.classList.add("d-none");
-                    btnPausar.classList.remove("d-none");
-                    btnPausar.textContent = "Pausar";
-                    btnPausar.classList.replace("btn-primary", "btn-warning");
-                }
-                btnReiniciar.classList.remove("d-none");
+                    if (state.pausado) {
+                        btnIniciar.classList.remove("d-none");
+                        btnPausar.classList.add("d-none");
+                        btnPausar.textContent = "Pausar";
+                        btnPausar.classList.replace(
+                            "btn-warning",
+                            "btn-primary"
+                        );
+                    } else {
+                        btnIniciar.classList.add("d-none");
+                        btnPausar.classList.remove("d-none");
+                        btnPausar.textContent = "Pausar";
+                        btnPausar.classList.replace(
+                            "btn-primary",
+                            "btn-warning"
+                        );
+                    }
+                    btnReiniciar.classList.remove("d-none");
 
-                const modalEl = document.getElementById("popupTerapeuta");
-                bootstrap.Modal.getInstance(modalEl)?.hide();
-            });
+                    const modalEl = document.getElementById("popupTerapeuta");
+                    bootstrap.Modal.getInstance(modalEl)?.hide();
+                });
         });
 
         atualizarTimersModal();
@@ -883,4 +925,9 @@ document.getElementById("fb-salvar").addEventListener("click", async () => {
         console.error("Erro ao salvar feedback:", e);
         alert("Ocorreu um erro ao salvar o feedback.");
     }
+});
+
+document.getElementById("sairbutton").addEventListener("click", () => {
+    localStorage.removeItem("token");
+    window.location.href = "/";
 });
