@@ -20,56 +20,66 @@
                 transform: translateY(0);
             }
         }
+
+        .border-lg-0 {
+            border: none !important;
+        }
+
+        @media (min-width: 992px) {
+            .border-lg-0 {
+                border: none !important;
+            }
+        }
+
+        .nav-link:hover {
+            color: #9db668 !important;
+        }
     </style>
     <title>Terapeutas</title>
 </head>
 
 <body class="roboto">
-    <div class="divnav">
-        <nav class=" navbar container-fluid roboto" style="background: #FFF;">
-            <div class="row m-0 w-100 justify-content-center justify-content-lg-start">
-                <div class="logo col-sm-12 col-lg-3 mb-1 mb-lg-0 text-center align-self-center"> <!-- ! LOGO-->
-                    <a href="#inicio"><img
-                            src="https://rokuzen.com.br/wp-content/uploads/2021/09/cropped-logomarca_pequena2.png"
-                            alt="" height="80px"></a>
-                </div>
-                <div class="menu col-sm-12 col-lg-9 text-center d-flex align-items-center"> <!-- ! MENU DA NAVBAR-->
-                    <ul
-                        class="list-unstyled d-none d-lg-flex w-100 m-0 justify-content-around align-items-center flex-wrap">
-                        <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5"
-                                href="#escala">Visualizar escala</a>
-                        </li>
-                        <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="#postos">Postos
-                                de
-                                atendimento</a></li>
-                        <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5"
-                                href="#sessao">Gerenciar sessão</a>
-                        </li>
-                        <li><button id="sairbutton" class="sair px-4 fs my-2 align-self-center">Sair</button></li>
-                    </ul>
-                </div>
-                <div id="menubtn" role="button" class="sidebar col-1 d-lg-none text-center">
-                    <!-- ! BOTAO PARA ABRIR MENU EM TELAS PEQUENAS-->
-                    <i onclick="abrirMenu()" class="mdi mdi-menu fs-1"></i>
-                </div>
-            </div>
-        </nav>
-        <div id="dropcnt" class="dropcnt container-fluid p-0 d-none w-100 d-lg-none">
-            <!-- ! CONTEÚDO DO BOTAO DE ABRIR MENU-->
-            <div class="dropopt container-fluid d-flex align-items-center justify-content-center">
-                <a class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
-                    href="" style="height: 100%;">Visualizar escala</a>
-            </div>
-            <div class="dropopt container-fluid d-flex align-items-center justify-content-center">
-                <a class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
-                    href="" style="height: 100%;">Postos de atendimento</a>
-            </div>
-            <div class="dropopt container-fluid d-flex align-items-center justify-content-center">
-                <a class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
-                    href="" style="height: 100%;">Gerenciar sessão</a>
+    <nav class="navbar navbar-expand-lg bg-white roboto border-bottom h-auto">
+        <div class="container-fluid h-100">
+            <!-- LOGO -->
+            <a class="navbar-brand mx-auto mx-lg-0 me-lg-0 ms-lg-5" href="/inicio/:id">
+                <img src="https://rokuzen.com.br/wp-content/uploads/2021/09/cropped-logomarca_pequena2.png" alt="Logo"
+                    height="80">
+            </a>
+
+            <!-- BOTÃO TOGGLER (MOBILE) -->
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <i class="mdi mdi-menu fs-1 text-secondary"></i>
+            </button>
+
+            <!-- MENU -->
+            <div class="collapse navbar-collapse bg-white shadow-sm border-top border-bottom border-lg-0 z-3 h-100"
+                id="navbarContent">
+                <ul class="navbar-nav align-items-center w-100 justify-content-around h-100">
+                    <li class="nav-item">
+                        <a class="nav-link text-secondary fs-6" href="/escala/:id">Visualizar Escala</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-secondary fs-6" href="/postosatendimento/:id">Postos de Atendimento</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-secondary fs-6" href="/sessao/:id">Gerenciar Sessão</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-secondary fs-6" href="/cadastrar/:id">Cadastro</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-secondary fs-6" href="/user/listar/:id">Usuários</a>
+                    </li>
+                    <li class="nav-item">
+                        <button id="sairbutton" class="btn btn-outline-secondary px-4 my-2">Sair</button>
+                    </li>
+                </ul>
             </div>
         </div>
-    </div>
+    </nav>
     <main id="main">
         <div id="container" class="container h-100 p-4 d-flex justify-content-center flex-column align-iten">
 

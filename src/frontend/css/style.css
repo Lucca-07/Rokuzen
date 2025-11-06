@@ -1,12 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 
 .roboto {
     font-family: "Roboto", sans-serif;
     font-optical-sizing: auto;
-    font-weight: 100;
+    font-weight: 300;
     font-style: normal;
-    font-variation-settings:
-        "wdth" 100;
 }
 
 .back {
@@ -366,7 +364,6 @@ a.text-decoration-none:hover h3 {
     cursor: pointer;
 }
 
-
 .modalescala {
     display: none;
     /* Escondido por padrão */
@@ -480,11 +477,13 @@ a.text-decoration-none:hover h3 {
     background-color: #c82333;
 }
 
-
 .card-cadastro {
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.76);
 }
 
 .card-editar {
     box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.356);
+}
+#sairbutton:hover {
+    background: #9db668 !important;
 }

@@ -185,4 +185,33 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     await buscarPostos();
+    const pathParts = window.location.pathname.split("/");
+    const id = pathParts[pathParts.length - 1];
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+        // sem token: volta pra login
+        window.location.href = "/";
+        return;
+    }
+    const links = {
+        escala: document.querySelector('a[href^="/escala"]'),
+        postos: document.querySelector('a[href^="/postosatendimento"]'),
+        sessao: document.querySelector('a[href^="/sessao"]'),
+        cadastro: document.querySelector('a[href^="/cadastrar"]'),
+        listar: document.querySelector('a[href^="/user/listar"]'),
+        inicio: document.querySelector('a[href^="/inicio"]'),
+    };
+
+    if (links.escala) links.escala.href = `/escala/${id}`;
+    if (links.postos) links.postos.href = `/postosatendimento/${id}`;
+    if (links.sessao) links.sessao.href = `/sessao/${id}`;
+    if (links.inicio) links.inicio.href = `/inicio/${id}`;
+    if (links.cadastro) links.cadastro.href = `/cadastrar/${id}`;
+    if (links.listar) links.listar.href = `/user/listar/${id}`;
+});
+
+document.getElementById("sairbutton").addEventListener("click", () => {
+    localStorage.removeItem("token");
+    window.location.href = "/";
 });

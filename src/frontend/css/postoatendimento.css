@@ -3,10 +3,8 @@
 .roboto {
     font-family: "Roboto", sans-serif;
     font-optical-sizing: auto;
-    font-weight: 100;
+    font-weight: 300;
     font-style: normal;
-    font-variation-settings:
-        "wdth" 100;
 }
 .sair {
     background-color: #c7ed79;
@@ -190,7 +188,7 @@
     gap: 15px;
 }
 
-.btn {
+.btnc {
     background-color: #aab874 !important;
     color: white !important;
     font-size: 28px;
@@ -204,15 +202,15 @@
     font-weight: 500;
 }
 
-.btn:hover {
+.btnc:hover {
     background-color: #e3efcc !important;
     transform: scale(1.03) !important;
 }
 
-.btn:hover {
+.btnc:hover {
     background-color: var(--btn-hover);
 }
-.btn:active {
+.btnc:active {
     transform: translateY(1px);
 }
 
@@ -231,4 +229,9 @@
 
 .fechar-popup:hover {
     color: #ff4d4d;
+}
+
+
+#sairbutton:hover{
+  background: #9DB668 !important;
 }

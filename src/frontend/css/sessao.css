@@ -1,18 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
 .roboto {
-  font-family: "Roboto", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 100;
-  font-style: normal;
-  font-variation-settings:
-    "wdth" 100;
+    font-family: "Roboto", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
 }
 
 /* Circulo timer */
 .timer-circle {
   width: 70vw;
-  max-width: 500px;
+  max-width: 350px;
   /* para manter o circulo redondo: */
   aspect-ratio: 1 / 1;
   background-color: rgb(225, 239, 197);
@@ -21,9 +19,13 @@
 }
 
 .timer-title {
-  font-size: clamp(50px, 8vw, 80px);
-  text-shadow: 1px 1px 5px black;
+  font-size: clamp(25px, 8vw, 50px);
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.164);
   border-bottom: 3px solid black;
+}
+.timer-title h2{
+  font-style: normal;
+  font-weight: 400;
 }
 
 /* Popup */
@@ -132,4 +134,8 @@
 
 .dropopt a:hover {
   color: #9DB668 !important;
+}
+
+#sairbutton:hover{
+  background: #9DB668 !important;
 }

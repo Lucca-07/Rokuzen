@@ -3,10 +3,8 @@
 .roboto {
     font-family: "Roboto", sans-serif;
     font-optical-sizing: auto;
-    font-weight: 100;
+    font-weight: 300;
     font-style: normal;
-    font-variation-settings:
-        "wdth" 100;
 }
 
 .navbar {
@@ -84,16 +82,23 @@
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
-    background-color: #9db668;
+    background-color: white;
     /* Azul primário */
-    color: white;
+    color:#9db668;
+    border: 2px solid #9db668 ;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
 #btn-anterior:hover,
 #btn-proximo:hover {
-    background-color: darkgreen;
+    background-color: white;
+    color: #b3ce78;
+    border: 2px solid #b3ce78;
+}
+
+#servicosh1{
+    font-weight: 400;
 }
 
 /* Estilo da Tabela do Calendário */
@@ -144,7 +149,7 @@
 }
 
 .evento {
-    background-color: #28a745;
+    background-color: #8fa25d;
     color: white;
     border-radius: 3px;
     padding: 5px;
@@ -228,9 +233,9 @@
 .btn-salvar {
     width: 100%;
     padding: 12px;
-    background-color: #ffc107;
+    background-color: #9db668;
     /* Amarelo/Laranja, Cor de destaque */
-    color: #333;
+    color: white;
     border: none;
     border-radius: 5px;
     margin-top: 20px;
@@ -240,23 +245,22 @@
 }
 
 .btn-salvar:hover {
-    background-color: #e0a800;
+    background-color: #9db668;
 }
 
 #btn-hoje {
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
-    background-color: #ffc107;
+    background-color: #9db668;
     /* Amarelo/Laranja, Cor de destaque */
-    color: #333;
+    color: white;
     cursor: pointer;
     transition: background-color 0.3s;
-    font-weight: bold;
 }
 
 #btn-hoje:hover {
-    background-color: #e0a800;
+    background-color: #b6d377;
 }
 
 /* style.css (Adicione no final) */
@@ -276,4 +280,7 @@
 
 .btn-excluir:hover {
     background-color: #c82333;
+}
+#sairbutton:hover{
+  background: #9DB668 !important;
 }

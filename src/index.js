@@ -169,7 +169,31 @@ app.get("/api/listarterapeutas", async (req, res) => {
         });
     }
 });
+// Atualiza um timer (tempo restante / estado)
+app.put("/api/atendimentos/:id/timer", async (req, res) => {
+  try {
+    const atendimentoId = req.params.id;
+    const update = {
+      tempoRestante: req.body.tempoRestante,
+      em_andamento: req.body.em_andamento
+    };
 
+    const atendimento = await Atendimentos.findByIdAndUpdate(
+      atendimentoId, 
+      update, 
+      { new: true }
+    );
+
+    if (!atendimento) {
+      return res.status(404).json({ error: "Atendimento não encontrado" });
+    }
+
+    res.json(atendimento);
+  } catch (err) {
+    console.error("Erro ao atualizar atendimento:", err);
+    res.status(500).json({ error: "Erro interno" });
+  }
+});
 // Rota de API
 app.get("/api/colaboradores/:id", checkToken, async (req, res) => {
     const id = req.params.id;
@@ -717,7 +741,7 @@ app.get("/api/colaboradores/:id/imagem", async (req, res) => {
 
         if (!colab || !colab.imagem) {
             return res.sendFile("account-outline.svg", {
-                root: path.join(frontendDir, "img"),
+                root: path.join(dirname, "frontend", "img"),
             });
         }
 
@@ -1060,10 +1084,9 @@ app.post("/auth/login", async (req, res) => {
         const secret = process.env.SECRET;
 
         const token = jwt.sign(
-            {
-                id: user._id,
-            },
-            secret
+            {id: user._id},
+            secret,
+            {expiresIn: "8h"}
         );
 
         res.status(200).json({
@@ -1073,6 +1096,8 @@ app.post("/auth/login", async (req, res) => {
             redirect: `/inicio/${user._id}`,
             id: user._id,
             unidades: user.unidades_trabalha,
+            tipoUser: user.tipo_colaborador,
+            perfis_usuario: user.perfis_usuario,
         });
     } catch (error) {
         console.log(error);
@@ -1223,6 +1248,7 @@ app.put("/api/user/update", async (req, res) => {
         res.status(500).json({ msg: "Erro no servidor", error: err.message });
     }
 });
+
 
 // SERVER
 // Faz o servidor rodar

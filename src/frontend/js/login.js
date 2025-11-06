@@ -25,6 +25,25 @@ document.getElementById("acessar").addEventListener("click", () => {
     }
 });
 
+// Funções que serão usadas
+function handleLoginKey(event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        validarUsuario().then(() => {
+            // se quiser, o listener pode ser trocado aqui depois que o login muda de card
+        });
+    }
+}
+
+function handleUnidadeKey(event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        document.getElementById("acessar").click();
+    }
+}
+
+document.addEventListener("keydown", handleLoginKey);
+
 //Valida o login
 async function validarUsuario() {
     const email = document.getElementById("email").value;
@@ -47,21 +66,23 @@ async function validarUsuario() {
         if (data.validado) {
             localStorage.setItem("token", data.token); // salva o token
             localStorage.setItem("userId", data.id); // Salva o id
+            localStorage.setItem("tipoUser", data.tipoUser);
+            localStorage.setItem("perfis_usuario", data.perfis_usuario[0]);
             document.getElementById("cardLogin").classList.toggle("d-none");
             document.getElementById("cardUnidades").classList.toggle("d-none");
             const select = document.getElementById("unidades");
             let listaUnidades;
-            console.log(typeof localStorage.getItem("unidadesTotais"));
             if (data.unidades.includes(",")) {
                 listaUnidades = data.unidades.split(",");
             } else {
                 listaUnidades = data.unidades;
             }
-            console.log(listaUnidades);
             listaUnidades.forEach((unidade) => {
                 select.add(new Option(unidade, unidade));
             });
             localStorage.setItem("redirect", data.redirect);
+            document.removeEventListener("keydown", handleLoginKey);
+            document.addEventListener("keydown", handleUnidadeKey);
         } else {
             console.error("Falha no login:", data.msg);
             paragrafoErro.innerHTML = "Usuário/Senha inválidos";
