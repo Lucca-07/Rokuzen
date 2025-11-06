@@ -85,14 +85,10 @@ app.get("/listarterapeutas", async (req, res) => {
 //Rota da api de listar Terapeutas
 app.get("/api/listarterapeutas", async (req, res) => {
     try {
-        console.log("Recebida requisição para listar terapeutas");
-        console.log("Hora atual:", new Date().toLocaleString());
-
         // Busca os terapeutas
         const terapeutas = await Colaboradores.find({
             perfis_usuario: "Terapeuta",
         });
-        console.log("Terapeutas encontrados:", terapeutas.length);
 
         const result = [];
         // Ajusta a data atual para UTC
@@ -100,13 +96,7 @@ app.get("/api/listarterapeutas", async (req, res) => {
         const agoraUTC = new Date(
             agora.getTime() - agora.getTimezoneOffset() * 60000
         );
-        console.log("Hora atual (local):", agora.toLocaleString());
-        console.log("Hora atual (UTC):", agoraUTC.toISOString());
-
         for (const terapeuta of terapeutas) {
-            console.log(
-                `\nVerificando atendimentos para ${terapeuta.nome_colaborador}`
-            );
 
             // Busca atendimento atual (entre início e fim programados)
             const atendimentoAtual = await Atendimentos.findOne({
@@ -129,16 +119,6 @@ app.get("/api/listarterapeutas", async (req, res) => {
                 inicio_atendimento: { $gt: agoraUTC },
                 encerrado: false,
             }).sort({ inicio_atendimento: 1 });
-
-            console.log("ID do terapeuta:", terapeuta._id.toString());
-            console.log("Atendimento atual encontrado:", atendimentoAtual);
-            console.log("Atendimento em andamento:", atendimentoEmAndamento);
-            console.log("Próximo atendimento:", proximoAtendimento);
-
-            console.log("Atual:", atendimentoAtual);
-            console.log("Em andamento:", atendimentoEmAndamento);
-            console.log("Próximo:", proximoAtendimento);
-
             // Prepara os dados do terapeuta
             const terapeutaInfo = {
                 colaborador_id: terapeuta._id,
@@ -181,7 +161,6 @@ app.get("/api/listarterapeutas", async (req, res) => {
         }
 
         // Retorna o resultado
-        console.log("Enviando resultado:", result);
         res.json({ terapeutas: result });
     } catch (error) {
         console.error("Erro:", error);
@@ -212,29 +191,32 @@ app.get("/api/colaboradores/:id", checkToken, async (req, res) => {
 });
 
 app.get("/api/postos", async (req, res) => {
-  // Agora também podemos receber 'incluir_posto_id'
-  const { unidade_id, status, incluir_posto_id } = req.query;
+    // Agora também podemos receber 'incluir_posto_id'
+    const { unidade_id, incluir_posto_id } = req.query;
+    let { status } = req.query;
 
-  if (!unidade_id) {
-    return res.status(400).json({ mensagem: "O ID da unidade é obrigatório." });
-  }
-
-  try {
-    const filtro = { unidade_id: unidade_id };
-
-    // Lógica para incluir o posto atual E os disponíveis
-    if (status === "Disponivel" && incluir_posto_id) {
-      filtro["$or"] = [{ status: "Disponivel" }, { _id: incluir_posto_id }];
-    } else if (status) {
-      filtro.status = status;
+    if (!unidade_id) {
+        return res
+            .status(400)
+            .json({ mensagem: "O ID da unidade é obrigatório." });
     }
 
-    const postos = await PostosAtendimento.find(filtro);
-    res.json(postos);
-  } catch (error) {
-    console.error("Erro ao buscar postos de atendimento:", error);
-    res.status(500).json({ mensagem: "Erro no servidor." });
-  }
+    try {
+        const filtro = { unidade_id: new mongoose.Types.ObjectId(unidade_id) };
+
+        // Lógica para incluir o posto atual E os disponíveis
+        if (status === "Disponivel") status = "Disponível";
+        if (status) filtro.status = status;
+        const postos = await PostosAtendimento.find(filtro);
+        res.json(postos);
+    } catch (error) {
+        console.error("❌ Erro ao buscar postos de atendimento:", error);
+        res.status(500).json({
+            mensagem: "Erro no servidor.",
+            erro: error.message,
+            stack: error.stack,
+        });
+    }
 });
 // ROTA PARA BUSCAR TODOS OS SERVIÇOS
 app.get("/api/colaboradores", async (req, res) => {
@@ -249,11 +231,23 @@ app.get("/api/colaboradores", async (req, res) => {
     }
 });
 // ROTA PARA BUSCAR TODOS OS SERVIÇOS
-app.get("/api/servicos", async (req, res) => {
+app.post("/api/servicos", async (req, res) => {
+    const { unidade } = req.body;
     try {
-        const servicos = await Servicos.find({ ativo: true }).select(
-            "nome_servico"
-        );
+        const unidadeEncontrada = await Unidades.findOne({
+            nome_unidade: unidade,
+        });
+        if (!unidadeEncontrada) {
+            return res
+                .status(404)
+                .json({ mensagem: "Unidade não encontrada." });
+        }
+
+        const servicos = await Servicos.find({
+            unidade_id: unidadeEncontrada._id,
+            ativo: true,
+        }).select("nome_servico");
+
         res.json(servicos);
     } catch (error) {
         console.error("Erro ao buscar serviços:", error);
@@ -824,7 +818,6 @@ app.post("/postoatendimento", async (req, res) => {
                     console.log("Erro");
             }
         });
-        console.log(quick, poltrona, maca);
         res.status(200).json({
             quick: quick,
             poltrona: poltrona,
@@ -837,8 +830,6 @@ app.post("/postoatendimento", async (req, res) => {
 app.post("/atualizarStatus", async (req, res) => {
     const { id, status } = req.body;
 
-    console.log("📩 Dados recebidos para atualizar:", { id, status });
-
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({ msg: "ID inválido" });
     }
@@ -848,8 +839,6 @@ app.post("/atualizarStatus", async (req, res) => {
             { _id: id },
             { $set: { status: status } }
         );
-
-        console.log("🧾 Resultado do update:", resultado);
 
         if (resultado.matchedCount === 0) {
             return res.status(404).json({ msg: "Posto não encontrado" });
@@ -1051,7 +1040,6 @@ app.post("/auth/client/register", async (req, res) => {
 app.post("/auth/login", async (req, res) => {
     const { email, pass } = req.body;
     if (!email) {
-        console.log(email);
         return res.status(422).json({ msg: "O email é obrigatório" });
     }
     if (!pass) {
@@ -1100,7 +1088,6 @@ app.post("/recuperar", async (req, res) => {
         });
         // console.log(emailRecuperacao);
         if (emailUsuario) {
-            console.log(emailRecuperacao);
             recuperarSenha(emailRecuperacao);
             res.json({ msg: "Email enviado" });
         } else {

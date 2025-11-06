@@ -162,7 +162,7 @@ async function carregarEquipamentos(unidadeId, equipamentoAtualId = null) {
 
         const response = await fetch(apiUrl);
         const equipamentos = await response.json();
-
+        console.log("🔎 Retorno da API de equipamentos:", equipamentos);
         selectEquipamento.innerHTML =
             '<option value="selecao" selected disabled>Selecione o equipamento</option>';
 
@@ -195,17 +195,24 @@ async function carregarOpcoesDoFormulario(unidadePredefinida = null) {
 
     // Limpa tudo
     selectFuncionario.innerHTML =
-        '<option value="selecao">Selecione o colaborador</option>';
+        '<option value="selecao" selected disabled>Selecione o colaborador: </option>';
     selectServico.innerHTML =
-        '<option value="selecao">Selecione o serviço</option>';
+        '<option value="selecao" selected disabled>Selecione o serviço: </option>';
     selectUnidade.innerHTML =
-        '<option value="selecao">Selecione a unidade</option>';
+        '<option value="selecao" selected disabled>Selecione a unidade: </option>';
 
     try {
+        const unidade = localStorage.getItem("unidade");
         // Busca colaboradores e serviços em paralelo
         const [resColaboradores, resServicos] = await Promise.all([
             fetch(`/api/colaboradores/`),
-            fetch("/api/servicos"),
+            fetch("/api/servicos", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    unidade: localStorage.getItem("unidade"),
+                }),
+            }),
         ]);
 
         const colaboradores = await resColaboradores.json();
@@ -391,7 +398,8 @@ function adicionarListenersCelulas() {
 }
 async function abrirModalCriacao(dataHoraKey) {
     eventoEmEdicao = null;
-
+    document.getElementById("titulo-agendamento").innerHTML =
+        "Novo Agendamento";
     const unidadeId = document.getElementById("unidade").value;
 
     formAgendamento.reset();
@@ -437,7 +445,8 @@ async function abrirModalEdicao(evento) {
     if (evento.postoId) {
         document.getElementById("equipamento").value = evento.postoId;
     }
-
+    document.getElementById("titulo-agendamento").innerHTML =
+        "Editar Agendamento";
     document.getElementById("funcionario").value = evento.funcionarioId;
     document.getElementById("tipo-trabalho").value = evento.tipoTrabalhoId;
     document.getElementById("unidade").value = evento.unidadeId;
@@ -498,7 +507,7 @@ formAgendamento.addEventListener("submit", async function (e) {
 
         if (response.ok) {
             alert(resultado.mensagem);
-            location.reload();
+            await carregarEventosDaSemana();
         } else {
             alert(`Erro: ${resultado.mensagem}`);
         }
@@ -516,7 +525,7 @@ formAgendamento.addEventListener("submit", async function (e) {
 btnExcluir.addEventListener("click", async () => {
     if (
         eventoEmEdicao &&
-        confirm("Tem certeza que deseja excluir esta reserva?")
+        confirm("Tem certeza que deseja excluir essa reserva?")
     ) {
         try {
             const urlAPI = `/api/atendimentos/${eventoEmEdicao.id}`;
@@ -528,8 +537,8 @@ btnExcluir.addEventListener("click", async () => {
 
             if (response.ok) {
                 alert(resultado.mensagem);
-                // await carregarEventosDaSemana();
-                location.reload();
+                await carregarEventosDaSemana();
+                // location.reload();
             } else {
                 alert(`Erro ao excluir: ${resultado.mensagem}`);
             }
@@ -564,29 +573,31 @@ document.getElementById("btn-hoje").addEventListener("click", () => {
     renderizarCalendario();
 });
 
-fecharBtn.onclick = function () {
+function fecharModalLimparFormulario() {
+    // 1. Guarda o ID da unidade ANTES do reset
+    const unidadeId = document.getElementById("unidade").value;
+
+    // 2. Reseta o formulário
+    formAgendamento.reset();
+
+    // 3. Recoloca o ID da unidade no campo escondido
+    const selectUnidade = document.getElementById("unidade");
+    selectUnidade.value = unidadeId;
+
+    // 4. Garante que o campo de unidade continua desativado se veio do localStorage
+    if (localStorage.getItem("unidade")) {
+        selectUnidade.disabled = true;
+    }
+
+    // 5. Limpa o estado e esconde o modal
     modal.style.display = "none";
     celulaSelecionada = null;
     eventoEmEdicao = null;
-    formAgendamento.reset();
-};
+}
 
 window.onclick = function (event) {
     if (event.target == modal) {
-        modal.style.display = "none";
-        celulaSelecionada = null;
-        eventoEmEdicao = null;
-        formAgendamento.reset();
-    }
-};
-
-// Fechar o modal ao clicar fora dele
-window.onclick = function (event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-        celulaSelecionada = null;
-        eventoEmEdicao = null;
-        formAgendamento.reset();
+        fecharModalLimparFormulario();
     }
 };
 
@@ -610,6 +621,8 @@ document.addEventListener("DOMContentLoaded", () => {
 //   const unidadeId = evento.target.value;
 //   carregarEquipamentos(unidadeId);
 // });
+
+fecharBtn.onclick = fecharModalLimparFormulario;
 
 async function teste() {
     try {
