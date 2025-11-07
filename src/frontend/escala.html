@@ -1,151 +1,191 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Escala</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="/frontend/css/escala.css" />
-  <link rel="stylesheet" href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" />
-  <style>
-    .border-lg-0 {
-      border: none !important;
-    }
-
-    @media (min-width: 992px) {
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Escala</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/frontend/css/escala.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css"
+    />
+    <style>
       .border-lg-0 {
         border: none !important;
       }
-    }
 
-    .nav-link:hover {
-      color: #9db668 !important;
-    }
-  </style>
-</head>
+      @media (min-width: 992px) {
+        .border-lg-0 {
+          border: none !important;
+        }
+      }
 
-<body class="roboto">
-  <nav class="navbar navbar-expand-lg bg-white roboto border-bottom h-auto">
-    <div class="container-fluid h-100">
-      <!-- LOGO -->
-      <a class="navbar-brand mx-auto mx-lg-0 me-lg-0 ms-lg-5" href="/inicio/:id">
-        <img src="https://rokuzen.com.br/wp-content/uploads/2021/09/cropped-logomarca_pequena2.png" alt="Logo"
-          height="80">
-      </a>
+      .nav-link:hover {
+        color: #9db668 !important;
+      }
+    </style>
+  </head>
 
-      <!-- BOTÃO TOGGLER (MOBILE) -->
-      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
-        aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-        <i class="mdi mdi-menu fs-1 text-secondary"></i>
-      </button>
+  <body class="roboto">
+    <nav class="navbar navbar-expand-lg bg-white roboto border-bottom h-auto">
+      <div class="container-fluid h-100">
+        <!-- LOGO -->
+        <a
+          class="navbar-brand mx-auto mx-lg-0 me-lg-0 ms-lg-5"
+          href="/inicio/:id"
+        >
+          <img
+            src="https://rokuzen.com.br/wp-content/uploads/2021/09/cropped-logomarca_pequena2.png"
+            alt="Logo"
+            height="80"
+          />
+        </a>
 
-      <!-- MENU -->
-      <div class="collapse navbar-collapse bg-white shadow-sm border-top border-bottom border-lg-0 z-3 h-100"
-        id="navbarContent">
-        <ul class="navbar-nav align-items-center w-100 justify-content-around h-100">
-          <li class="nav-item">
-            <a class="nav-link text-secondary fs-6" href="/escala/:id">Visualizar Escala</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-secondary fs-6" href="/postosatendimento/:id">Postos de Atendimento</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-secondary fs-6" href="/sessao/:id">Gerenciar Sessão</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-secondary fs-6" href="/cadastrar/:id">Cadastro</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-secondary fs-6" href="/user/listar/:id">Usuários</a>
-          </li>
-          <li class="nav-item">
-            <button id="sairbutton" class="btn btn-outline-secondary px-4 my-2">Sair</button>
-          </li>
-        </ul>
+        <!-- BOTÃO TOGGLER (MOBILE) -->
+        <button
+          class="navbar-toggler border-0"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarContent"
+          aria-controls="navbarContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <i class="mdi mdi-menu fs-1 text-secondary"></i>
+        </button>
+
+        <!-- MENU -->
+        <div
+          class="collapse navbar-collapse bg-white shadow-sm border-top border-bottom border-lg-0 z-3 h-100"
+          id="navbarContent"
+        >
+          <ul
+            class="navbar-nav align-items-center w-100 justify-content-around h-100"
+          >
+            <li class="nav-item">
+              <a class="nav-link text-secondary fs-6" href="/escala/:id"
+                >Visualizar Escala</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link text-secondary fs-6"
+                href="/postosatendimento/:id"
+                >Postos de Atendimento</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-secondary fs-6" href="/sessao/:id"
+                >Gerenciar Sessão</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-secondary fs-6" href="/cadastrar/:id"
+                >Cadastro</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-secondary fs-6" href="/user/listar/:id"
+                >Usuários</a
+              >
+            </li>
+            <li class="nav-item">
+              <button
+                id="sairbutton"
+                class="btn btn-outline-secondary px-4 my-2"
+              >
+                Sair
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- <div class="calendario-container"> -->
+    <!-- começo codigo calendário -->
+    <header class="header-escala">
+      <h1 id="servicosh1" class="pt-2">Serviços da Semanas</h1>
+      <div class="nav-botoes">
+        <button id="btn-anterior">Semana Anterior</button>
+        <button id="btn-hoje">Semana Atual</button>
+        <button id="btn-proximo">Próxima Semana</button>
+      </div>
+    </header>
+
+    <div class="calendario-container">
+      <table id="tabela-calendario">
+        <thead>
+          <!-- th, tr e th são as tabelas -->
+          <tr>
+            <th>Horário</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div id="modal-agendamento" class="modal">
+      <div class="modal-conteudo">
+        <span class="fechar-btn">&times;</span>
+        <h2 id="titulo-agendamento">Novo Agendamento</h2>
+        <p>Horário Selecionado: <strong id="horario-selecionado"></strong></p>
+
+        <form id="form-agendamento">
+          <label for="funcionario">Profissional</label>
+          <select id="funcionario" required></select>
+
+          <label for="tipo-trabalho">Serviço</label>
+          <select id="tipo-trabalho" required></select>
+
+          <label for="unidade" hidden>Unidade</label>
+          <select id="unidade" hidden></select>
+
+          <label for="equipamento">Equipamento</label>
+          <select id="equipamento" required disabled>
+            <option value="selecao" selected disabled>
+              Carregando equipamentos...
+            </option>
+          </select>
+
+          <button type="submit" id="btn-salvar" class="btn-salvar">
+            Salvar Agendamento
+          </button>
+          <button
+            type="button"
+            id="btn-excluir"
+            class="btn-excluir"
+            style="display: none"
+          >
+            Excluir Agendamento
+          </button>
+        </form>
       </div>
     </div>
-  </nav>
-
-  <!-- <div class="calendario-container"> -->
-  <!-- começo codigo calendário -->
-  <header class="header-escala">
-    <h1 id="servicosh1" class="pt-2">Serviços da Semanas</h1>
-    <div class="nav-botoes">
-      <button id="btn-anterior">Semana Anterior</button>
-      <button id="btn-hoje">Semana Atual</button>
-      <button id="btn-proximo">Próxima Semana</button>
+    <div vw class="enabled">
+      <div vw-access-button class="active"></div>
+      <div vw-plugin-wrapper>
+        <div class="vw-plugin-topwrapper"></div>
+      </div>
     </div>
-  </header>
+    <!-- Bootstrap JS -->
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>
+      new window.VLibras.Widget("https://vlibras.gov.br/app");
+    </script>
 
-  <div class="calendario-container">
-    <table id="tabela-calendario">
-      <thead>
-        <!-- th, tr e th são as tabelas -->
-        <tr>
-          <th>Horário</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-  <div id="modal-agendamento" class="modal">
-    <div class="modal-conteudo">
-      <span class="fechar-btn">&times;</span>
-      <h2 id="titulo-agendamento">Novo Agendamento</h2>
-      <p>Horário Selecionado: <strong id="horario-selecionado"></strong></p>
-
-      <form id="form-agendamento">
-        <label for="funcionario">Profissional</label>
-        <select id="funcionario" required>
-
-        </select>
-
-        <label for="tipo-trabalho">Serviço</label>
-        <select id="tipo-trabalho" required>
-
-        </select>
-
-        <label for="unidade" hidden>Unidade</label>
-        <select id="unidade" hidden>
-
-        </select>
-
-        <label for="equipamento">Equipamento</label>
-        <select id="equipamento" required disabled>
-          <option value="selecao" selected disabled>
-            Carregando equipamentos...
-          </option>
-        </select>
-
-        <button type="submit" id="btn-salvar" class="btn-salvar">
-          Salvar Agendamento
-        </button>
-        <button type="button" id="btn-excluir" class="btn-excluir" style="display: none">
-          Excluir Agendamento
-        </button>
-      </form>
-    </div>
-  </div>
-  <div vw class="enabled">
-		<div vw-access-button class="active"></div>
-		<div vw-plugin-wrapper>
-			<div class="vw-plugin-topwrapper"></div>
-		</div>
-	</div>
-	<!-- Bootstrap JS -->
-	<script src="https://vlibras.gov.br/app/vlibras-plugin.js"> </script>
-	<script>new window.VLibras.Widget('https://vlibras.gov.br/app')</script>
-
-  <script>
-    const menubtn = document.getElementById("menubtn");
-    function abrirMenu() {
-      const dropcnt = document.getElementById("dropcnt");
-      dropcnt.classList.toggle("d-none");
-    }
-  </script>
-  <script src="/frontend/js/escala.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-
+    <script>
+      const menubtn = document.getElementById("menubtn");
+      function abrirMenu() {
+        const dropcnt = document.getElementById("dropcnt");
+        dropcnt.classList.toggle("d-none");
+      }
+    </script>
+    <script src="https://app.embed.im/accessibility.js" defer></script>
+    <script src="/frontend/js/escala.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
 </html>

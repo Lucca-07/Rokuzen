@@ -1,125 +1,178 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
-    <link rel="stylesheet" href="/frontend/css/style.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css"
+    />
+    <link rel="stylesheet" href="/frontend/css/style.css" />
     <title>Usuários</title>
     <style>
-        @keyframes aparecer {
-            0% {
-                opacity: 0;
-                transform: translateY(300px);
-            }
-
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
+      @keyframes aparecer {
+        0% {
+          opacity: 0;
+          transform: translateY(300px);
         }
 
+        100% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .border-lg-0 {
+        border: none !important;
+      }
+
+      @media (min-width: 992px) {
         .border-lg-0 {
-            border: none !important;
+          border: none !important;
         }
+      }
 
-        @media (min-width: 992px) {
-            .border-lg-0 {
-                border: none !important;
-            }
-        }
-
-        .nav-link:hover {
-            color: #9db668 !important;
-        }
+      .nav-link:hover {
+        color: #9db668 !important;
+      }
     </style>
-</head>
+  </head>
 
-<body class="roboto" onload="listarColaboradores()">
+  <body class="roboto" onload="listarColaboradores()">
     <nav class="navbar navbar-expand-lg bg-white roboto border-bottom h-auto">
-        <div class="container-fluid h-100">
-            <!-- LOGO -->
-            <a class="navbar-brand mx-auto mx-lg-0 me-lg-0 ms-lg-5" href="/inicio/:id">
-                <img src="https://rokuzen.com.br/wp-content/uploads/2021/09/cropped-logomarca_pequena2.png" alt="Logo"
-                    height="80">
-            </a>
+      <div class="container-fluid h-100">
+        <!-- LOGO -->
+        <a
+          class="navbar-brand mx-auto mx-lg-0 me-lg-0 ms-lg-5"
+          href="/inicio/:id"
+        >
+          <img
+            src="https://rokuzen.com.br/wp-content/uploads/2021/09/cropped-logomarca_pequena2.png"
+            alt="Logo"
+            height="80"
+          />
+        </a>
 
-            <!-- BOTÃO TOGGLER (MOBILE) -->
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false"
-                aria-label="Toggle navigation">
-                <i class="mdi mdi-menu fs-1 text-secondary"></i>
-            </button>
+        <!-- BOTÃO TOGGLER (MOBILE) -->
+        <button
+          class="navbar-toggler border-0"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarContent"
+          aria-controls="navbarContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <i class="mdi mdi-menu fs-1 text-secondary"></i>
+        </button>
 
-            <!-- MENU -->
-            <div class="collapse navbar-collapse bg-white shadow-sm border-top border-bottom border-lg-0 z-3 h-100"
-                id="navbarContent">
-                <ul class="navbar-nav align-items-center w-100 justify-content-around h-100">
-                    <li class="nav-item">
-                        <a class="nav-link text-secondary fs-6" href="/escala/:id">Visualizar Escala</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-secondary fs-6" href="/postosatendimento/:id">Postos de Atendimento</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-secondary fs-6" href="/sessao/:id">Gerenciar Sessão</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-secondary fs-6" href="/cadastrar/:id">Cadastro</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-secondary fs-6" href="/user/listar/:id">Usuários</a>
-                    </li>
-                    <li class="nav-item">
-                        <button id="sairbutton" class="btn btn-outline-secondary px-4 my-2">Sair</button>
-                    </li>
-                </ul>
-            </div>
+        <!-- MENU -->
+        <div
+          class="collapse navbar-collapse bg-white shadow-sm border-top border-bottom border-lg-0 z-3 h-100"
+          id="navbarContent"
+        >
+          <ul
+            class="navbar-nav align-items-center w-100 justify-content-around h-100"
+          >
+            <li class="nav-item">
+              <a class="nav-link text-secondary fs-6" href="/escala/:id"
+                >Visualizar Escala</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link text-secondary fs-6"
+                href="/postosatendimento/:id"
+                >Postos de Atendimento</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-secondary fs-6" href="/sessao/:id"
+                >Gerenciar Sessão</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-secondary fs-6" href="/cadastrar/:id"
+                >Cadastro</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-secondary fs-6" href="/user/listar/:id"
+                >Usuários</a
+              >
+            </li>
+            <li class="nav-item">
+              <button
+                id="sairbutton"
+                class="btn btn-outline-secondary px-4 my-2"
+              >
+                Sair
+              </button>
+            </li>
+          </ul>
         </div>
+      </div>
     </nav>
 
     <div class="row justify-content-center">
-        <div class="col-md-8 d-flex justify-content-center">
-            <div id="alertDel"
-                class="alert alert-danger alert-dismissible fade position-absolute mt-2 d-none text-center z-3"
-                role="alert">
-                <span id="pAlertDel" class="fs-3 px-3 text-center">Colaborador deletado com sucesso!</span>
-            </div>
+      <div class="col-md-8 d-flex justify-content-center">
+        <div
+          id="alertDel"
+          class="alert alert-danger alert-dismissible fade position-absolute mt-2 d-none text-center z-3"
+          role="alert"
+        >
+          <span id="pAlertDel" class="fs-3 px-3 text-center"
+            >Colaborador deletado com sucesso!</span
+          >
         </div>
-        <div class="col-md-8 d-flex justify-content-center">
-            <div id="alertEdit"
-                class="alert alert-success alert-dismissible fade position-absolute mt-2 d-none text-center z-3"
-                role="alert">
-                <span id="pAlertEdit" class="fs-3 px-3 text-center">Colaborador editado com sucesso!</span>
-            </div>
+      </div>
+      <div class="col-md-8 d-flex justify-content-center">
+        <div
+          id="alertEdit"
+          class="alert alert-success alert-dismissible fade position-absolute mt-2 d-none text-center z-3"
+          role="alert"
+        >
+          <span id="pAlertEdit" class="fs-3 px-3 text-center"
+            >Colaborador editado com sucesso!</span
+          >
         </div>
+      </div>
     </div>
-    <main id="main" class="roboto d-flex justify-content-center flex-column align-items-center ">
-    </main>
+    <main
+      id="main"
+      class="roboto d-flex justify-content-center flex-column align-items-center"
+    ></main>
     <div vw class="enabled">
-        <div vw-access-button class="active"></div>
-        <div vw-plugin-wrapper>
-            <div class="vw-plugin-topwrapper"></div>
-        </div>
+      <div vw-access-button class="active"></div>
+      <div vw-plugin-wrapper>
+        <div class="vw-plugin-topwrapper"></div>
+      </div>
     </div>
     <!-- Bootstrap JS -->
-    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"> </script>
-    <script>new window.VLibras.Widget('https://vlibras.gov.br/app')</script>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
     <script>
-        const menubtn = document.getElementById("menubtn");
-        function abrirMenu() {
-            const dropcnt = document.getElementById("dropcnt");
-            dropcnt.classList.toggle("d-none");
-        }
+      new window.VLibras.Widget("https://vlibras.gov.br/app");
+    </script>
+    <script>
+      const menubtn = document.getElementById("menubtn");
+      function abrirMenu() {
+        const dropcnt = document.getElementById("dropcnt");
+        dropcnt.classList.toggle("d-none");
+      }
     </script>
     <script src="/frontend/js/listarCadastros.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
-        crossorigin="anonymous"></script>
-</body>
-
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://app.embed.im/accessibility.js" defer></script>
+  </body>
 </html>
