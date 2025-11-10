@@ -73,39 +73,38 @@
     <!-- Conteudo principal -->
     <main class="container-fluid bg-white py-5 h-100">
         <div class="text-center mb-5">
-            <h2 class="fs-2">
+            <h2 class="fs-2" style="font-weight: 400;">
                 Postos de Atendimento
             </h2>
         </div>
 
-        <div class="w-75 p-4 p-lg-5"
-            style="margin: auto; background-color: #e9eaee; border-radius: 30px; box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.164);">
+        <div class="w-75 p-4 p-lg-5 bg-body" style="margin: auto; border-radius: 30px;">
             <!-- Cards das imagens da poltrona, maca e cadeira -->
             <div class="row justify-content-center g-5 text-center">
                 <!-- Cadeira -->
-                <div class="col-12 col-xl-4">
+                <div class="col-12 col-lg-6 col-xl-4">
                     <div class="card border-0 shadow-sm" role="button" onclick="abrirPopup('cadeira')"
-                        style="border-radius: 50px;">
-                        <img src="/frontend/img/Quick.jpg" class="card-img-top" alt="Cadeira Quick"
-                            style="border-radius: 50px;" />
+                        style="border-radius: 20px;">
+                        <img src="/frontend/img/Quick.jpg" class="card-img-top" alt="Maca"
+                            style="border-radius: 20px;  box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.164);" />
                     </div>
                 </div>
 
                 <!-- Maca -->
-                <div class="col-12 col-xl-4">
+                <div class="col-12 col-lg-6 col-xl-4">
                     <div class="card border-0 shadow-sm" role="button" onclick="abrirPopup('maca')"
-                        style="border-radius: 50px;">
+                        style="border-radius: 20px;">
                         <img src="/frontend/img/Maca.jpg" class="card-img-top" alt="Maca"
-                            style="border-radius: 50px;" />
+                            style="border-radius: 20px;  box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.164);" />
                     </div>
                 </div>
 
                 <!-- Poltrona -->
-                <div class="col-12 col-xl-4">
+                <div class="col-12 col-lg-6 col-xl-4">
                     <div class="card border-0 shadow-sm" role="button" onclick="abrirPopup('poltrona')"
-                        style="border-radius: 50px;">
+                        style="border-radius: 20px;">
                         <img src="/frontend/img/Poltrona.jpg" class="card-img-top" alt="Poltrona Reflexologia"
-                            style="border-radius: 50px;" />
+                            style="border-radius: 20px;  box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.164);" />
                     </div>
                 </div>
             </div>
@@ -117,8 +116,8 @@
     <!-- Cadeira -->
     <div class="popup-bg" id="popup-cadeira" style="display: none">
         <div class="popup">
-            <button class="fechar-popup" onclick="fecharPopup(this)">
-                ✖
+            <button class="fechar-popup btn-close" onclick="fecharPopup(this)">
+                
             </button>
             <h2>Cadeira Quick</h2>
             <div class="frame" id="frame-cadeira"></div>
@@ -131,8 +130,8 @@
     <!-- Maca-->
     <div class="popup-bg" id="popup-maca" style="display: none">
         <div class="popup">
-            <button class="fechar-popup" onclick="fecharPopup(this)">
-                ✖
+            <button class="fechar-popup btn-close" onclick="fecharPopup(this)">
+                
             </button>
             <h2>Maca</h2>
             <div class="frame" id="frame-maca"></div>
@@ -145,8 +144,8 @@
     <!-- Poltrona-->
     <div class="popup-bg" id="popup-poltrona" style="display: none">
         <div class="popup">
-            <button class="fechar-popup" onclick="fecharPopup(this)">
-                ✖
+            <button class="fechar-popup btn-close" onclick="fecharPopup(this)">
+                
             </button>
             <h2>Poltrona Reflexologia</h2>
             <div class="frame" id="frame-poltrona"></div>
@@ -173,7 +172,7 @@
     <script>
         new window.VLibras.Widget("https://vlibras.gov.br/app");
     </script>
-      <script src="https://app.embed.im/accessibility.js" defer></script>
+    <script src="https://app.embed.im/accessibility.js" defer></script>
 </body>
 
 </html>
