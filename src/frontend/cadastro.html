@@ -82,8 +82,7 @@
                 </div>
             </div>
         </div>
-        <div id="selectUsuario" class="container-lg w-100 mt-3 d-flex align-items-center flex-column"
-            style="height: 75px;">
+        <div id="selectUsuario" class="container-lg w-100 mt-3 mb-3 d-flex align-items-center flex-column">
             <div class="row justify-content-center w-100 position-absolute">
                 <div class="col-md-8">
                     <div class="alert alert-success alert-dismissible text-center d-none">
@@ -94,18 +93,18 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <select name="usuarioselect" id="usuarioselect" class="p-2 fs-4" style="cursor: pointer;">
+                    <select name="usuarioselect" id="usuarioselect" class="p-1 fs-5" style="cursor: pointer;">
                         <option value="interno">Interno</option>
                         <option value="externo">Externo</option>
                     </select>
                 </div>
             </div>
         </div>
-        <div id="containerColaborador" class="container-lg bg-light p-4 border d-flex flex-column mb-5 card-cadastro"
+        <div id="containerColaborador" class="container-lg bg-light p-4 border d-flex flex-column mb-5  card-cadastro"
             style="border-radius: 30px;">
             <div class="row align-content-start">
-                <div id="logo" class="col-12 d-flex justify-content-center mb-5">
-                    <img src="/frontend/img/logo.png" alt="Logo da rokuzen" width="40%">
+                <div id="logo" class="col-12 d-flex justify-content-center mb-3 mt-0">
+                    <img src="/frontend/img/logo.png" alt="Logo da rokuzen" width="20%">
                 </div>
             </div>
             <form>
@@ -154,7 +153,7 @@
                         </div>
 
                         <!-- Unidades -->
-                        <div id="unidades" class="w-100 d-flex flex-column align-items-start mt-3">
+                        <div id="unidades" class="w-100 d-flex flex-column align-items-start mt-1">
                             <p class="campos fw-bold mb-2">Unidades:</p>
                             <div id="unidadesdiv" class="d-flex flex-wrap justify-content-start gap-3">
                                 <div class="form-check">
@@ -193,7 +192,7 @@
                 <!-- Botão Salvar -->
                 <div class="row mt-4">
                     <div class="col-12 text-center">
-                        <button id="enviarColaborador" type="submit" class="enviar mt-3 px-4 py-2 fs-4"
+                        <button id="enviarColaborador" type="submit" class="enviar mt-1 px-3 py-1 fs-4"
                             onclick="salvarColaborador(event)">Salvar</button>
                     </div>
                 </div>
@@ -204,12 +203,12 @@
             class="container-lg bg-light d-flex p-4 border d-flex flex-column mb-5 d-none card-cadastro"
             style="border-radius: 30px;">
             <div class="row align-content-start">
-                <div id="logo" class="col-12 d-flex justify-content-center ">
-                    <img src="/frontend/img/logo.png" alt="Logo da rokuzen" width="40%">
+                <div id="logo" class="col-12 d-flex justify-content-center mt-0">
+                    <img src="/frontend/img/logo.png" alt="Logo da rokuzen" width="20%">
                 </div>
             </div>
             <!--dividido em duas colunas -->
-            <div class="row bg-light p-4 mt-3 g-4 d-flex align-content-start justify-content-between">
+            <div class="row bg-light p-4 mt-0 g-4 d-flex align-content-start justify-content-between">
                 <!-- COLUNA ESQUERDA -->
                 <div class="col-12 col-lg-6 d-flex flex-column justify-content-start gap-3">
                     <div id="nome" class="d-flex justify-content-start">
@@ -260,7 +259,7 @@
                     <div id="observacoes" class="d-flex flex-column gap-2">
                         <p class="campos m-0">Observações:</p>
                         <div id="obserdiv" class="d-flex flex-column">
-                            <textarea id="textobservacoes" class="form-control w-100" rows="3"></textarea>
+                            <textarea id="textobservacoes" class="form-control w-100" rows="2"></textarea>
                         </div>
                     </div>
 
@@ -268,7 +267,7 @@
 
                 <!-- Botão Salvar -->
                 <div class="col-12 text-center mt-4">
-                    <button type="submit" class="enviar px-4 py-2 fs-3" onclick="salvarCliente(event)">Salvar</button>
+                    <button type="submit" class="enviar px-3 py-1 fs-4" onclick="salvarCliente(event)">Salvar</button>
                 </div>
             </div>
         </div>
