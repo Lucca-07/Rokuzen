@@ -7,8 +7,19 @@
     font-style: normal;
 }
 
+.imglogo {
+    display: flex;
+    align-self: center;
+    justify-self: center;
+    /* border: 1px solid red; */
+    min-height: 5%;
+    height: 10%;
+    max-height: 13%;
+    animation: aparecer 0.3s ease-in forwards;
+}
+
 .sair {
-    background-color: #C7ED79;
+    background-color: #c7ed79;
     height: 40px;
     border-radius: 10px;
 }
@@ -18,35 +29,39 @@
 }
 
 .navbar {
-    border-top: 5px solid #9DB668;
-    border-bottom: 5px solid #E9EAEE;
+    border-top: 5px solid #9db668;
+    border-bottom: 5px solid #e9eaee;
     height: 150px;
 }
 
 .menu a:hover {
-    color: #9DB668 !important;
+    color: #9db668 !important;
 }
 
-
 .dropcnt {
-    border: 5px solid #E9EAEE;
+    border: 5px solid #e9eaee;
     border-top: none;
     height: 305px;
-    position: fixed;
+    /* position: fixed; */
     top: 150px;
     z-index: 999 !important;
 }
 
 .dropopt {
     height: 100px;
-    border: 1px solid #E9EAEE;
+    border: 1px solid #e9eaee;
     background-color: white;
 }
 
 .dropopt a:hover {
-    color: #9DB668 !important;
+    color: #9db668 !important;
 }
 
+.campos {
+    font-weight: 500;
+    color: #333;
+    font-size: 1rem;
+}
 
 #sairbutton:hover{
   background: #9DB668 !important;

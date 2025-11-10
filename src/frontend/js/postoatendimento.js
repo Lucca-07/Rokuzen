@@ -185,8 +185,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     await buscarPostos();
-    const pathParts = window.location.pathname.split("/");
-    const id = pathParts[pathParts.length - 1];
+    const id = localStorage.getItem("userId")
 
     const token = localStorage.getItem("token");
     if (!token) {

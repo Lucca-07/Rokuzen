@@ -409,8 +409,7 @@ async function deleteColaborador(id) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    const pathParts = window.location.pathname.split("/");
-    const id = pathParts[pathParts.length - 1];
+    const id = localStorage.getItem("userId")
 
     const token = localStorage.getItem("token");
     if (!token) {
