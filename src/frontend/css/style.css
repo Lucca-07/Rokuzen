@@ -9,8 +9,9 @@
 
 .back {
     height: 100vh;
-    background-image: url("/frontend/img/fundoImagem.jpg");
+    background-color: beige;
     background-size: cover;
+    background-repeat: no-repeat;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -95,7 +96,9 @@
 }
 
 .campos {
-    font-size: 1.5rem;
+    font-weight: 500;
+    color: #333;
+    font-size: 1rem;
 }
 
 .enviar {
@@ -114,7 +117,87 @@
 #containerColaborador,
 #containerCliente {
     animation: aparecer 0.3s ease-in forwards;
+    background-color: #f8f9fa;
+    border-radius: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    font-family: "Roboto", sans-serif;
 }
+
+/* inputs e selects */
+#containerColaborador input[type="text"],
+#containerColaborador input[type="email"],
+#containerColaborador input[type="password"],
+#containerColaborador select,
+#containerCliente input[type="text"],
+#containerCliente input[type="email"],
+#containerCliente input[type="password"],
+#containerCliente input[type="date"],
+#containerCliente textarea,
+#containerCliente select {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 6px 10px;
+    font-size: 1rem;
+    color: #333;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    min-width: 160px;
+    padding-right: 25px;
+}
+
+#containerColaborador input:focus,
+#containerCliente input:focus,
+#containerColaborador select:focus,
+#containerCliente select:focus,
+#containerCliente textarea:focus {
+    border-color: #93a46b;
+    /* verde RokuZen */
+    box-shadow: 0 0 0 2px rgba(147, 164, 107, 0.3);
+    outline: none;
+}
+
+/* botões Salvar */
+#containerColaborador .enviar,
+#containerCliente .enviar {
+    background-color: #93a46b;
+    /* verde RokuZen */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#containerColaborador .enviar:hover,
+#containerCliente .enviar:hover {
+    background-color: #7e925e;
+    transform: scale(1.03);
+}
+
+#foto img {
+    border: 2px solid #93a46b;
+    background-color: #fff;
+}
+
+/* textos dentro das seções */
+#unidades p,
+#saude p,
+#observacoes p {
+    font-weight: 600;
+    color: #222;
+}
+
+#setorcargo {
+    display: flex;
+    align-items: center;
+    gap: 10px; 
+}
+
+#setorgerente {
+    min-width: 160px;
+}
+
+
 
 /* Animação para o card aparecer */
 @keyframes aparecer {
@@ -484,6 +567,7 @@ a.text-decoration-none:hover h3 {
 .card-editar {
     box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.356);
 }
+
 #sairbutton:hover {
     background: #9db668 !important;
 }
