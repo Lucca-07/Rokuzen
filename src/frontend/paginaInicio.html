@@ -1,129 +1,189 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+  <head>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
 
-<head>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css"
+    />
+    <link rel="stylesheet" href="/frontend/css/style.css" />
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
-  <link rel="stylesheet" href="/frontend/css/style.css">
-
-  <style>
-    .border-lg-0 {
-      border: none !important;
-    }
-
-    @media (min-width: 992px) {
+    <style>
       .border-lg-0 {
         border: none !important;
       }
-    }
-  </style>
 
-  <title>Rokuzen</title>
+      @media (min-width: 992px) {
+        .border-lg-0 {
+          border: none !important;
+        }
+      }
+    </style>
 
-</head>
+    <title>Rokuzen</title>
+  </head>
 
-<body>
-  <nav class="navbar navbar-expand-lg bg-white roboto border-bottom h-auto">
-    <div class="container-fluid h-100">
-      <!-- LOGO -->
-      <a class="navbar-brand mx-auto mx-lg-0 me-lg-0 ms-lg-5" href="/inicio/:id">
-        <img src="https://rokuzen.com.br/wp-content/uploads/2021/09/cropped-logomarca_pequena2.png" alt="Logo"
-          height="80">
-      </a>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-white roboto border-bottom h-auto">
+      <div class="container-fluid h-100">
+        <!-- LOGO -->
+        <a
+          class="navbar-brand mx-auto mx-lg-0 me-lg-0 ms-lg-5"
+          href="/inicio/:id"
+        >
+          <img
+            src="https://rokuzen.com.br/wp-content/uploads/2021/09/cropped-logomarca_pequena2.png"
+            alt="Logo"
+            height="80"
+          />
+        </a>
 
-      <!-- BOTÃO TOGGLER (MOBILE) -->
-      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
-        aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-        <i class="mdi mdi-menu fs-1 text-secondary"></i>
-      </button>
+        <!-- BOTÃO TOGGLER (MOBILE) -->
+        <button
+          class="navbar-toggler border-0"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarContent"
+          aria-controls="navbarContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <i class="mdi mdi-menu fs-1 text-secondary"></i>
+        </button>
 
-      <!-- MENU -->
-      <div class="collapse navbar-collapse bg-white shadow-sm border-top border-bottom border-lg-0 z-3 h-100"
-        id="navbarContent">
-        <ul class="navbar-nav align-items-center w-100 justify-content-around h-100">
-          <li class="nav-item">
-            <a class="nav-link text-secondary fs-6" href="/escala/:id">Visualizar Escala</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-secondary fs-6" href="/postosatendimento/:id">Postos de Atendimento</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-secondary fs-6" href="/sessao/:id">Gerenciar Sessão</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-secondary fs-6" href="/cadastrar/:id">Cadastro</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-secondary fs-6" href="/user/listar/:id">Usuários</a>
-          </li>
-          <li class="nav-item">
-            <button id="sairbutton" class="btn btn-outline-secondary px-4 my-2">Sair</button>
-          </li>
-        </ul>
+        <!-- MENU -->
+        <div
+          class="collapse navbar-collapse bg-white shadow-sm border-top border-bottom border-lg-0 z-3 h-100"
+          id="navbarContent"
+        >
+          <ul
+            class="navbar-nav align-items-center w-100 justify-content-around h-100"
+          >
+            <li class="nav-item">
+              <a class="nav-link text-secondary fs-6" href="/escala/:id"
+                >Visualizar Escala</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link text-secondary fs-6"
+                href="/postosatendimento/:id"
+                >Postos de Atendimento</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-secondary fs-6" href="/sessao/:id"
+                >Gerenciar Sessão</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-secondary fs-6" href="/cadastrar/:id"
+                >Cadastro</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-secondary fs-6" href="/user/listar/:id"
+                >Usuários</a
+              >
+            </li>
+            <li class="nav-item">
+              <button
+                id="sairbutton"
+                class="btn btn-outline-secondary px-4 my-2"
+              >
+                Sair
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container my-5">
+      <div class="row justify-content-center g-5">
+        <div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center">
+          <a href="#" class="text-decoration-none">
+            <div
+              class="cardinicio text-center shadow border-0 p-3"
+              style="width: 270px; height: 360px"
+            >
+              <div
+                class="cardinicio-image"
+                style="
+                  background-image: url('/frontend/img/escalaHorario.jpg');
+                  background-size: cover;
+                  background-position: center;
+                "
+              ></div>
+              <div class="cardinicio-body">
+                <h3 class="fs-5 text-dark">Visualizar Escala</h3>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center">
+          <a href="#" class="text-decoration-none">
+            <div
+              class="cardinicio text-center shadow border-0 p-3"
+              style="width: 270px; height: 360px"
+            >
+              <div
+                class="cardinicio-image"
+                style="
+                  background-image: url('/frontend/img/imagemPostosAtendimento.jpg');
+                  background-size: cover;
+                  background-position: center;
+                "
+              ></div>
+              <div class="cardinicio-body">
+                <h3 class="fs-5 text-dark">Postos de Atendimento</h3>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center">
+          <a href="#" class="text-decoration-none">
+            <div
+              class="cardinicio text-center shadow border-0 p-3"
+              style="width: 270px; height: 360px"
+            >
+              <div
+                class="cardinicio-image"
+                style="
+                  background-image: url('/frontend/img/imagemSessoes.jpg');
+                  background-size: cover;
+                "
+              ></div>
+              <div class="cardinicio-body">
+                <h3 class="fs-5 text-dark">Gerenciar Sessão</h3>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </main>
+    <div vw class="enabled">
+      <div vw-access-button class="active"></div>
+      <div vw-plugin-wrapper>
+        <div class="vw-plugin-topwrapper"></div>
       </div>
     </div>
-  </nav>
+    <!-- Bootstrap JS -->
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>
+      new window.VLibras.Widget("https://vlibras.gov.br/app");
+    </script>
 
-
-
-  <main class="container my-5">
-    <div class="row justify-content-center g-5">
-
-      <div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center">
-        <a href="#" class="text-decoration-none">
-          <div class="cardinicio text-center shadow border-0 p-3" style="width: 270px; height: 360px;">
-            <div class="cardinicio-image"
-              style="background-image: url('/frontend/img/escalaHorario.jpg'); background-size: cover; background-position: center;">
-            </div>
-            <div class="cardinicio-body">
-              <h3 class="fs-5 text-dark">Visualizar Escala</h3>
-            </div>
-          </div>
-        </a>
-      </div>
-
-      <div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center">
-        <a href="#" class="text-decoration-none">
-          <div class="cardinicio text-center shadow border-0 p-3" style="width: 270px; height: 360px;">
-            <div class="cardinicio-image"
-              style="background-image: url('/frontend/img/imagemPostosAtendimento.jpg'); background-size: cover; background-position: center;">
-            </div>
-            <div class="cardinicio-body">
-              <h3 class="fs-5 text-dark">Postos de Atendimento</h3>
-            </div>
-          </div>
-        </a>
-      </div>
-
-      <div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center">
-        <a href="#" class="text-decoration-none">
-          <div class="cardinicio text-center shadow border-0 p-3" style="width: 270px; height: 360px;">
-            <div class="cardinicio-image"
-              style="background-image: url('/frontend/img/imagemSessoes.jpg'); background-size: cover;">
-            </div>
-            <div class="cardinicio-body">
-              <h3 class="fs-5 text-dark">Gerenciar Sessão</h3>
-            </div>
-          </div>
-        </a>
-      </div>
-
-    </div>
-  </main>
-  <div vw class="enabled">
-    <div vw-access-button class="active"></div>
-    <div vw-plugin-wrapper>
-      <div class="vw-plugin-topwrapper"></div>
-    </div>
-  </div>
-  <!-- Bootstrap JS -->
-  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"> </script>
-  <script>new window.VLibras.Widget('https://vlibras.gov.br/app')</script>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="/frontend/js/paginaInicio.js"></script>
-</body>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/frontend/js/paginaInicio.js"></script>
+    <script src="https://app.embed.im/accessibility.js" defer></script>
+  </body>
 </html>
