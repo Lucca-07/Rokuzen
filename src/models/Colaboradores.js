@@ -8,6 +8,7 @@ const ColaboradoresSchema = new mongoose.Schema({
     perfis_usuario: { type: [String], default: [] },
     login: { type: Object },
     imagem: { type: String, default: null },
+    pontos: { type: Number, default: 0 }
 });
 
 export default mongoose.model("Colaboradores", ColaboradoresSchema);

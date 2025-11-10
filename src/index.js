@@ -779,7 +779,6 @@ app.put("/api/atendimentos/:id/encerrar", async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Atualiza o atendimento: marca como encerrado, tempo zerado e registra data de término
         const atendimento = await Atendimentos.findByIdAndUpdate(
             id,
             {
@@ -793,9 +792,19 @@ app.put("/api/atendimentos/:id/encerrar", async (req, res) => {
         );
 
         if (!atendimento) {
-            return res
-                .status(404)
-                .json({ error: "Atendimento não encontrado" });
+            return res.status(404).json({ error: "Atendimento não encontrado" });
+        }
+
+        // Adiciona +1 ponto ao colaborador responsável
+        if (atendimento.colaborador_id) {
+            const colaborador = await Colaboradores.findById(atendimento.colaborador_id);
+
+            if (colaborador) {
+                colaborador.pontos++;
+                await colaborador.save();
+
+                console.log(`Colaborador ${colaborador.nome_colaborador} agora tem ${colaborador.pontos} ponto.`);
+            }
         }
 
         res.json({ message: "Atendimento encerrado com sucesso", atendimento });
