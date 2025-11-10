@@ -228,8 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btnAdicionar1?.addEventListener("click", () => adicionarTempo(60));
     btnAdicionar5?.addEventListener("click", () => adicionarTempo(5 * 60));
     btnAdicionar10?.addEventListener("click", () => adicionarTempo(10 * 60));
-    const pathParts = window.location.pathname.split("/");
-    const id = pathParts[pathParts.length - 1];
+    const id = localStorage.getItem("userId")
 
     const token = localStorage.getItem("token");
     if (!token) {

@@ -6,8 +6,7 @@ function abrirMenu() {
 
 document.addEventListener("DOMContentLoaded", async () => {
     // pega o id da URL: /inicio/:id
-    const pathParts = window.location.pathname.split("/");
-    const id = pathParts[pathParts.length - 1];
+    const id = localStorage.getItem("userId")
 
     const token = localStorage.getItem("token");
     if (!token) {
