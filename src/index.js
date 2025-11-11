@@ -7,9 +7,6 @@ import path from "path";
 import { fileURLToPath } from "node:url";
 import connectDB from "./modules/connect.js";
 connectDB();
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ Conectado ao MongoDB com sucesso"))
-  .catch(err => console.error("❌ Erro ao conectar ao MongoDB:", err));
 
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
