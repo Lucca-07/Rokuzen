@@ -25,23 +25,6 @@ document.getElementById("acessar").addEventListener("click", () => {
     }
 });
 
-// Funções que serão usadas
-function handleLoginKey(event) {
-    if (event.key === "Enter") {
-        event.preventDefault();
-        validarUsuario().then(() => {
-            // se quiser, o listener pode ser trocado aqui depois que o login muda de card
-        });
-    }
-}
-
-function handleUnidadeKey(event) {
-    if (event.key === "Enter") {
-        event.preventDefault();
-        document.getElementById("acessar").click();
-    }
-}
-
 document.addEventListener("keydown", handleLoginKey);
 
 //Valida o login
@@ -141,9 +124,8 @@ function esqueciSenha() {
 }
 
 const passwordInput = document.getElementById("pass");
-const toggleButton = document.getElementById("togglePassword");
+const toggleButton = document.getElementById("toggle-senha");
 const toggleIcon = toggleButton.querySelector("i"); // Seleciona o ícone dentro do botão
-
 
 function togglePassword(inputId, iconId) {
     const senhaInput = document.getElementById(inputId);
@@ -160,5 +142,28 @@ function togglePassword(inputId, iconId) {
         toggleIcon.classList.remove("mdi-eye");
         toggleIcon.classList.add("mdi-eye-off");
         toggleButton.setAttribute("aria-label", "Mostrar senha");
+    }
+}
+
+function handleLoginKey(event) {
+    if (event.key === "Enter") {
+        if (cardLogin.classList.contains("d-none")) {
+            handleForgotKey();
+            return;
+        }
+        console.log(cardLogin.classList);
+        event.preventDefault();
+        validarUsuario();
+    }
+}
+
+function handleForgotKey() {
+    recuperarButton.click();
+}
+
+function handleUnidadeKey(event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        document.getElementById("acessar").click();
     }
 }

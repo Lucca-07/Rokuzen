@@ -83,3 +83,12 @@ function togglePassword(inputId, iconId) {
         toggleButton.setAttribute("aria-label", "Mostrar senha");
     }
 }
+
+function handleEditPassKey(event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        salvarSenha.click();
+    }
+}
+
+document.addEventListener("keydown", handleEditPassKey);

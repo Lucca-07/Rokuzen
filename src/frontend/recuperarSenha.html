@@ -22,43 +22,42 @@
 
     <div class="row d-flex align-items-center justify-content-center w-100">
       <div id="cardLogin" class="card d-flex justify-content-center h-auto p-4" style="max-width: 400px;">
-        <form aria-label="Campos para redefinição de senha">
 
-          <div class="mb-3">
-            <label for="email" class="visually-hidden">Email</label>
-            <input id="email" class="p-2 px-3 form-control" type="email" placeholder="Email" aria-required="true"
-              required aria-describedby="pSenha" autocomplete="email" />
-          </div>
+        <div class="mb-3">
+          <label for="email" class="visually-hidden">Email</label>
+          <input id="email" class="p-2 px-3 form-control" type="email" placeholder="Email" aria-required="true" required
+            aria-describedby="pSenha" autocomplete="email" />
+        </div>
 
-          <div class="mb-3 password-container">
-            <label for="novasenha1" class="visually-hidden">Nova Senha</label>
-            <input id="novasenha1" class="p-2 px-3 form-control" type="password" placeholder="Nova senha"
-              aria-required="true" required autocomplete="new-password" aria-describedby="pSenha" />
+        <div class="mb-3 password-container">
+          <label for="novasenha1" class="visually-hidden">Nova Senha</label>
+          <input id="novasenha1" class="p-2 px-3 form-control" type="password" placeholder="Nova senha"
+            aria-required="true" required aria-describedby="pSenha" />
 
-            <button type="button" id="toggle-novasenha1" class="toggle-password text-secondary"
-              aria-label="Mostrar senha" onclick="togglePassword('novasenha1', 'toggle-novasenha1-icon')">
-              <i class="mdi mdi-eye-off" aria-hidden="true" id="toggle-novasenha1-icon"></i>
-            </button>
-          </div>
-
-          <div class="mb-3 password-container">
-            <label for="novasenha2" class="visually-hidden">Confirmar Nova Senha</label>
-            <input id="novasenha2" class="p-2 px-3 form-control" type="password" placeholder="Confirmar nova senha"
-              aria-required="true" required autocomplete="new-password" aria-describedby="pSenha" />
-
-            <button type="button" id="toggle-novasenha2" class="toggle-password text-secondary"
-              aria-label="Mostrar senha" onclick="togglePassword('novasenha2', 'toggle-novasenha2-icon')">
-              <i class="mdi mdi-eye-off" aria-hidden="true" id="toggle-novasenha2-icon"></i>
-            </button>
-          </div>
-
-          <p id="pSenha" class="mb-2 text-center d-none" role="alert" aria-live="assertive"></p>
-
-          <button id="confirmar" class="acessar align-self-center p-2 px-3 border-1 mb-3 w-100" type="submit"
-            aria-label="Confirmar nova senha">
-            Confirmar
+          <button type="button" id="toggle-novasenha1" class="toggle-password text-secondary" aria-label="Mostrar senha"
+            onclick="togglePassword('novasenha1', 'toggle-novasenha1-icon')">
+            <i class="mdi mdi-eye-off" aria-hidden="true" id="toggle-novasenha1-icon"></i>
           </button>
-        </form>
+        </div>
+
+        <div class="mb-3 password-container">
+          <label for="novasenha2" class="visually-hidden">Confirmar Nova Senha</label>
+          <input id="novasenha2" class="p-2 px-3 form-control" type="password" placeholder="Confirmar nova senha"
+            aria-required="true" required aria-describedby="pSenha" />
+
+          <button type="button" id="toggle-novasenha2" class="toggle-password text-secondary" aria-label="Mostrar senha"
+            onclick="togglePassword('novasenha2', 'toggle-novasenha2-icon')">
+            <i class="mdi mdi-eye-off" aria-hidden="true" id="toggle-novasenha2-icon"></i>
+          </button>
+        </div>
+
+        <p id="pSenha" class="mb-2 text-center d-none" role="alert" aria-live="assertive"></p>
+
+        <button id="confirmar" class="acessar align-self-center p-2 px-3 border-1 mb-3 w-100" type="submit"
+          aria-label="Confirmar nova senha">
+          Confirmar
+        </button>
+
       </div>
     </div>
   </main>
