@@ -7,10 +7,15 @@ import path from "path";
 import { fileURLToPath } from "node:url";
 import connectDB from "./modules/connect.js";
 connectDB();
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ Conectado ao MongoDB com sucesso"))
+  .catch(err => console.error("❌ Erro ao conectar ao MongoDB:", err));
+
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
+import equipamentoRoutes from "./api/routes/equipamento.routes.js";
 import recuperarSenha from "./modules/recuperarSenha.js";
 import Clientes from "./models/Clientes.js";
 import Colaboradores from "./models/Colaboradores.js";
@@ -29,6 +34,8 @@ app.use(express.json());
 
 // Servir os arquivos estáticos do projeto (CSS, IMG ...)
 app.use("/frontend", express.static(path.join(dirname, "frontend")));
+
+app.use("/api/equipamentos", equipamentoRoutes);
 
 // GETS
 // Rota da Página de Login
