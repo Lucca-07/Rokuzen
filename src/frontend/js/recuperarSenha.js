@@ -65,3 +65,21 @@ async function updateSenha() {
         console.log("Erro ao tentar atualizar a senha:", error);
     }
 }
+
+function togglePassword(inputId, iconId) {
+    const senhaInput = document.getElementById(inputId);
+    const toggleIcon = document.getElementById(iconId);
+    const toggleButton = toggleIcon.parentElement; // O pai do ícone é o botão
+
+    if (senhaInput.type === "password") {
+        senhaInput.type = "text";
+        toggleIcon.classList.remove("mdi-eye-off");
+        toggleIcon.classList.add("mdi-eye");
+        toggleButton.setAttribute("aria-label", "Ocultar senha");
+    } else {
+        senhaInput.type = "password";
+        toggleIcon.classList.remove("mdi-eye");
+        toggleIcon.classList.add("mdi-eye-off");
+        toggleButton.setAttribute("aria-label", "Mostrar senha");
+    }
+}

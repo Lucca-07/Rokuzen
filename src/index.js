@@ -77,7 +77,7 @@ app.get("/sessao/:id", async (req, res) => {
 });
 
 app.get("/listarterapeutas", async (req, res) => {
-  res.sendFile(path.join(dirname, "src", "frontend", "listarTerapeutas.html"));
+  res.sendFile(path.join(dirname, "frontend", "listarTerapeutas.html"));
 });
 
 //Rota da api de listar Terapeutas
