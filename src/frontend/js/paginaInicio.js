@@ -7,8 +7,15 @@ document.getElementById("sairbutton").addEventListener("click", () => {
 // CONFIGURAÇÃO DE LINKS E TOKEN
 // ==================================
 document.addEventListener("DOMContentLoaded", async () => {
-    const id = localStorage.getItem("userId");
+    const pathParts = window.location.pathname.split("/");
+    const id = pathParts[pathParts.length - 1];
+
     const token = localStorage.getItem("token");
+    if (!token) {
+        window.location.href = "/";
+        return;
+    }
+
     try {
         const res = await fetch(`/api/colaboradores/${id}`, {
             headers: {
@@ -22,6 +29,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             window.location.href = "/";
             return;
         }
+
         if (!res.ok) {
             const err = await res.json();
             console.error("Erro ao carregar dados:", err);
