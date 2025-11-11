@@ -74,7 +74,7 @@
         </div>
     </nav>
 
-    <main class="container-fluid bg-white py-5 h-100" role="main"
+    <main class="container-fluid bg-white py-5 " role="main"
         aria-label="Seleção dos postos de atendimento disponíveis">
         <div class="text-center mb-5">
             <h2 class="fs-2" style="font-weight: 400;">
@@ -86,7 +86,7 @@
             aria-label="Selecione um dos tipos de posto de atendimento">
             <div class="row justify-content-center g-5 text-center">
 
-                <div class="col-12 col-lg-6 col-xl-4">
+                <div class="col-12 col-md-6 col-xl-4">
                     <div class="card border-0 shadow-sm" role="button" onclick="abrirPopup('cadeira')"
                         style="border-radius: 20px;" tabindex="0"
                         aria-label="Abrir detalhes e selecionar a Cadeira Quick">
@@ -96,7 +96,7 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-lg-6 col-xl-4">
+                <div class="col-12 col-md-6 col-xl-4">
                     <div class="card border-0 shadow-sm" role="button" onclick="abrirPopup('maca')"
                         style="border-radius: 20px;" tabindex="0" aria-label="Abrir detalhes e selecionar a Maca">
                         <img src="/frontend/img/Maca.jpg" class="card-img-top"
@@ -105,7 +105,7 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-lg-6 col-xl-4">
+                <div class="col-12 col-md-6 col-xl-4">
                     <div class="card border-0 shadow-sm" role="button" onclick="abrirPopup('poltrona')"
                         style="border-radius: 20px;" tabindex="0"
                         aria-label="Abrir detalhes e selecionar a Poltrona de Reflexologia">
@@ -158,7 +158,14 @@
         </div>
     </div>
 
-    <footer role="contentinfo" aria-label="Informações de rodapé do sistema">
+    <footer class="bg-light border-top mt-5 py-4 shadow-sm" role="contentinfo" aria-label="Rodapé do site">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="text-muted mb-0 fs-6">&copy; 2025 Rokuzen. Todos os direitos reservados.</p>
+                </div>
+            </div>
+        </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
