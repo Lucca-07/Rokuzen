@@ -190,14 +190,12 @@
 #setorcargo {
     display: flex;
     align-items: center;
-    gap: 10px; 
+    gap: 10px;
 }
 
 #setorgerente {
     min-width: 160px;
 }
-
-
 
 /* Animação para o card aparecer */
 @keyframes aparecer {
@@ -570,4 +568,22 @@ a.text-decoration-none:hover h3 {
 
 #sairbutton:hover {
     background: #9db668 !important;
+}
+
+#togglePassword:hover {
+    background: #a0af68;
+}
+.password-container {
+    position: relative;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: none;
+    cursor: pointer;
+    z-index: 10;
 }

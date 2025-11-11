@@ -195,8 +195,7 @@ document.addEventListener("DOMContentLoaded", () => {
     buscarColaboradores();
     // Atualiza a cada 30 segundos
     setInterval(atualizarDados, 120000);
-    const pathParts = window.location.pathname.split("/");
-    const id = pathParts[pathParts.length - 1];
+    const id = localStorage.getItem("userId")
 
     const token = localStorage.getItem("token");
     if (!token) {

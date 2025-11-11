@@ -7,15 +7,9 @@ document.getElementById("sairbutton").addEventListener("click", () => {
 // CONFIGURAÇÃO DE LINKS E TOKEN
 // ==================================
 document.addEventListener("DOMContentLoaded", async () => {
-  const pathParts = window.location.pathname.split("/");
-  const id = pathParts[pathParts.length - 1];
 
+  const id = localStorage.getItem("userId")
   const token = localStorage.getItem("token");
-  if (!token) {
-    window.location.href = "/";
-    return;
-  }
-
   try {
     const res = await fetch(`/api/colaboradores/${id}`, {
       headers: {
@@ -28,7 +22,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       localStorage.removeItem("token");
       window.location.href = "/";
       return;
-    }
 
     if (!res.ok) {
       const err = await res.json();

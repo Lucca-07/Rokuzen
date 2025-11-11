@@ -1,147 +1,109 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css"
-    />
-    <link rel="stylesheet" href="/frontend/css/style.css" />
-    <style>
-      @keyframes aparecer {
-        0% {
-          opacity: 0;
-          transform: translateY(300px);
-        }
 
-        100% {
-          opacity: 1;
-          transform: translateY(0);
-        }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css" />
+  <link rel="stylesheet" href="/frontend/css/style.css" />
+  <link rel="shortcut icon" href="/frontend/img/logoFavicon.png" sizes="32x32" type="image/png"
+    alt="Ícone da Logo Rokuzen" aria-hidden="true" />
+  <style>
+    @keyframes aparecer {
+      0% {
+        opacity: 0;
+        transform: translateY(300px);
       }
 
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .border-lg-0 {
+      border: none !important;
+    }
+
+    @media (min-width: 992px) {
       .border-lg-0 {
         border: none !important;
       }
+    }
 
-      @media (min-width: 992px) {
-        .border-lg-0 {
-          border: none !important;
-        }
-      }
+    .nav-link:hover {
+      color: #9db668 !important;
+    }
+  </style>
+  <title>Terapeutas</title>
+</head>
 
-      .nav-link:hover {
-        color: #9db668 !important;
-      }
-    </style>
-    <title>Terapeutas</title>
-  </head>
+<body class="roboto">
+  <nav class="navbar navbar-expand-lg bg-white roboto border-bottom h-auto" role="navigation"
+    aria-label="Menu principal de navegação do sistema">
+    <div class="container-fluid h-100">
+      <a class="navbar-brand mx-auto mx-lg-0 me-lg-0 ms-lg-5" href="/inicio/:id">
+        <img src="https://rokuzen.com.br/wp-content/uploads/2021/09/cropped-logomarca_pequena2.png"
+          alt="Logo Rokuzen. Clique para ir à página inicial." height="80" />
+      </a>
 
-  <body class="roboto">
-    <nav class="navbar navbar-expand-lg bg-white roboto border-bottom h-auto">
-      <div class="container-fluid h-100">
-        <!-- LOGO -->
-        <a
-          class="navbar-brand mx-auto mx-lg-0 me-lg-0 ms-lg-5"
-          href="/inicio/:id"
-        >
-          <img
-            src="https://rokuzen.com.br/wp-content/uploads/2021/09/cropped-logomarca_pequena2.png"
-            alt="Logo"
-            height="80"
-          />
-        </a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+        aria-controls="navbarContent" aria-expanded="false" aria-label="Abrir e fechar menu de navegação">
+        <i class="mdi mdi-menu fs-1 text-secondary" aria-hidden="true"></i>
+      </button>
 
-        <!-- BOTÃO TOGGLER (MOBILE) -->
-        <button
-          class="navbar-toggler border-0"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarContent"
-          aria-controls="navbarContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <i class="mdi mdi-menu fs-1 text-secondary"></i>
-        </button>
-
-        <!-- MENU -->
-        <div
-          class="collapse navbar-collapse bg-white shadow-sm border-top border-bottom border-lg-0 z-3 h-100"
-          id="navbarContent"
-        >
-          <ul
-            class="navbar-nav align-items-center w-100 justify-content-around h-100"
-          >
-            <li class="nav-item">
-              <a class="nav-link text-secondary fs-6" href="/escala/:id"
-                >Visualizar Escala</a
-              >
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link text-secondary fs-6"
-                href="/postosatendimento/:id"
-                >Postos de Atendimento</a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-secondary fs-6" href="/sessao/:id"
-                >Gerenciar Sessão</a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-secondary fs-6" href="/cadastrar/:id"
-                >Cadastro</a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-secondary fs-6" href="/user/listar/:id"
-                >Usuários</a
-              >
-            </li>
-            <li class="nav-item">
-              <button
-                id="sairbutton"
-                class="btn btn-outline-secondary px-4 my-2"
-              >
-                Sair
-              </button>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-    <main id="main">
-      <div
-        id="container"
-        class="container h-100 p-4 d-flex justify-content-center flex-column align-iten"
-      ></div>
-    </main>
-    <div vw class="enabled">
-      <div vw-access-button class="active"></div>
-      <div vw-plugin-wrapper>
-        <div class="vw-plugin-topwrapper"></div>
+      <div class="collapse navbar-collapse bg-white border-top border-bottom border-lg-0 h-100" id="navbarContent">
+        <ul class="navbar-nav align-items-center w-100 justify-content-around h-100" role="list">
+          <li class="nav-item" role="listitem">
+            <a class="nav-link text-secondary fs-6" href="/escala/:id" aria-current="false">Visualizar Escala</a>
+          </li>
+          <li class="nav-item" role="listitem">
+            <a class="nav-link text-secondary fs-6" href="/postosatendimento/:id" aria-current="false">Postos de
+              Atendimento</a>
+          </li>
+          <li class="nav-item" role="listitem">
+            <a class="nav-link text-secondary fs-6" href="/sessao/:id" aria-current="false">Gerenciar Sessão</a>
+          </li>
+          <li class="nav-item" role="listitem">
+            <a class="nav-link text-secondary fs-6" href="/cadastrar/:id" aria-current="false">Cadastro</a>
+          </li>
+          <li class="nav-item" role="listitem">
+            <a class="nav-link text-secondary fs-6" href="/user/listar/:id" aria-current="false">Usuários</a>
+          </li>
+          <li class="nav-item" role="listitem">
+            <button id="sairbutton" class="btn btn-outline-secondary px-4 my-2" role="button"
+              aria-label="Botão para Sair do Sistema">
+              Sair
+            </button>
+          </li>
+        </ul>
       </div>
     </div>
-    <!-- Bootstrap JS -->
-    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-    <script>
-      new window.VLibras.Widget("https://vlibras.gov.br/app");
-    </script>
-    <script src="/frontend/js/listarTerapeutas.js"></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
-      crossorigin="anonymous"
-    ></script>
-    <script src="https://app.embed.im/accessibility.js" defer></script>
-  </body>
+  </nav>
+
+  <main id="main" role="main" aria-label="Lista de terapeutas cadastrados">
+    <div id="container" class="container h-100 p-4 d-flex justify-content-center flex-column align-iten"
+      aria-live="polite" aria-atomic="true">
+    </div>
+  </main>
+
+  <div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+      <div class="vw-plugin-topwrapper"></div>
+    </div>
+  </div>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+  <script>
+    new window.VLibras.Widget("https://vlibras.gov.br/app");
+  </script>
+  <script src="/frontend/js/listarTerapeutas.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+    crossorigin="anonymous"></script>
+  <script src="https://app.embed.im/accessibility.js" defer></script>
+</body>
+
 </html>
