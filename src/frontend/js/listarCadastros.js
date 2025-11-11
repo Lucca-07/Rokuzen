@@ -78,7 +78,7 @@ async function listarColaboradores() {
                     <div class="col-12 col-md-6 col-lg-3 d-flex align-self-center align-items-center justify-content-center h-50">
                         <img src="${
                             user.imagem || "/frontend/img/account-outline.svg"
-                        }" alt=""
+                        }" alt="Imagem de perfil do colaborador"
                             style="border-radius: 25px; border: 1px solid black; height: 100px; width: 100px; object-fit: cover;">
                     </div>
                     <div class="col-12 col-md-6 col-lg-9 d-flex">
