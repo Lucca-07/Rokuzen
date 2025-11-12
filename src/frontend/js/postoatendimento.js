@@ -1,109 +1,44 @@
+// Menu toggle
 const menubtn = document.getElementById("menubtn");
-function abrirMenu() {
-    const dropcnt = document.getElementById("dropcnt");
-    dropcnt.classList.toggle("d-none");
-}
+menubtn?.addEventListener("click", () => {
+    document.getElementById("dropcnt")?.classList.toggle("d-none");
+});
 
+// Mapas de status e cores
 const statusMap = {
     verde: "Disponível",
     vermelho: "Ocupado",
     amarelo: "Manutenção",
     laranja: "Intervalo",
 };
-
 const colorMap = {
-    Disponível: "#90ee90", // Verde claro
-    Ocupado: "#ff4d4d", // Vermelho
-    Manutenção: "#ffd700", // Amarelo
-    Intervalo: "#ffa500", // Laranja
+    Disponível: "#90ee90",
+    Ocupado: "#ff4d4d",
+    Manutenção: "#ffd700",
+    Intervalo: "#ffa500",
 };
-// Abro os pop up
+
+// Abrir popup
 function abrirPopup(tipo) {
     fecharTodosPopups();
     const popup = document.getElementById(`popup-${tipo}`);
     if (popup) popup.style.display = "flex";
 }
 
-// Fecho todos os pop ups
+// Fechar todos os popups
 function fecharTodosPopups() {
-    document.querySelectorAll(".popup-bg").forEach((popup) => {
-        popup.style.display = "none";
-    });
+    document
+        .querySelectorAll(".popup-bg")
+        .forEach((p) => (p.style.display = "none"));
 }
 
-// Fechar o pop o pup com o icone do x no superior da tela
+// Fechar popup pelo X
 function fecharPopup(botao) {
     const popup = botao.closest(".popup-bg");
     if (popup) popup.style.display = "none";
 }
 
-// Pego os postos do back
-async function buscarPostos() {
-    try {
-        const response = await fetch("/postoatendimento", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                unidade: localStorage.getItem("unidade"),
-            }),
-        });
-
-        if (!response.ok) {
-            throw new Error(`Erro na requisição: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log("📬 Dados recebidos do backend:", data);
-        renderizarPostos(data);
-    } catch (error) {
-        console.error("Erro ao buscar postos:", error);
-    }
-}
-
-// Renderiza os postos
-function renderizarPostos(data) {
-    const { quick, poltrona, maca } = data;
-
-    // Cadeiras quick
-    const frameCadeira = document.getElementById("frame-cadeira");
-    frameCadeira.innerHTML = "";
-    quick.forEach((posto, i) => {
-        const statusInicial =
-            posto.status && posto.status.trim() !== ""
-                ? posto.status
-                : "Disponível";
-        const linha = criarLinha(posto._id, `Cadeira ${i + 1}`, statusInicial);
-        frameCadeira.appendChild(linha);
-    });
-
-    // Poltronas
-    const framePoltrona = document.getElementById("frame-poltrona");
-    framePoltrona.innerHTML = "";
-    poltrona.forEach((posto, i) => {
-        const statusInicial =
-            posto.status && posto.status.trim() !== ""
-                ? posto.status
-                : "Disponível";
-        const linha = criarLinha(posto._id, `Poltrona ${i + 1}`, statusInicial);
-        framePoltrona.appendChild(linha);
-    });
-
-    // Macas
-    const frameMaca = document.getElementById("frame-maca");
-    frameMaca.innerHTML = "";
-    maca.forEach((posto, i) => {
-        const statusInicial =
-            posto.status && posto.status.trim() !== ""
-                ? posto.status
-                : "Disponível";
-        const linha = criarLinha(posto._id, `Maca ${i + 1}`, statusInicial);
-        frameMaca.appendChild(linha);
-    });
-}
-
-// Crio linha
+// Criar linha de posto
 function criarLinha(id, nome, statusInicial) {
     const linha = document.createElement("div");
     linha.classList.add("linha");
@@ -138,21 +73,97 @@ function criarLinha(id, nome, statusInicial) {
     statusSelect.value = statusInicial;
 
     statusSelect.addEventListener("change", () => {
-        const novaCor = colorMap[statusSelect.value];
-        item.style.backgroundColor = novaCor;
+        item.style.backgroundColor = colorMap[statusSelect.value];
     });
 
     linha.append(item, statusLabel, statusSelect);
     return linha;
 }
 
-// Confirmar alteracoes
-document.addEventListener("DOMContentLoaded", async () => {
-    document.querySelectorAll(".popup").forEach((popup) => {
-        const btnConfirmar = popup.querySelector(".confirmar");
+// Renderizar postos
+function renderizarPostos(data) {
+    const { quick, poltrona, maca } = data;
 
+    const frames = {
+        cadeira: document.getElementById("frame-cadeira"),
+        poltrona: document.getElementById("frame-poltrona"),
+        maca: document.getElementById("frame-maca"),
+    };
+
+    quick.forEach((p, i) => {
+        frames.cadeira.appendChild(
+            criarLinha(p._id, `Cadeira ${i + 1}`, p.status || "Disponível")
+        );
+    });
+    poltrona.forEach((p, i) => {
+        frames.poltrona.appendChild(
+            criarLinha(p._id, `Poltrona ${i + 1}`, p.status || "Disponível")
+        );
+    });
+    maca.forEach((p, i) => {
+        frames.maca.appendChild(
+            criarLinha(p._id, `Maca ${i + 1}`, p.status || "Disponível")
+        );
+    });
+}
+
+// Buscar postos do backend
+async function buscarPostos() {
+    try {
+        const response = await fetch("/postoatendimento", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ unidade: localStorage.getItem("unidade") }),
+        });
+        if (!response.ok)
+            throw new Error(`Erro na requisição: ${response.status}`);
+        const data = await response.json();
+        console.log("📬 Dados recebidos do backend:", data);
+        renderizarPostos(data);
+    } catch (err) {
+        console.error("Erro ao buscar postos:", err);
+    }
+}
+
+// Confirmar alterações
+async function confirmarAlteracoes(popup) {
+    const frame = popup.querySelector(".frame");
+    const linhas = frame.querySelectorAll(".linha");
+    const atualizacoes = Array.from(linhas).map((linha) => ({
+        id: linha.dataset.id,
+        status: linha.querySelector(".status-select").value,
+    }));
+
+    try {
+        for (const item of atualizacoes) {
+            const res = await fetch("/atualizarStatus", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(item),
+            });
+            const result = await res.json();
+            console.log("Resultado backend:", result);
+        }
+        alert("Status alterado com sucesso!");
+        popup.style.display = "none";
+    } catch (err) {
+        console.error("Erro ao atualizar status:", err);
+        alert("Erro ao salvar as alterações!");
+    }
+}
+
+// Inicialização
+document.addEventListener("DOMContentLoaded", async () => {
+    // Seleciona todos os botões de confirmar nos modais
+    document.querySelectorAll(".confirmar").forEach((btnConfirmar) => {
         btnConfirmar.addEventListener("click", async () => {
-            const frame = popup.querySelector(".frame");
+            // Pega o modal pai
+            const modalContent = btnConfirmar.closest(".modal-content");
+            if (!modalContent) return;
+
+            const frame = modalContent.querySelector(".frame");
+            if (!frame) return;
+
             const linhas = frame.querySelectorAll(".linha");
             const atualizacoes = [];
 
@@ -170,29 +181,37 @@ document.addEventListener("DOMContentLoaded", async () => {
                         body: JSON.stringify(item),
                     });
 
+                    if (!response.ok) {
+                        throw new Error(
+                            `Erro ao atualizar: ${response.status}`
+                        );
+                    }
+
                     const result = await response.json();
-                    console.log(" Resultado atualização:", result);
+                    console.log("Resultado backend:", result);
                 }
 
-                // Alerta quando salvar
-                alert("Status alterado com sucesso");
-                popup.parentElement.style.display = "none";
+                alert("Status alterado com sucesso!");
+
+                // Fecha o modal usando Bootstrap JS
+                const modalElement = btnConfirmar.closest(".modal");
+                if (modalElement) {
+                    const modal = bootstrap.Modal.getInstance(modalElement);
+                    if (modal) modal.hide();
+                }
             } catch (error) {
-                console.error(" Erro ao atualizar status:", error);
+                console.error("Erro ao atualizar status:", error);
                 alert("Erro ao salvar as alterações!");
             }
         });
     });
 
     await buscarPostos();
-    const id = localStorage.getItem("userId")
 
+    // Configurar links dinâmicos
+    const id = localStorage.getItem("userId");
     const token = localStorage.getItem("token");
-    if (!token) {
-        // sem token: volta pra login
-        window.location.href = "/";
-        return;
-    }
+    if (!token) return (window.location.href = "/");
     const links = {
         escala: document.querySelector('a[href^="/escala"]'),
         postos: document.querySelector('a[href^="/postosatendimento"]'),
@@ -201,16 +220,29 @@ document.addEventListener("DOMContentLoaded", async () => {
         listar: document.querySelector('a[href^="/user/listar"]'),
         inicio: document.querySelector('a[href^="/inicio"]'),
     };
-
     if (links.escala) links.escala.href = `/escala/${id}`;
     if (links.postos) links.postos.href = `/postosatendimento/${id}`;
     if (links.sessao) links.sessao.href = `/sessao/${id}`;
     if (links.inicio) links.inicio.href = `/inicio/${id}`;
     if (links.cadastro) links.cadastro.href = `/cadastrar/${id}`;
     if (links.listar) links.listar.href = `/user/listar/${id}`;
-});
 
-document.getElementById("sairbutton").addEventListener("click", () => {
-    localStorage.removeItem("token");
-    window.location.href = "/";
+    // Evento global de clique
+    document.addEventListener("click", (e) => {
+        // Confirmar alterações
+        const btnConfirmar = e.target.closest(".confirmar");
+        if (btnConfirmar) {
+            const popup = btnConfirmar.closest(".popup-bg");
+            if (popup) confirmarAlteracoes(popup);
+        }
+        // Fechar popup pelo X
+        const btnFechar = e.target.closest(".btn-fechar-popup");
+        if (btnFechar) fecharPopup(btnFechar);
+    });
+
+    // Sair
+    document.getElementById("sairbutton")?.addEventListener("click", () => {
+        localStorage.removeItem("token");
+        window.location.href = "/";
+    });
 });
