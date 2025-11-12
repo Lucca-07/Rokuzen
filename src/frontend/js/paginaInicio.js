@@ -72,50 +72,72 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    try {
-        console.log("🔍 Carregando equipamentos da unidade:", unidade);
+    async function buscarEquipamentosDisponiveis() {
+        try {
 
-        const response = await fetch(
-            `/api/equipamentos/disponiveis?unidade=${encodeURIComponent(
-                unidade
-            )}`
-        );
+            const unidade = localStorage.getItem("unidade")
 
-        if (!response.ok) {
-            throw new Error(`Erro na resposta da API (${response.status})`);
+            console.log("Buscando equipamentos da unidade:", unidade);
+
+            const response = await fetch("/api/equipamentos/disponiveis", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ unidade: unidade }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(
+                    `Erro ${response.status}: ${
+                        errorData.erro || errorData.error
+                    }`
+                );
+            }
+
+            const equipamentos = await response.json();
+            console.log("Equipamentos recebidos:", equipamentos);
+            preencherTabelaEquipamentos(equipamentos);
+        } catch (error) {
+            console.error("Erro ao buscar equipamentos:", error);
+            document.getElementById("tabela-equipamentos").innerHTML = `
+                <tr>
+                    <td colspan="2" class="text-center text-danger py-4">
+                        ⚠️ ${error.message}
+                    </td>
+                </tr>
+            `;
         }
+    }
 
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-            throw new Error("Resposta não está em formato JSON");
-        }
+    function preencherTabelaEquipamentos(equipamentos) {
+        const tbody = document.getElementById("tabela-equipamentos");
 
-        const data = await response.json();
-        console.log("Equipamentos disponíveis:", data);
-
-        if (!data || data.length === 0) {
-            tabela.innerHTML =
-                "<tr><td colspan='2'>Nenhum equipamento disponível.</td></tr>";
+        if (!equipamentos || equipamentos.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="2" class="text-center text-muted py-4">
+                        Nenhum equipamento disponível
+                    </td>
+                </tr>
+            `;
             return;
         }
 
-        const equipamentosFiltrados = data.filter(
-            (eq) => eq.status && eq.status.toLowerCase().includes("dispon")
-        );
-
-        tabela.innerHTML = equipamentosFiltrados
+        tbody.innerHTML = equipamentos
             .map(
-                (eq) => `
-        <tr>
-          <td>${eq.nome_posto || "Sem nome"}</td>
-          <td>${eq.status || "Sem status"}</td>
-        </tr>
-      `
+                (equip) => `
+            <tr>
+                <td>${equip.nome_posto || "N/A"}</td>
+                <td>
+                    <span class="badge bg-success">Disponível</span>
+                </td>
+            </tr>
+        `
             )
             .join("");
-    } catch (error) {
-        console.error("Erro ao carregar equipamentos:", error);
-        tabela.innerHTML =
-            "<tr><td colspan='2'>Erro ao carregar equipamentos.</td></tr>";
     }
+
+    buscarEquipamentosDisponiveis();
 });
