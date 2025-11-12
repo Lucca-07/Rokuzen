@@ -13,6 +13,7 @@ import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
 import equipamentoRoutes from "./api/routes/equipamento.routes.js";
+import colaboradoresRoutes from "./api/routes/colaboradores.routes.js";
 import recuperarSenha from "./modules/recuperarSenha.js";
 import Clientes from "./models/Clientes.js";
 import Colaboradores from "./models/Colaboradores.js";
@@ -34,6 +35,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/frontend", express.static(path.join(dirname, "frontend")));
 
 app.use("/api/equipamentos", equipamentoRoutes); // ✅ Esta linha precisa estar aqui
+app.use("/api/colaboradores", colaboradoresRoutes);
+
 
 // GETS
 // Rota da Página de Login

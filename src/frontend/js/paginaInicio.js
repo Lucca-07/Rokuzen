@@ -141,3 +141,40 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     buscarEquipamentosDisponiveis();
 });
+
+// ==================================
+// LISTAR PONTUAÇÃO DOS TERAPEUTAS
+// ==================================
+document.addEventListener("DOMContentLoaded", async () => {
+    const tabelaPontuacao = document.querySelector(
+        '.card:has(#titulo-terapeutas) table'
+    );
+
+    try {
+        const response = await fetch("/api/colaboradores/pontuacao");
+        if (!response.ok) throw new Error("Erro ao buscar pontuação");
+
+        const terapeutas = await response.json();
+
+        const linhas = terapeutas
+            .map(
+                (t) => `
+            <tr>
+                <td>${t.nome_colaborador || "Sem nome"}</td>
+                <td>${t.pontos ?? 0}</td>
+            </tr>`
+            )
+            .join("");
+
+        tabelaPontuacao.innerHTML += `<tbody>${linhas}</tbody>`;
+    } catch (error) {
+        console.error("Erro ao carregar pontuação:", error);
+        tabelaPontuacao.innerHTML += `
+            <tbody>
+                <tr>
+                    <td colspan="2" class="text-danger py-3">Erro ao carregar pontuação</td>
+                </tr>
+            </tbody>
+        `;
+    }
+});
