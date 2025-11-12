@@ -659,7 +659,7 @@ a.text-decoration-none:hover h3 {
 body {
     font-family: "Roboto", sans-serif;
     height: 100vh;
-    background: url("/frontend/img/teste.jpeg") no-repeat center center / cover;
+    background: url("/frontend/img/Fundo.jpeg") no-repeat center center / cover;
     display: flex;
     align-items: center;
     justify-content: center;
