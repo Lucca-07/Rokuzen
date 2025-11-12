@@ -74,8 +74,7 @@
         </div>
     </nav>
 
-    <main class="container-fluid bg-white py-5 " role="main"
-        aria-label="Seleção dos postos de atendimento disponíveis">
+    <main class="container-fluid bg-white py-5 " role="main" aria-label="Seleção dos postos de atendimento disponíveis">
         <div class="text-center mb-5">
             <h2 class="fs-2" style="font-weight: 400;">
                 Postos de Atendimento
@@ -87,8 +86,8 @@
             <div class="row justify-content-center g-5 text-center">
 
                 <div class="col-12 col-md-6 col-xl-4">
-                    <div class="card border-0 shadow-sm" role="button" onclick="abrirPopup('cadeira')"
-                        style="border-radius: 20px;" tabindex="0"
+                    <div class="card border-0 shadow-sm" role="button" data-bs-toggle="modal"
+                        data-bs-target="#popup-cadeira" style="border-radius: 20px;" tabindex="0"
                         aria-label="Abrir detalhes e selecionar a Cadeira Quick">
                         <img src="/frontend/img/Quick.jpg" class="card-img-top"
                             alt="Cadeira Quick para massagem ou atendimento rápido"
@@ -97,8 +96,9 @@
                 </div>
 
                 <div class="col-12 col-md-6 col-xl-4">
-                    <div class="card border-0 shadow-sm" role="button" onclick="abrirPopup('maca')"
-                        style="border-radius: 20px;" tabindex="0" aria-label="Abrir detalhes e selecionar a Maca">
+                    <div class="card border-0 shadow-sm" role="button" data-bs-toggle="modal"
+                        data-bs-target="#popup-maca" style="border-radius: 20px;" tabindex="0"
+                        aria-label="Abrir detalhes e selecionar a Maca">
                         <img src="/frontend/img/Maca.jpg" class="card-img-top"
                             alt="Maca para massagem ou terapias longas"
                             style="border-radius: 20px;  box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.164);" />
@@ -106,8 +106,8 @@
                 </div>
 
                 <div class="col-12 col-md-6 col-xl-4">
-                    <div class="card border-0 shadow-sm" role="button" onclick="abrirPopup('poltrona')"
-                        style="border-radius: 20px;" tabindex="0"
+                    <div class="card border-0 shadow-sm" role="button" data-bs-toggle="modal"
+                        data-bs-target="#popup-poltrona" style="border-radius: 20px;" tabindex="0"
                         aria-label="Abrir detalhes e selecionar a Poltrona de Reflexologia">
                         <img src="/frontend/img/Poltrona.jpg" class="card-img-top"
                             alt="Poltrona para reflexologia ou massagem nos pés"
@@ -118,42 +118,56 @@
         </div>
     </main>
 
-    <div class="popup-bg" id="popup-cadeira" style="display: none" role="dialog" aria-modal="true"
-        aria-labelledby="titulo-cadeira" aria-hidden="true">
-        <div class="popup">
-            <button class="fechar-popup btn-close" onclick="fecharPopup(this)" aria-label="Fechar Pop-up Cadeira Quick">
-            </button>
-            <h2 id="titulo-cadeira">Cadeira Quick</h2>
-            <div class="frame" id="frame-cadeira"></div>
-            <div class="botoes">
-                <button class="btnc confirmar" role="button">Confirmar</button>
+    <!-- Cadeira Quick -->
+    <div class="modal fade" id="popup-cadeira" tabindex="-1" aria-labelledby="titulo-cadeira" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="titulo-cadeira">Cadeira Quick</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="frame" id="frame-cadeira"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary confirmar" type="button">Confirmar</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="popup-bg" id="popup-maca" style="display: none" role="dialog" aria-modal="true"
-        aria-labelledby="titulo-maca" aria-hidden="true">
-        <div class="popup">
-            <button class="fechar-popup btn-close" onclick="fecharPopup(this)" aria-label="Fechar Pop-up Maca">
-            </button>
-            <h2 id="titulo-maca">Maca</h2>
-            <div class="frame" id="frame-maca"></div>
-            <div class="botoes">
-                <button class="btnc confirmar" role="button">Confirmar</button>
+    <!-- Maca -->
+    <div class="modal fade" id="popup-maca" tabindex="-1" aria-labelledby="titulo-maca" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="titulo-maca">Maca</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="frame" id="frame-maca"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary confirmar" type="button">Confirmar</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="popup-bg" id="popup-poltrona" style="display: none" role="dialog" aria-modal="true"
-        aria-labelledby="titulo-poltrona" aria-hidden="true">
-        <div class="popup">
-            <button class="fechar-popup btn-close" onclick="fecharPopup(this)"
-                aria-label="Fechar Pop-up Poltrona Reflexologia">
-            </button>
-            <h2 id="titulo-poltrona">Poltrona Reflexologia</h2>
-            <div class="frame" id="frame-poltrona"></div>
-            <div class="botoes">
-                <button class="btnc confirmar" role="button">Confirmar</button>
+    <!-- Poltrona -->
+    <div class="modal fade" id="popup-poltrona" tabindex="-1" aria-labelledby="titulo-poltrona" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="titulo-poltrona">Poltrona Reflexologia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="frame" id="frame-poltrona"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary confirmar" type="button">Confirmar</button>
+                </div>
             </div>
         </div>
     </div>
