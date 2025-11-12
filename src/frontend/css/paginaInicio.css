@@ -15,7 +15,6 @@
     min-height: 5%;
     height: 10%;
     max-height: 13%;
-    animation: aparecer 0.3s ease-in forwards;
 }
 
 .sair {

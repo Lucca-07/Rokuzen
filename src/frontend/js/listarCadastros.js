@@ -72,7 +72,7 @@ async function listarColaboradores() {
             console.log("Perfis depois:", perfis);
             // console.log(perfisOrganizados)
 
-            const card = `<div id="card-${contador}" class="row container-lg bg-light d-flex p-4 border border-1 rounded-3 mt-4 card-editar h-25" style="animation: aparecer 0.3s ease-in forwards;">
+            const card = `<div id="card-${contador}" class="row container-lg bg-light d-flex p-4 border border-1 rounded-3 mt-4 card-editar h-25">
                 <div class="col-12 col-md-6 col-lg-3 d-flex align-items-center justify-content-center">
                     <img src="${
                         user.imagem || "/frontend/img/account-outline.svg"
