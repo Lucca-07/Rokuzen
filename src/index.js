@@ -1191,7 +1191,7 @@ app.post("/atualizarSenha", async (req, res) => {
         if (emailUsuario) {
             res.json({ msg: "Senha atualizada com sucesso!" });
         } else {
-            res.status(404).json({ msg: "Usuário não encontrado." });
+            res.status(404).json({ msg: "Email não encontrado." });
         }
     } catch (error) {
         console.error("Erro ao atualizar senha:", error);
