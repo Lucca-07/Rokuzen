@@ -141,3 +141,79 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     buscarEquipamentosDisponiveis();
 });
+
+// ==================================
+// LISTAR PONTUAÇÃO DOS TERAPEUTAS POR UNIDADE
+// ==================================
+document.addEventListener("DOMContentLoaded", async () => {
+    const unidade = localStorage.getItem("unidade");
+    const tabelaPontuacao = document.querySelector(".table.table-striped.table-hover.text-center.align-middle.mb-0");
+
+    if (!unidade) {
+        console.error("Nenhuma unidade encontrada no localStorage para pontuação");
+        return;
+    }
+
+    try {
+        const response = await fetch("/api/colaboradores/pontuacao", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ unidade }),
+        });
+
+        if (!response.ok) {
+            const erro = await response.json();
+            console.error("Erro ao buscar pontuação:", erro);
+            return;
+        }
+
+        const terapeutas = await response.json();
+        preencherTabelaPontuacao(terapeutas);
+    } catch (error) {
+        console.error("Erro de rede ao buscar pontuação:", error);
+    }
+
+    function preencherTabelaPontuacao(terapeutas) {
+        // Seleciona o <table> certo com base no cabeçalho "Pontuação dos Terapeutas"
+        const tabela = document.querySelector("#titulo-terapeutas")
+            ?.closest(".card")
+            ?.querySelector("table");
+
+        if (!tabela) {
+            console.error("Tabela de pontuação não encontrada no DOM");
+            return;
+        }
+
+        // Cria o corpo da tabela dinamicamente
+        let tbody = tabela.querySelector("tbody");
+        if (!tbody) {
+            tbody = document.createElement("tbody");
+            tabela.appendChild(tbody);
+        }
+
+        if (!terapeutas || terapeutas.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="2" class="text-center text-muted py-4">
+                        Nenhum terapeuta encontrado para esta unidade.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = terapeutas
+            .map(
+                (t) => `
+                <tr>
+                    <td>${t.nome_colaborador}</td>
+                    <td>${t.pontos ?? 0}</td>
+                </tr>
+            `
+            )
+            .join("");
+    }
+});
+
