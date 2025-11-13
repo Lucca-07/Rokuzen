@@ -220,20 +220,20 @@ async function popupEdit(id) {
                                     <p class="mb-1 fs-5">Unidades:</p>
                                     <div id="unidadesdiv-${id}" class="row gy-2 justify-content-center">
                                         <div class="col-6 col-md-3 text-center">
-                                            <label class="d-block">Golden Square</label>
-                                            <input type="checkbox" name="unidades" id="GoldenSquare-${id}" value="GoldenSquare">
+                                            <label class="d-block" for='GoldenSquare-${id}'>Golden Square</label>
+                                            <input type="checkbox" name="unidades" id="GoldenSquare-${id}" value="Golden Square">
                                         </div>
                                         <div class="col-6 col-md-3 text-center">
-                                            <label class="d-block">Mooca Plaza</label>
-                                            <input type="checkbox" name="unidades" id="MoocaPlaza-${id}" value="MoocaPlaza">
+                                            <label class="d-block" for='MoocaPlaza-${id}'>Mooca Plaza</label>
+                                            <input type="checkbox" name="unidades" id="MoocaPlaza-${id}" value="Mooca Plaza">
                                         </div>
                                         <div class="col-6 col-md-3 text-center">
-                                            <label class="d-block">Grand Plaza</label>
-                                            <input type="checkbox" name="unidades" id="GrandPlaza-${id}" value="GrandPlaza">
+                                            <label class="d-block" for='GrandPlaza-${id}'>Grand Plaza</label>
+                                            <input type="checkbox" name="unidades" id="GrandPlaza-${id}" value="Grand Plaza">
                                         </div>
                                         <div class="col-6 col-md-3 text-center">
-                                            <label class="d-block">West Plaza</label>
-                                            <input type="checkbox" name="unidades" id="WestPlaza-${id}" value="WestPlaza">
+                                            <label class="d-block" for='WestPlaza-${id}'>West Plaza</label>
+                                            <input type="checkbox" name="unidades" id="WestPlaza-${id}" value="West Plaza">
                                         </div>
                                     </div>
                                 </div>
