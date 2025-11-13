@@ -93,52 +93,75 @@
     </div>
   </main>
 
-  <div id="modal-agendamento" class="modal" role="dialog" aria-modal="true" aria-labelledby="titulo-agendamento"
-    aria-hidden="true" style="display: none;">
-    <div class="modal-conteudo">
-      <button class="fechar-btn btn-close" aria-label="Fechar Novo Agendamento Modal" data-dismiss="modal"></button>
-      <h2 id="titulo-agendamento">Novo Agendamento</h2>
+  <!-- Modal Bootstrap -->
+  <div id="modal-agendamento" class="modal fade" tabindex="-1" role="dialog" aria-modal="true"
+    aria-labelledby="titulo-agendamento" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="titulo-agendamento">Novo Agendamento</h2>
+          <button type="button" class="btn-close fechar-btn" aria-label="Fechar Novo Agendamento Modal"
+            data-bs-dismiss="modal"></button>
+        </div>
 
-      <p>Horário Selecionado: <strong id="horario-selecionado" aria-live="polite"></strong></p>
+        <div class="modal-body">
+          <p class="mb-3">
+            Horário Selecionado: <strong id="horario-selecionado" aria-live="polite"></strong>
+          </p>
 
-      <form id="form-agendamento" aria-label="Formulário de Agendamento de Serviço">
+          <form id="form-agendamento" aria-label="Formulário de Agendamento de Serviço">
+            <div class="mb-3">
+              <label for="funcionario" class="form-label">Profissional</label>
+              <select id="funcionario" class="form-select" aria-required="true" aria-label="Selecionar Profissional"
+                required></select>
+            </div>
 
-        <label for="funcionario">Profissional</label>
-        <select id="funcionario" aria-required="true" aria-label="Selecionar Profissional" required></select>
+            <div class="mb-3">
+              <label for="tipo-trabalho" class="form-label">Serviço</label>
+              <select id="tipo-trabalho" class="form-select" aria-required="true" aria-label="Selecionar Serviço"
+                required></select>
+            </div>
 
-        <label for="tipo-trabalho">Serviço</label>
-        <select id="tipo-trabalho" aria-required="true" aria-label="Selecionar Serviço" required></select>
+            <div class="mb-3 visually-hidden">
+              <label for="unidade" class="form-label">Unidade</label>
+              <select id="unidade" class="form-select" aria-hidden="true" aria-label="Unidade do Agendamento"></select>
+            </div>
 
-        <label for="unidade" class="visually-hidden">Unidade</label>
-        <select id="unidade" class="visually-hidden" aria-hidden="true" aria-label="Unidade do Agendamento"></select>
+            <div class="mb-3">
+              <label for="equipamento" class="form-label">Equipamento</label>
+              <select id="equipamento" class="form-select" aria-required="true" aria-label="Selecionar Equipamento"
+                required disabled>
+                <option value="selecao" selected disabled>
+                  Carregando equipamentos...
+                </option>
+              </select>
+            </div>
+          </form>
+        </div>
 
-        <label for="equipamento">Equipamento</label>
-        <select id="equipamento" aria-required="true" aria-label="Selecionar Equipamento" required disabled>
-          <option value="selecao" selected disabled>
-            Carregando equipamentos...
-          </option>
-        </select>
-
-        <button type="submit" id="btn-salvar" class="btn-salvar" aria-label="Salvar Agendamento">
-          Salvar Agendamento
-        </button>
-        <button type="button" id="btn-excluir" class="btn-excluir" style="display: none"
-          aria-label="Excluir Agendamento">
-          Excluir Agendamento
-        </button>
-      </form>
+        <div class="modal-footer">
+          <button type="button" id="btn-excluir" class="btn btn-danger me-auto" style="display: none"
+            aria-label="Excluir Agendamento">
+            Excluir Agendamento
+          </button>
+          <button type="submit" id="btn-salvar" class="btn btn-success" form="form-agendamento"
+            aria-label="Salvar Agendamento">
+            Salvar Agendamento
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
   <footer class="bg-light border-top mt-5 py-4 shadow-sm" role="contentinfo" aria-label="Rodapé do site">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-12 text-center">
-                    <p class="text-muted mb-0 fs-6">&copy; 2025 Rokuzen. Todos os direitos reservados.</p>
-                </div>
-            </div>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12 text-center">
+          <p class="text-muted mb-0 fs-6">&copy; 2025 Rokuzen. Todos os direitos reservados.</p>
         </div>
-    </footer>
+      </div>
+    </div>
+  </footer>
 
   <div vw class="enabled">
     <div vw-access-button class="active"></div>
