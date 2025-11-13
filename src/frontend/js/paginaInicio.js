@@ -143,38 +143,77 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 // ==================================
-// LISTAR PONTUAÇÃO DOS TERAPEUTAS
+// LISTAR PONTUAÇÃO DOS TERAPEUTAS POR UNIDADE
 // ==================================
 document.addEventListener("DOMContentLoaded", async () => {
-    const tabelaPontuacao = document.querySelector(
-        '.card:has(#titulo-terapeutas) table'
-    );
+    const unidade = localStorage.getItem("unidade");
+    const tabelaPontuacao = document.querySelector(".table.table-striped.table-hover.text-center.align-middle.mb-0");
+
+    if (!unidade) {
+        console.error("Nenhuma unidade encontrada no localStorage para pontuação");
+        return;
+    }
 
     try {
-        const response = await fetch("/api/colaboradores/pontuacao");
-        if (!response.ok) throw new Error("Erro ao buscar pontuação");
+        const response = await fetch("/api/colaboradores/pontuacao", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ unidade }),
+        });
+
+        if (!response.ok) {
+            const erro = await response.json();
+            console.error("Erro ao buscar pontuação:", erro);
+            return;
+        }
 
         const terapeutas = await response.json();
+        preencherTabelaPontuacao(terapeutas);
+    } catch (error) {
+        console.error("Erro de rede ao buscar pontuação:", error);
+    }
 
-        const linhas = terapeutas
+    function preencherTabelaPontuacao(terapeutas) {
+        // Seleciona o <table> certo com base no cabeçalho "Pontuação dos Terapeutas"
+        const tabela = document.querySelector("#titulo-terapeutas")
+            ?.closest(".card")
+            ?.querySelector("table");
+
+        if (!tabela) {
+            console.error("Tabela de pontuação não encontrada no DOM");
+            return;
+        }
+
+        // Cria o corpo da tabela dinamicamente
+        let tbody = tabela.querySelector("tbody");
+        if (!tbody) {
+            tbody = document.createElement("tbody");
+            tabela.appendChild(tbody);
+        }
+
+        if (!terapeutas || terapeutas.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="2" class="text-center text-muted py-4">
+                        Nenhum terapeuta encontrado para esta unidade.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = terapeutas
             .map(
                 (t) => `
-            <tr>
-                <td>${t.nome_colaborador || "Sem nome"}</td>
-                <td>${t.pontos ?? 0}</td>
-            </tr>`
+                <tr>
+                    <td>${t.nome_colaborador}</td>
+                    <td>${t.pontos ?? 0}</td>
+                </tr>
+            `
             )
             .join("");
-
-        tabelaPontuacao.innerHTML += `<tbody>${linhas}</tbody>`;
-    } catch (error) {
-        console.error("Erro ao carregar pontuação:", error);
-        tabelaPontuacao.innerHTML += `
-            <tbody>
-                <tr>
-                    <td colspan="2" class="text-danger py-3">Erro ao carregar pontuação</td>
-                </tr>
-            </tbody>
-        `;
     }
 });
+
