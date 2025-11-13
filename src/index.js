@@ -634,8 +634,21 @@ app.get("/api/terapeutas", async (req, res) => {
 // Todos os timers
 app.get("/api/atendimentos", async (req, res) => {
     try {
-        const atendimentos = await Atendimentos.find();
-        res.json(atendimentos);
+        const atendimentos = await Atendimentos.find()
+            .populate("colaborador_id", "nome_colaborador _id")
+            .populate("servico_id", "nome_servico _id");
+
+        // Transforma o resultado para manter colaborador_id como ID
+        const atendimentosFormatados = atendimentos.map(att => {
+            const obj = att.toObject();
+            // Se colaborador_id foi populado, extrai o _id
+            if (obj.colaborador_id && typeof obj.colaborador_id === 'object' && obj.colaborador_id._id) {
+                obj.colaborador_id = obj.colaborador_id._id;
+            }
+            return obj;
+        });
+
+        res.json(atendimentosFormatados);
     } catch (err) {
         console.error("Erro ao buscar atendimentos:", err);
         res.status(500).json({ error: "Erro ao buscar atendimentos" });
