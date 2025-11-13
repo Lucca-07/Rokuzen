@@ -1,73 +1,18 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+/* ============================================
+   ESCALA.CSS - Página de Visualização de Escala
+   ============================================ */
 
-.roboto {
-    font-family: "Roboto", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 300;
-    font-style: normal;
-}
-
-.navbar {
-    border-top: 5px solid #9db668;
-    border-bottom: 5px solid #e9eaee;
-    height: 150px;
-}
-
-.menu a:hover {
-    color: #9db668 !important;
-}
-
-.dropcnt {
-    border: 5px solid #e9eaee;
-    border-top: none;
-    height: 305px;
-    /* position: fixed; */
-    top: 150px;
-    z-index: 999 !important;
-}
-
-.dropopt {
-    height: 100px;
-    border: 1px solid #e9eaee;
-    background-color: white;
-}
-
-.dropopt a:hover {
-    color: #9db668 !important;
-}
-
-.btncustom {
-    background: #a0af68;
-    color: white;
-    border: none;
-    border-radius: 15px;
-    padding: 6px 14px;
-    margin-top: 5px;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.btncustom:hover {
-    background: #8fa25d;
-}
-
-.fechar {
-    position: absolute;
-    top: 5px;
-    right: 10px;
-    background: none;
-    border: none;
-    font-size: 22px;
-    cursor: pointer;
-}
-
+/* === HEADER === */
 .header-escala {
     text-align: center;
     margin-bottom: 25px;
 }
 
+#servicosh1 {
+    font-weight: 400;
+}
+
+/* === NAVEGAÇÃO DE SEMANAS === */
 .nav-botoes {
     display: flex;
     justify-content: center;
@@ -95,14 +40,24 @@
     border: 2px solid #b3ce78;
 }
 
-#servicosh1 {
-    font-weight: 400;
+#btn-hoje {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #9db668;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-weight: bold;
 }
 
-/* tabela do calendario */
+#btn-hoje:hover {
+    background-color: #b6d377;
+}
+
+/* === TABELA DO CALENDÁRIO === */
 .calendario-container {
     overflow-x: auto;
-    /* pra funcionar em mobile */
     background-color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
@@ -113,9 +68,7 @@
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
-    /* mantém as colunas com tamanho fixo */
     min-width: 900px;
-    /* tamanho minimo pra não quebrar */
 }
 
 #tabela-calendario th,
@@ -132,7 +85,7 @@
     color: #495057;
 }
 
-/* células clicáveis */
+/* === CÉLULAS DE HORÁRIOS === */
 .horario-celula {
     cursor: pointer;
     transition: background-color 0.2s;
@@ -144,13 +97,13 @@
     background-color: #ffe8cc;
 }
 
-/* células de horários que já passaram - riscadas e desabilitadas */
+/* === HORÁRIOS PASSADOS === */
 .horario-celula.passado {
     background-color: #f5f5f5;
     cursor: not-allowed;
     opacity: 0.6;
     position: relative;
-    overflow: visible; /* pra não cortar os eventos */
+    overflow: visible;
 }
 
 .horario-celula.passado:hover {
@@ -158,7 +111,6 @@
     cursor: not-allowed;
 }
 
-/* padrão de riscas pra indicar que passou */
 .horario-celula.passado::after {
     content: "";
     position: absolute;
@@ -174,30 +126,28 @@
         rgba(0, 0, 0, 0.1) 20px
     );
     pointer-events: none;
-    z-index: 0; /* fica atrás dos eventos */
+    z-index: 0;
 }
 
-/* eventos em células passadas precisam ficar por cima das riscas */
 .horario-celula.passado .evento {
     opacity: 0.9;
     cursor: pointer;
     position: relative;
-    z-index: 10; /* bem acima das riscas */
-    pointer-events: auto; /* pra poder clicar */
-    background-color: #8fa25d; /* cobre as riscas */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* destaque */
+    z-index: 10;
+    pointer-events: auto;
+    background-color: #8fa25d;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* hover nos eventos passados */
 .horario-celula.passado .evento:hover {
     opacity: 1;
     transform: scale(1.05);
     transition: all 0.2s;
-    z-index: 11; /* ainda mais acima */
+    z-index: 11;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* estilo base dos eventos */
+/* === EVENTOS === */
 .evento {
     background-color: #8fa25d;
     color: white;
@@ -213,13 +163,14 @@
     justify-content: center;
     box-sizing: border-box;
     margin-bottom: 5px;
-    position: relative; /* pro z-index funcionar */
-    z-index: 1; /* z-index padrão */
+    position: relative;
+    z-index: 1;
     width: 100%;
     min-height: 20px;
     cursor: pointer;
 }
 
+/* === MODAL === */
 .modalescala {
     display: none;
     position: fixed;
@@ -258,7 +209,7 @@
     text-decoration: none;
 }
 
-/* formulário */
+/* === FORMULÁRIO DE AGENDAMENTO === */
 #form-agendamento label {
     display: block;
     margin-top: 15px;
@@ -276,6 +227,17 @@
     box-sizing: border-box;
 }
 
+#form-agendamento select:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+#form-agendamento select:disabled option {
+    color: #6c757d;
+}
+
+/* === BOTÕES DO MODAL === */
 .btn-salvar {
     width: 100%;
     padding: 12px;
@@ -291,20 +253,6 @@
 
 .btn-salvar:hover {
     background-color: #9db668;
-}
-
-#btn-hoje {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    background-color: #9db668;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-#btn-hoje:hover {
-    background-color: #b6d377;
 }
 
 .btn-excluir {
@@ -323,22 +271,8 @@
 .btn-excluir:hover {
     background-color: #c82333;
 }
-#sairbutton:hover {
-    background: #9db668 !important;
-}
 
-/* campos desabilitados quando o agendamento já passou */
-#form-agendamento select:disabled {
-    background-color: #e9ecef;
-    cursor: not-allowed;
-    opacity: 0.7;
-}
-
-#form-agendamento select:disabled option {
-    color: #6c757d;
-}
-
-/* mensagem de aviso pra agendamentos passados */
+/* === ALERTA DE AGENDAMENTO PASSADO === */
 .modal-body .alert-info {
     background-color: #d1ecf1;
     border-color: #bee5eb;

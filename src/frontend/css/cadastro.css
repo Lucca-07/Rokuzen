@@ -1,119 +1,8 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+/* ============================================
+   CADASTRO.CSS - Página de Cadastro
+   ============================================ */
 
-.roboto {
-    font-family: "Roboto", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 300;
-    font-style: normal;
-}
-
-.back {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-flow: column;
-    overflow-y: auto; /* permitir scroll em telas pequenas */
-}
-
-.imgfundo {
-    height: 100vh;
-    z-index: 0;
-}
-
-.card {
-    max-height: 300px;
-    min-height: 200px;
-    /* altura relativa costuma causar problemas em telas pequenas -> use auto */
-    height: auto;
-    width: 100%; /* deixar o Bootstrap controlar o contêiner */
-    max-width: 420px; /* limite visual, não obrigatório */
-    border-radius: 20px;
-    background-color: whitesmoke;
-    border: 1px solid black;
-    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.342);
-}
-
-.card input {
-    border: 1px solid black;
-}
-
-.acessar {
-    border-radius: 10px;
-    background-color: #c7ed79;
-}
-
-.senha {
-    height: auto;
-}
-
-.imglogo {
-    display: block;
-    margin: 0 auto;
-    max-width: 250px; /* controla tamanho máximo */
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-}
-
-.sair {
-    background-color: #c7ed79;
-    height: 40px;
-    border-radius: 10px;
-}
-
-.sair:hover {
-    background: #cbff63;
-}
-
-.navbar {
-    border-top: 5px solid #9db668;
-    border-bottom: 5px solid #e9eaee;
-    height: 150px;
-}
-
-.menu a:hover {
-    color: #9db668 !important;
-}
-
-.dropcnt {
-    border: 5px solid #e9eaee;
-    border-top: none;
-    height: 305px;
-    /* position: fixed; */
-    top: 150px;
-    z-index: 999 !important;
-}
-
-.dropopt {
-    height: 100px;
-    border: 1px solid #e9eaee;
-    background-color: white;
-}
-
-.dropopt a:hover {
-    color: #9db668 !important;
-}
-
-.campos {
-    font-weight: 500;
-    color: #333;
-    font-size: 1rem;
-}
-
-.enviar {
-    border: 1px solid black;
-    border-radius: 10px;
-}
-
-#containerfundo {
-    box-shadow: 10px 10px 10px #a8a8a879;
-}
-
-#usuarioselect {
-    background-color: #c7ed79;
-}
-
+/* === CONTAINERS DE CADASTRO === */
 #containerColaborador,
 #containerCliente {
     background-color: #f8f9fa;
@@ -122,7 +11,7 @@
     font-family: "Roboto", sans-serif;
 }
 
-/* inputs e selects */
+/* === INPUTS E SELECTS === */
 #containerColaborador input[type="text"],
 #containerColaborador input[type="email"],
 #containerColaborador input[type="password"],
@@ -149,16 +38,14 @@
 #containerCliente select:focus,
 #containerCliente textarea:focus {
     border-color: #93a46b;
-    /* verde RokuZen */
     box-shadow: 0 0 0 2px rgba(147, 164, 107, 0.3);
     outline: none;
 }
 
-/* botões Salvar */
+/* === BOTÕES SALVAR === */
 #containerColaborador .enviar,
 #containerCliente .enviar {
     background-color: #93a46b;
-    /* verde RokuZen */
     color: white;
     border: none;
     border-radius: 10px;
@@ -173,12 +60,18 @@
     transform: scale(1.03);
 }
 
+.enviar {
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+/* === FOTO === */
 #foto img {
     border: 2px solid #93a46b;
     background-color: #fff;
 }
 
-/* textos dentro das seções */
+/* === TEXTOS DAS SEÇÕES === */
 #unidades p,
 #saude p,
 #observacoes p {
@@ -186,6 +79,14 @@
     color: #222;
 }
 
+/* === CAMPOS === */
+.campos {
+    font-weight: 500;
+    color: #333;
+    font-size: 1rem;
+}
+
+/* === LAYOUT === */
 #setorcargo {
     display: flex;
     align-items: center;
@@ -196,354 +97,15 @@
     min-width: 160px;
 }
 
-.cardinicio-image {
-    width: 100%;
-    height: 260px;
-    border-radius: 20px;
-    border: 1px solid #9db668;
-    background-color: #ddd;
+#containerfundo {
+    box-shadow: 10px 10px 10px #a8a8a879;
 }
 
-.cardinicio:hover {
-    transform: scale(1.06);
-    transition: transform 0.5s ease;
+#usuarioselect {
+    background-color: #c7ed79;
 }
 
-a.text-decoration-none:hover h3 {
-    color: #9db668 !important;
-}
-
-.cardposto:hover {
-    transform: scale(1.05);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-}
-
-.cardposto img {
-    /* width: 100%; */
-    height: 100%;
-    /* object-fit: cover; */
-}
-
-.cardposto {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.cardposto:hover {
-    transform: scale(1.05);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-}
-
-.cardposto img {
-    height: 380px;
-    object-fit: cover;
-}
-
-.titulo {
-    font-size: 999px;
-}
-
-/* === POPUP === */
-.popup-bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
-
-.popupposto {
-    background: #d3d3d3;
-    border-radius: 15px;
-    padding: 30px;
-    display: flex;
-    gap: 20px;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    position: relative;
-}
-
-.frameposto {
-    background: #fff;
-    border-radius: 15px;
-    padding: 15px;
-    width: 250px;
-    text-align: center;
-    border: 2px solid #aaa;
-}
-
-.frameposto h3 {
-    font-weight: bold;
-    margin-bottom: 10px;
-    color: #666;
-}
-
-.itemposto {
-    border-radius: 10px;
-    padding: 10px;
-    margin: 8px 0;
-    font-size: 18px;
-    font-weight: 600;
-}
-
-.verde {
-    background-color: #7fff7f;
-}
-
-.amarelo {
-    background-color: #ffef75;
-}
-
-.vermelho {
-    background-color: #ff5959;
-}
-
-.laranja {
-    background-color: #ff964f;
-}
-
-.btncustom {
-    background: #a0af68;
-    color: white;
-    border: none;
-    border-radius: 15px;
-    padding: 6px 14px;
-    margin-top: 5px;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.btncustom:hover {
-    background: #8fa25d;
-}
-
-.fechar {
-    position: absolute;
-    top: 5px;
-    right: 10px;
-    background: none;
-    border: none;
-    font-size: 22px;
-    cursor: pointer;
-}
-
-.header-escala {
-    text-align: center;
-    margin-bottom: 25px;
-}
-
-.nav-botoes {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    margin-top: 15px;
-}
-
-#btn-anterior,
-#btn-proximo {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    background-color: #9db668;
-    /* Azul primário */
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-#btn-anterior:hover,
-#btn-proximo:hover {
-    background-color: #0056b3;
-}
-
-/* Estilo da Tabela do Calendário */
-.calendario-container {
-    overflow-x: auto;
-    /* Permite rolagem lateral em telas menores */
-    background-color: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    padding: 10px;
-}
-
-#tabela-calendario {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-    /* Ajuda a manter a largura das colunas consistente */
-    min-width: 900px;
-    /* Garante que a tabela tenha um tamanho mínimo */
-}
-
-#tabela-calendario th,
-#tabela-calendario td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: center;
-    height: 50px;
-    /* Altura padrão da célula de horário */
-}
-
-#tabela-calendario thead th {
-    background-color: #e9ecef;
-    /* Cor do cabeçalho */
-    font-weight: bold;
-    color: #495057;
-}
-
-/* Células de horários disponíveis */
-.horario-celula {
-    cursor: pointer;
-    transition: background-color 0.2s;
-    position: relative;
-    padding: 10px;
-}
-
-.horario-celula:hover {
-    background-color: #ffe8cc;
-}
-
-.evento {
-    background-color: #28a745;
-    color: white;
-    border-radius: 3px;
-    padding: 5px;
-    font-size: 0.8em;
-    font-weight: bold;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    margin-bottom: 5px;
-    position: static;
-    width: 100%;
-    min-height: 20px;
-    cursor: pointer;
-}
-
-.modalescala {
-    display: none;
-    /* Escondido por padrão */
-    position: fixed;
-    z-index: 100;
-    /* Fica acima de tudo */
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
-    /* Fundo escuro transparente */
-}
-
-.modalescala-conteudo {
-    background-color: #fff;
-    margin: 10% auto;
-    /* 10% do topo e centralizado */
-    padding: 25px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 500px;
-    border-radius: 10px;
-    position: relative;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-.fechar-btn {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.fechar-btn:hover,
-.fechar-btn:focus {
-    color: #333;
-    text-decoration: none;
-}
-
-/* Estilos do Formulário */
-#form-agendamento label {
-    display: block;
-    margin-top: 15px;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-#form-agendamento select,
-#form-agendamento input[type="text"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-.btn-salvar {
-    width: 100%;
-    padding: 12px;
-    background-color: #ffc107;
-    /* Amarelo/Laranja, Cor de destaque */
-    color: #333;
-    border: none;
-    border-radius: 5px;
-    margin-top: 20px;
-    font-size: 1.1em;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.btn-salvar:hover {
-    background-color: #e0a800;
-}
-
-#btn-hoje {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    background-color: #ffc107;
-    /* Amarelo/Laranja, Cor de destaque */
-    color: #333;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    font-weight: bold;
-}
-
-#btn-hoje:hover {
-    background-color: #e0a800;
-}
-
-/* style.css (Adicione no final) */
-.btn-excluir {
-    width: 100%;
-    padding: 12px;
-    background-color: #dc3545;
-    /* Vermelho para exclusão */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    margin-top: 10px;
-    font-size: 1.1em;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.btn-excluir:hover {
-    background-color: #c82333;
-}
-
+/* === CARDS === */
 .card-cadastro {
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.76);
 }
@@ -552,28 +114,7 @@ a.text-decoration-none:hover h3 {
     box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.356);
 }
 
-#sairbutton:hover {
-    background: #9db668 !important;
-}
-
-#togglePassword:hover {
-    background: #a0af68;
-}
-.password-container {
-    position: relative;
-}
-
-.toggle-password {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    border: none;
-    background: none;
-    cursor: pointer;
-    z-index: 10;
-}
-
+/* === PREVIEW DE IMAGEM === */
 .preview-container {
     width: 100%;
     max-width: 220px;
@@ -589,4 +130,17 @@ a.text-decoration-none:hover h3 {
     height: 100%;
     object-fit: cover;
     border-radius: 0.25rem;
+}
+
+/* === RESPONSIVIDADE === */
+@media (min-width: 992px) {
+    .me-lg-6 {
+        margin-inline-end: 4rem !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .me-xl-6 {
+        margin-inline-end: 12rem !important;
+    }
 }

@@ -187,30 +187,35 @@ async function popupEdit(id) {
                                 </div>
                                 <!-- restante do modal permanece igual -->
                                 <div class="col-12 col-lg-9">
-                                    <div class="row">
-                                        <div class="col-12 col-md-6 mb-2">
+                                    <div class="row g-2">
+                                        <div class="col-12 col-md-6">
                                             <label for="nome-${id}" class="fs-6">Nome:</label>
                                             <input id="nome-${id}" type="text" class="form-control" value="${nome}">
                                         </div>
-                                        <div class="col-12 col-md-6 mb-2">
+                                        <div class="col-12 col-md-6">
                                             <label for="email-${id}" class="fs-6">Email:</label>
                                             <input id="email-${id}" type="text" class="form-control" value="${email}">
                                         </div>
-                                        <div class="col-12 text-center mt-2">
-                                            <label for="cargos-${id}" class="fs-6">Cargos:</label>
-                                            <select class="form-select d-inline-block w-auto" id="cargos-${id}">
-                                                <option value="selecionar" disabled>Selecionar:</option>
-                                                <option value="Master">Master</option>
-                                                <option value="Gerente">Gerente</option>
-                                                <option value="Recepção">Recepção</option>
-                                                <option value="Terapeuta">Terapeuta</option>
-                                            </select>
-                                            <div id="setorcargo-${id}" class="d-none mt-2">
-                                                <label for="setorgerente-${id}" class="me-2">Setor:</label>
-                                                <select id="setorgerente-${id}" class="form-select d-inline-block w-auto">
-                                                    <option value="Recepção" selected>Recepção</option>
-                                                    <option value="Terapeuta">Terapeuta</option>
-                                                </select>
+                                        <div class="col-12 mt-2">
+                                            <div class="row g-2">
+                                                <div class="col-12 col-md-6">
+                                                    <label for="cargos-${id}" class="fs-6">Cargos:</label>
+                                                    <select class="form-select" id="cargos-${id}">
+                                                        <option value="selecionar" disabled>Selecionar:</option>
+                                                        <option value="Master">Master</option>
+                                                        <option value="Gerente">Gerente</option>
+                                                        <option value="Recepção">Recepção</option>
+                                                        <option value="Terapeuta">Terapeuta</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-12 col-md-6" id="setorcargo-${id}">
+                                                    <label for="setorgerente-${id}" class="fs-6">Setor:</label>
+                                                    <select id="setorgerente-${id}" class="form-select">
+                                                        <option value="" selected>Selecionar:</option>
+                                                        <option value="Recepção">Recepção</option>
+                                                        <option value="Terapeuta">Terapeuta</option>
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -243,7 +248,7 @@ async function popupEdit(id) {
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                        <button id="salvarEdicaoColaborador-${id}" type="button" class="btn btn-primary">Salvar</button>
+                        <button id="salvarEdicaoColaborador-${id}" type="button" class="btn btn-success">Salvar</button>
                     </div>
                 </div>
             </div>

@@ -1,62 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+/* ============================================
+   POSTOATENDIMENTO.CSS - Página de Postos de Atendimento
+   ============================================ */
 
-.roboto {
-    font-family: "Roboto", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 300;
-    font-style: normal;
-}
-.sair {
-    background-color: #c7ed79;
-    height: 40px;
-    border-radius: 10px;
-}
-
-.sair:hover {
-    background: #cbff63;
-}
-
-.navbar {
-    border-top: 5px solid #9db668;
-    border-bottom: 5px solid #e9eaee;
-    height: 150px;
-}
-
-.menu a:hover {
-    color: #9db668 !important;
-}
-
-.dropcnt {
-    border: 5px solid #e9eaee;
-    border-top: none;
-    height: 305px;
-    top: 150px;
-    z-index: 999 !important;
-}
-
-.dropopt {
-    height: 100px;
-    border: 1px solid #e9eaee;
-    background-color: white;
-}
-
-.dropopt a:hover {
-    color: #9db668 !important;
-}
-
-/* Cards */
-
-.card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-}
-
-.card img {
-    height: 100% !important;
-    background-position: center center;
-    background-size: contain;
-}
-
+/* === CARDS === */
 .card {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -71,8 +17,7 @@
     object-fit: cover;
 }
 
-/* Pop Up */
-
+/* === POPUP === */
 .popup-bg {
     display: flex;
     position: fixed;
@@ -161,27 +106,28 @@
     color: #ff0000;
 }
 
-/* Cores dos itens */
-
+/* === CORES DOS ITENS === */
 .verde {
     background-color: #7cff7c;
     color: #0b0b0b;
 }
+
 .vermelho {
     background-color: #ff4d4d;
     color: #fff;
 }
+
 .amarelo {
     background-color: #ffe95c;
     color: #111;
 }
+
 .laranja {
     background-color: #ff9a3d;
     color: #fff;
 }
 
-/* Botões */
-
+/* === BOTÕES === */
 .botoes {
     margin-top: 25px;
     display: flex;
@@ -209,9 +155,6 @@
     transform: scale(1.03) !important;
 }
 
-.btnc:hover {
-    background-color: var(--btn-hover);
-}
 .btnc:active {
     transform: translateY(1px);
 }
@@ -231,9 +174,4 @@
 
 .fechar-popup:hover {
     color: #ff4d4d;
-}
-
-
-#sairbutton:hover{
-  background: #9DB668 !important;
 }

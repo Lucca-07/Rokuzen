@@ -1,0 +1,155 @@
+/* 
+============================================
+GLOBAL.CSS - estilos compartilhados
+============================================ 
+*/
+
+/* === FONTES === */
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+
+.roboto {
+    font-family: "Roboto", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
+}
+
+/* === NAVBAR === */
+.navbar {
+    border-top: 5px solid #9db668;
+    border-bottom: 5px solid #e9eaee;
+    height: 150px;
+}
+
+.menu a:hover,
+.nav-link:hover {
+    color: #9db668 !important;
+}
+
+.nav-link {
+    border: none !important;
+    outline: none !important;
+}
+
+.nav-link:focus,
+.nav-link:focus-visible {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* === DROPDOWN MENU === */
+.dropcnt {
+    border: 5px solid #e9eaee;
+    border-top: none;
+    height: 305px;
+    top: 150px;
+    z-index: 999 !important;
+}
+
+.dropopt {
+    height: 100px;
+    border: 1px solid #e9eaee;
+    background-color: white;
+}
+
+.dropopt a:hover {
+    color: #9db668 !important;
+}
+
+/* === BOTÃO SAIR === */
+.sair {
+    background-color: #c7ed79;
+    height: 40px;
+    border-radius: 10px;
+}
+
+.sair:hover {
+    background: #cbff63;
+}
+
+#sairbutton:hover {
+    background: #9db668 !important;
+}
+
+/* === CORES DE STATUS === */
+.verde {
+    background-color: #7fff7f;
+}
+
+.amarelo {
+    background-color: #ffef75;
+}
+
+.vermelho {
+    background-color: #ff5959;
+}
+
+.laranja {
+    background-color: #ff964f;
+}
+
+/* === ANIMAÇÕES === */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.fade-in {
+    animation: fadeIn 1s ease forwards;
+}
+
+/* === UTILITÁRIOS === */
+.border-lg-0 {
+    border: none !important;
+}
+
+@media (min-width: 992px) {
+    .border-lg-0 {
+        border: none !important;
+    }
+}
+
+/* === PASSWORD TOGGLE === */
+.password-container {
+    position: relative;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: none;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.toggle-password i {
+    color: #777;
+    transition: color 0.2s ease;
+}
+
+.toggle-password i:hover {
+    color: #4a4a4a;
+}
+
+#togglePassword:hover {
+    background: #a0af68;
+}
