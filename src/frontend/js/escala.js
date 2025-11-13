@@ -547,6 +547,8 @@ async function abrirModalCriacao(dataHoraKey) {
 
 async function abrirModalEdicao(evento) {
     eventoEmEdicao = evento;
+
+    unidadeIdAtual = evento.unidadeId;
     celulaSelecionada = document.querySelector(
         `[data-time="${evento.dataHora}"]`
     );
@@ -642,10 +644,15 @@ formAgendamento.addEventListener("submit", async function (e) {
         }
     }
 
+    // pega o valor da unidade (mesmo se desabilitado)
+    const selectUnidade = document.getElementById("unidade");
+    const unidadeValue =
+        unidadeIdAtual || selectUnidade.value || eventoEmEdicao?.unidadeId;
+
     const dadosParaEnviar = {
         colaborador_id: document.getElementById("funcionario").value,
         servico_id: document.getElementById("tipo-trabalho").value,
-        unidade_id: document.getElementById("unidade").value,
+        unidade_id: unidadeValue,
         posto_id: document.getElementById("equipamento").value,
     };
 
