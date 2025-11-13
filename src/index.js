@@ -222,8 +222,8 @@ app.get("/api/colaboradores/:id", checkToken, async (req, res) => {
 });
 
 app.get("/api/postos", async (req, res) => {
-    // Agora também podemos receber 'incluir_posto_id'
-    const { unidade_id, incluir_posto_id } = req.query;
+    // Agora também podemos receber 'incluir_posto_id' e 'dataHora'
+    const { unidade_id, incluir_posto_id, dataHora } = req.query;
     let { status } = req.query;
 
     if (!unidade_id) {
@@ -232,12 +232,20 @@ app.get("/api/postos", async (req, res) => {
             .json({ mensagem: "O ID da unidade é obrigatório." });
     }
 
+    // Validar se o unidade_id é um ObjectId válido
+    if (!mongoose.Types.ObjectId.isValid(unidade_id)) {
+        return res.status(400).json({
+            mensagem: "O ID da unidade fornecido é inválido.",
+            erro: "ID deve ser um ObjectId válido do MongoDB",
+        });
+    }
+
     try {
         const filtro = { unidade_id: new mongoose.Types.ObjectId(unidade_id) };
 
         // Lógica para incluir o posto atual E os disponíveis
         if (status === "Disponivel") status = "Disponível";
-        // if (status) filtro.status = status;
+
         // 3. Criamos as condições para o $or
         const condicoesOu = [];
         // Condição 1: Postos com o status desejado (ex: "Disponível")
@@ -253,13 +261,61 @@ app.get("/api/postos", async (req, res) => {
             condicoesOu.push({
                 _id: new mongoose.Types.ObjectId(incluir_posto_id),
             });
-        } // 4. Se tivermos condições, aplicamos o $or ao filtro principal
+        }
 
+        // 4. Se tivermos condições, aplicamos o $or ao filtro principal
         if (condicoesOu.length > 0) {
             filtro.$or = condicoesOu;
         }
 
         const postos = await PostosAtendimento.find(filtro);
+
+        // Se um horário foi fornecido, filtrar postos que já têm agendamento nesse horário
+        if (dataHora) {
+            try {
+                const dataHoraObj = new Date(dataHora + "Z");
+                const fimAtendimento = new Date(dataHoraObj);
+                fimAtendimento.setMinutes(fimAtendimento.getMinutes() + 60);
+
+                // Buscar atendimentos que conflitam com o horário
+                const atendimentosConflitantes = await Atendimentos.find({
+                    inicio_atendimento: { $lt: fimAtendimento },
+                    fim_atendimento: { $gt: dataHoraObj },
+                    posto_id: { $exists: true, $ne: null },
+                }).select("posto_id");
+
+                // Extrair IDs dos postos ocupados
+                const postosOcupadosIds = atendimentosConflitantes
+                    .map((at) => at.posto_id?.toString())
+                    .filter((id) => id);
+
+                // Se estamos editando um agendamento, excluir o próprio agendamento do conflito
+                // (isso será tratado no frontend passando o id do atendimento em edição)
+
+                // Filtrar postos que não estão ocupados no horário
+                const postosDisponiveis = postos.filter((posto) => {
+                    const postoIdStr = posto._id.toString();
+                    // Se o posto está na lista de ocupados, só incluir se for o posto que estamos editando
+                    if (postosOcupadosIds.includes(postoIdStr)) {
+                        // Se é o posto que estamos editando (incluir_posto_id), incluir mesmo ocupado
+                        if (
+                            incluir_posto_id &&
+                            postoIdStr === incluir_posto_id.toString()
+                        ) {
+                            return true;
+                        }
+                        return false;
+                    }
+                    return true;
+                });
+
+                return res.json(postosDisponiveis);
+            } catch (error) {
+                console.error("Erro ao verificar conflitos de horário:", error);
+                // Em caso de erro, retornar todos os postos (comportamento antigo)
+            }
+        }
+
         res.json(postos);
     } catch (error) {
         console.error("❌ Erro ao buscar postos de atendimento:", error);
@@ -371,25 +427,50 @@ app.get("/api/atendimentos", async (req, res) => {
 
 app.put("/api/atendimentos/:id", async (req, res) => {
     const { id } = req.params;
-    const { colaborador_id, servico_id, unidade_id } = req.body;
+    const { colaborador_id, servico_id, unidade_id, posto_id } = req.body;
 
     try {
+        // 1. Buscar o agendamento ANTES de atualizar para pegar o posto_id antigo
+        const atendimentoAntigo = await Atendimentos.findById(id);
+
+        if (!atendimentoAntigo) {
+            return res
+                .status(404)
+                .json({ mensagem: "Agendamento não encontrado." });
+        }
+
+        const postoIdAntigo = atendimentoAntigo.posto_id?.toString();
+        const postoIdNovo = posto_id?.toString();
+
+        // 2. Atualizar o agendamento
         const atendimentoAtualizado = await Atendimentos.findByIdAndUpdate(
             id,
             {
                 colaborador_id,
                 servico_id,
                 unidade_id,
+                posto_id,
             },
             { new: true }
         )
             .populate("colaborador_id", "nome_colaborador")
             .populate("servico_id", "nome_servico");
 
-        if (!atendimentoAtualizado) {
-            return res
-                .status(404)
-                .json({ mensagem: "Agendamento não encontrado." });
+        // 3. Gerenciar os status dos postos
+        // Se o posto mudou ou foi removido
+        if (postoIdAntigo && postoIdAntigo !== postoIdNovo) {
+            // Liberar o posto antigo
+            await PostosAtendimento.findByIdAndUpdate(postoIdAntigo, {
+                status: "Disponível",
+            });
+        }
+
+        // Se um novo posto foi atribuído (diferente do antigo)
+        if (postoIdNovo && postoIdNovo !== postoIdAntigo) {
+            // Reservar o novo posto
+            await PostosAtendimento.findByIdAndUpdate(postoIdNovo, {
+                status: "Ocupado",
+            });
         }
 
         res.json({
@@ -852,51 +933,36 @@ app.post("/postoatendimento", async (req, res) => {
                 msg: "Postos não encontrados",
             });
         }
-        let quick = [];
-        let poltrona = [];
-        let maca = [];
-        postos.forEach((posto) => {
-            switch (posto.nome_posto) {
-                case "Cadeira Quick 1":
-                    quick.push(posto);
-                    break;
-                case "Cadeira Quick 2":
-                    quick.push(posto);
-                    break;
-                case "Cadeira Quick 3":
-                    quick.push(posto);
-                    break;
-                case "Cadeira Quick 4":
-                    quick.push(posto);
-                    break;
-                case "Poltrona de Reflexologia 1":
-                    poltrona.push(posto);
-                    break;
-                case "Poltrona de Reflexologia 2":
-                    poltrona.push(posto);
-                    break;
-                case "Sala de Maca 1":
-                    maca.push(posto);
-                    break;
-                case "Sala de Maca 2":
-                    maca.push(posto);
-                    break;
-                case "Sala de Maca 3":
-                    maca.push(posto);
-                    break;
-                case "Sala de Maca 4":
-                    maca.push(posto);
-                    break;
-                default:
-                    console.log("Erro");
+
+        // Usar reduce para categorizar os postos de forma mais eficiente
+        const categorias = postos.reduce(
+            (acc, posto) => {
+                const nome = posto.nome_posto;
+
+                if (nome.startsWith("Cadeira Quick")) {
+                    acc.quick.push(posto);
+                } else if (nome.startsWith("Poltrona de Reflexologia")) {
+                    acc.poltrona.push(posto);
+                } else if (nome.startsWith("Sala de Maca")) {
+                    acc.maca.push(posto);
+                } else {
+                    console.warn(`Tipo de posto não reconhecido: ${nome}`);
+                }
+
+                return acc;
+            },
+            {
+                quick: [],
+                poltrona: [],
+                maca: [],
             }
-        });
-        res.status(200).json({
-            quick: quick,
-            poltrona: poltrona,
-            maca: maca,
-        });
-    } catch (error) {}
+        );
+
+        res.status(200).json(categorias);
+    } catch (error) {
+        console.error("Erro ao buscar postos:", error);
+        res.status(500).json({ msg: "Erro no servidor" });
+    }
 });
 
 // Atualiza o status de um posto (cadeira, maca, poltrona) pelo ID

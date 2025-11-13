@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 
 .roboto {
     font-family: "Roboto", sans-serif;
@@ -35,7 +35,6 @@
 .dropopt a:hover {
     color: #9db668 !important;
 }
-
 
 .btncustom {
     background: #a0af68;
@@ -83,9 +82,8 @@
     border: none;
     border-radius: 5px;
     background-color: white;
-    /* Azul primário */
-    color:#9db668;
-    border: 2px solid #9db668 ;
+    color: #9db668;
+    border: 2px solid #9db668;
     cursor: pointer;
     transition: background-color 0.3s;
 }
@@ -97,14 +95,14 @@
     border: 2px solid #b3ce78;
 }
 
-#servicosh1{
+#servicosh1 {
     font-weight: 400;
 }
 
-/* Estilo da Tabela do Calendário */
+/* tabela do calendario */
 .calendario-container {
     overflow-x: auto;
-    /* Permite rolagem lateral em telas menores */
+    /* pra funcionar em mobile */
     background-color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
@@ -115,9 +113,9 @@
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
-    /* Ajuda a manter a largura das colunas consistente */
+    /* mantém as colunas com tamanho fixo */
     min-width: 900px;
-    /* Garante que a tabela tenha um tamanho mínimo */
+    /* tamanho minimo pra não quebrar */
 }
 
 #tabela-calendario th,
@@ -126,17 +124,15 @@
     padding: 10px;
     text-align: center;
     height: 50px;
-    /* Altura padrão da célula de horário */
 }
 
 #tabela-calendario thead th {
     background-color: #e9ecef;
-    /* Cor do cabeçalho */
     font-weight: bold;
     color: #495057;
 }
 
-/* Células de horários disponíveis */
+/* células clicáveis */
 .horario-celula {
     cursor: pointer;
     transition: background-color 0.2s;
@@ -148,6 +144,60 @@
     background-color: #ffe8cc;
 }
 
+/* células de horários que já passaram - riscadas e desabilitadas */
+.horario-celula.passado {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+    opacity: 0.6;
+    position: relative;
+    overflow: visible; /* pra não cortar os eventos */
+}
+
+.horario-celula.passado:hover {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+
+/* padrão de riscas pra indicar que passou */
+.horario-celula.passado::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(0, 0, 0, 0.1) 10px,
+        rgba(0, 0, 0, 0.1) 20px
+    );
+    pointer-events: none;
+    z-index: 0; /* fica atrás dos eventos */
+}
+
+/* eventos em células passadas precisam ficar por cima das riscas */
+.horario-celula.passado .evento {
+    opacity: 0.9;
+    cursor: pointer;
+    position: relative;
+    z-index: 10; /* bem acima das riscas */
+    pointer-events: auto; /* pra poder clicar */
+    background-color: #8fa25d; /* cobre as riscas */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* destaque */
+}
+
+/* hover nos eventos passados */
+.horario-celula.passado .evento:hover {
+    opacity: 1;
+    transform: scale(1.05);
+    transition: all 0.2s;
+    z-index: 11; /* ainda mais acima */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* estilo base dos eventos */
 .evento {
     background-color: #8fa25d;
     color: white;
@@ -163,32 +213,28 @@
     justify-content: center;
     box-sizing: border-box;
     margin-bottom: 5px;
-    position: static;
+    position: relative; /* pro z-index funcionar */
+    z-index: 1; /* z-index padrão */
     width: 100%;
     min-height: 20px;
     cursor: pointer;
 }
 
-
 .modalescala {
     display: none;
-    /* Escondido por padrão */
     position: fixed;
     z-index: 100;
-    /* Fica acima de tudo */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.4);
-    /* Fundo escuro transparente */
 }
 
 .modalescala-conteudo {
     background-color: #fff;
     margin: 10% auto;
-    /* 10% do topo e centralizado */
     padding: 25px;
     border: 1px solid #888;
     width: 80%;
@@ -212,7 +258,7 @@
     text-decoration: none;
 }
 
-/* Estilos do Formulário */
+/* formulário */
 #form-agendamento label {
     display: block;
     margin-top: 15px;
@@ -234,7 +280,6 @@
     width: 100%;
     padding: 12px;
     background-color: #9db668;
-    /* Amarelo/Laranja, Cor de destaque */
     color: white;
     border: none;
     border-radius: 5px;
@@ -253,7 +298,6 @@
     border: none;
     border-radius: 5px;
     background-color: #9db668;
-    /* Amarelo/Laranja, Cor de destaque */
     color: white;
     cursor: pointer;
     transition: background-color 0.3s;
@@ -263,12 +307,10 @@
     background-color: #b6d377;
 }
 
-/* style.css (Adicione no final) */
 .btn-excluir {
     width: 100%;
     padding: 12px;
     background-color: #dc3545;
-    /* Vermelho para exclusão */
     color: white;
     border: none;
     border-radius: 5px;
@@ -281,6 +323,27 @@
 .btn-excluir:hover {
     background-color: #c82333;
 }
-#sairbutton:hover{
-  background: #9DB668 !important;
+#sairbutton:hover {
+    background: #9db668 !important;
+}
+
+/* campos desabilitados quando o agendamento já passou */
+#form-agendamento select:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+#form-agendamento select:disabled option {
+    color: #6c757d;
+}
+
+/* mensagem de aviso pra agendamentos passados */
+.modal-body .alert-info {
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+    color: #0c5460;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
 }
