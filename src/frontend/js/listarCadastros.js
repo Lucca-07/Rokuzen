@@ -242,8 +242,8 @@ async function popupEdit(id) {
                     </div>
 
                     <div class="modal-footer">
-                        <button id="salvarEdicaoColaborador-${id}" type="button" class="btn btn-primary">Salvar</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        <button id="salvarEdicaoColaborador-${id}" type="button" class="btn btn-primary">Salvar</button>
                     </div>
                 </div>
             </div>
