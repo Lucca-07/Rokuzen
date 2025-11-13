@@ -1,19 +1,20 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+/* ============================================
+   STYLE.CSS - Estilos Globais e Compartilhados
+   ============================================ */
 
-.roboto {
-    font-family: "Roboto", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 300;
-    font-style: normal;
-}
+/* Importa estilos globais compartilhados */
+@import url("global.css");
 
+/* === ESTILOS LEGADOS E ESPECÍFICOS === */
+
+/* === BACKGROUND E LAYOUT === */
 .back {
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-flow: column;
-    overflow-y: auto; /* permitir scroll em telas pequenas */
+    overflow-y: auto;
 }
 
 .imgfundo {
@@ -21,13 +22,13 @@
     z-index: 0;
 }
 
+/* === CARDS LEGADOS === */
 .card {
     max-height: 300px;
     min-height: 200px;
-    /* altura relativa costuma causar problemas em telas pequenas -> use auto */
     height: auto;
-    width: 100%; /* deixar o Bootstrap controlar o contêiner */
-    max-width: 420px; /* limite visual, não obrigatório */
+    width: 100%;
+    max-width: 420px;
     border-radius: 20px;
     background-color: whitesmoke;
     border: 1px solid black;
@@ -50,152 +51,13 @@
 .imglogo {
     display: block;
     margin: 0 auto;
-    max-width: 250px; /* controla tamanho máximo */
+    max-width: 250px;
     width: 100%;
     height: auto;
     object-fit: cover;
 }
 
-.sair {
-    background-color: #c7ed79;
-    height: 40px;
-    border-radius: 10px;
-}
-
-.sair:hover {
-    background: #cbff63;
-}
-
-.navbar {
-    border-top: 5px solid #9db668;
-    border-bottom: 5px solid #e9eaee;
-    height: 150px;
-}
-
-.menu a:hover {
-    color: #9db668 !important;
-}
-
-.dropcnt {
-    border: 5px solid #e9eaee;
-    border-top: none;
-    height: 305px;
-    /* position: fixed; */
-    top: 150px;
-    z-index: 999 !important;
-}
-
-.dropopt {
-    height: 100px;
-    border: 1px solid #e9eaee;
-    background-color: white;
-}
-
-.dropopt a:hover {
-    color: #9db668 !important;
-}
-
-.campos {
-    font-weight: 500;
-    color: #333;
-    font-size: 1rem;
-}
-
-.enviar {
-    border: 1px solid black;
-    border-radius: 10px;
-}
-
-#containerfundo {
-    box-shadow: 10px 10px 10px #a8a8a879;
-}
-
-#usuarioselect {
-    background-color: #c7ed79;
-}
-
-#containerColaborador,
-#containerCliente {
-    background-color: #f8f9fa;
-    border-radius: 30px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    font-family: "Roboto", sans-serif;
-}
-
-/* inputs e selects */
-#containerColaborador input[type="text"],
-#containerColaborador input[type="email"],
-#containerColaborador input[type="password"],
-#containerColaborador select,
-#containerCliente input[type="text"],
-#containerCliente input[type="email"],
-#containerCliente input[type="password"],
-#containerCliente input[type="date"],
-#containerCliente textarea,
-#containerCliente select {
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 6px 10px;
-    font-size: 1rem;
-    color: #333;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    min-width: 160px;
-    padding-right: 25px;
-}
-
-#containerColaborador input:focus,
-#containerCliente input:focus,
-#containerColaborador select:focus,
-#containerCliente select:focus,
-#containerCliente textarea:focus {
-    border-color: #93a46b;
-    /* verde RokuZen */
-    box-shadow: 0 0 0 2px rgba(147, 164, 107, 0.3);
-    outline: none;
-}
-
-/* botões Salvar */
-#containerColaborador .enviar,
-#containerCliente .enviar {
-    background-color: #93a46b;
-    /* verde RokuZen */
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-#containerColaborador .enviar:hover,
-#containerCliente .enviar:hover {
-    background-color: #7e925e;
-    transform: scale(1.03);
-}
-
-#foto img {
-    border: 2px solid #93a46b;
-    background-color: #fff;
-}
-
-/* textos dentro das seções */
-#unidades p,
-#saude p,
-#observacoes p {
-    font-weight: 600;
-    color: #222;
-}
-
-#setorcargo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-#setorgerente {
-    min-width: 160px;
-}
-
+/* === CARDS DE INÍCIO === */
 .cardinicio-image {
     width: 100%;
     height: 260px;
@@ -219,9 +81,7 @@ a.text-decoration-none:hover h3 {
 }
 
 .cardposto img {
-    /* width: 100%; */
     height: 100%;
-    /* object-fit: cover; */
 }
 
 .cardposto {
@@ -242,7 +102,7 @@ a.text-decoration-none:hover h3 {
     font-size: 999px;
 }
 
-/* === POPUP === */
+/* === POPUP LEGADO === */
 .popup-bg {
     position: fixed;
     top: 0;
@@ -290,22 +150,6 @@ a.text-decoration-none:hover h3 {
     font-weight: 600;
 }
 
-.verde {
-    background-color: #7fff7f;
-}
-
-.amarelo {
-    background-color: #ffef75;
-}
-
-.vermelho {
-    background-color: #ff5959;
-}
-
-.laranja {
-    background-color: #ff964f;
-}
-
 .btncustom {
     background: #a0af68;
     color: white;
@@ -333,283 +177,12 @@ a.text-decoration-none:hover h3 {
     cursor: pointer;
 }
 
-.header-escala {
-    text-align: center;
-    margin-bottom: 25px;
-}
-
-.nav-botoes {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    margin-top: 15px;
-}
-
-#btn-anterior,
-#btn-proximo {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    background-color: #9db668;
-    /* Azul primário */
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-#btn-anterior:hover,
-#btn-proximo:hover {
-    background-color: #0056b3;
-}
-
-/* Estilo da Tabela do Calendário */
-.calendario-container {
-    overflow-x: auto;
-    /* Permite rolagem lateral em telas menores */
-    background-color: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    padding: 10px;
-}
-
-#tabela-calendario {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-    /* Ajuda a manter a largura das colunas consistente */
-    min-width: 900px;
-    /* Garante que a tabela tenha um tamanho mínimo */
-}
-
-#tabela-calendario th,
-#tabela-calendario td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: center;
-    height: 50px;
-    /* Altura padrão da célula de horário */
-}
-
-#tabela-calendario thead th {
-    background-color: #e9ecef;
-    /* Cor do cabeçalho */
-    font-weight: bold;
-    color: #495057;
-}
-
-/* Células de horários disponíveis */
-.horario-celula {
-    cursor: pointer;
-    transition: background-color 0.2s;
-    position: relative;
-    padding: 10px;
-}
-
-.horario-celula:hover {
-    background-color: #ffe8cc;
-}
-
-.evento {
-    background-color: #28a745;
-    color: white;
-    border-radius: 3px;
-    padding: 5px;
-    font-size: 0.8em;
-    font-weight: bold;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    margin-bottom: 5px;
-    position: static;
-    width: 100%;
-    min-height: 20px;
-    cursor: pointer;
-}
-
-.modalescala {
-    display: none;
-    /* Escondido por padrão */
-    position: fixed;
-    z-index: 100;
-    /* Fica acima de tudo */
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
-    /* Fundo escuro transparente */
-}
-
-.modalescala-conteudo {
-    background-color: #fff;
-    margin: 10% auto;
-    /* 10% do topo e centralizado */
-    padding: 25px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 500px;
-    border-radius: 10px;
-    position: relative;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-.fechar-btn {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.fechar-btn:hover,
-.fechar-btn:focus {
-    color: #333;
-    text-decoration: none;
-}
-
-/* Estilos do Formulário */
-#form-agendamento label {
-    display: block;
-    margin-top: 15px;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-#form-agendamento select,
-#form-agendamento input[type="text"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-.btn-salvar {
-    width: 100%;
-    padding: 12px;
-    background-color: #ffc107;
-    /* Amarelo/Laranja, Cor de destaque */
-    color: #333;
-    border: none;
-    border-radius: 5px;
-    margin-top: 20px;
-    font-size: 1.1em;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.btn-salvar:hover {
-    background-color: #e0a800;
-}
-
-#btn-hoje {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    background-color: #ffc107;
-    /* Amarelo/Laranja, Cor de destaque */
-    color: #333;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    font-weight: bold;
-}
-
-#btn-hoje:hover {
-    background-color: #e0a800;
-}
-
-/* style.css (Adicione no final) */
-.btn-excluir {
-    width: 100%;
-    padding: 12px;
-    background-color: #dc3545;
-    /* Vermelho para exclusão */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    margin-top: 10px;
-    font-size: 1.1em;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.btn-excluir:hover {
-    background-color: #c82333;
-}
-
-.card-cadastro {
-    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.76);
-}
-
-.card-editar {
-    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.356);
-}
-
-#sairbutton:hover {
-    background: #9db668 !important;
-}
-
-#togglePassword:hover {
-    background: #a0af68;
-}
-.password-container {
-    position: relative;
-}
-
-.toggle-password {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    border: none;
-    background: none;
-    cursor: pointer;
-    z-index: 10;
-}
-
-.preview-container {
-    width: 100%;
-    max-width: 220px;
-    height: 220px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
-.preview-img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    border-radius: 0.25rem;
-}
-
-@media (min-width: 992px) {
-    .me-lg-6 {
-        margin-inline-end: 4rem !important;
-    }
-}
-
-@media (min-width: 1200px) {
-    .me-xl-6 {
-        margin-inline-end: 12rem !important;
-    }
-}
-
-/* small+medium-screen overlay: card sobre a imagem a partir de breakpoint md (<= lg-1) */
+/* === RESPONSIVIDADE === */
 @media (max-width: 991.98px) {
     .back .row.position-relative {
         position: relative;
     }
 
-    /* centraliza e sobrepõe a coluna de cards */
     #cardConteudos {
         position: absolute !important;
         left: 50%;
@@ -617,11 +190,10 @@ a.text-decoration-none:hover h3 {
         transform: translate(-50%, -50%);
         width: 92%;
         max-width: 420px;
-        z-index: 1050; /* acima da imagem de fundo */
-        padding: 0; /* conteúdo do card já tem padding */
+        z-index: 1050;
+        padding: 0;
     }
 
-    /* deixa a imagem de fundo ocupando toda a área e atrás */
     .imgfundo {
         overflow: hidden;
         height: 100vh;
@@ -629,7 +201,6 @@ a.text-decoration-none:hover h3 {
         filter: brightness(0.65) saturate(0.95);
     }
 
-    /* torna o painel de conteúdo levemente translúcido para contraste */
     #conteudos {
         background-color: rgba(255, 255, 255, 0.95);
         padding: 1.25rem;
@@ -637,7 +208,6 @@ a.text-decoration-none:hover h3 {
     }
 }
 
-/* em telas grandes para cima, volta ao fluxo normal (>= lg) */
 @media (min-width: 992px) {
     #cardConteudos {
         position: static !important;
@@ -655,114 +225,4 @@ a.text-decoration-none:hover h3 {
         background-color: var(--bs-body-bg);
         padding: 2rem;
     }
-}
-body {
-    font-family: "Roboto", sans-serif;
-    height: 100vh;
-    background: url("/frontend/img/Fundo.jpeg") no-repeat center center / cover;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.card-custom {
-    background-color: rgba(255, 255, 255, 0.95);
-    border-radius: 15px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    padding: 2rem;
-    max-width: 420px;
-    width: 100%;
-    text-align: center;
-}
-
-.imglogo {
-    max-width: 180px;
-    margin-bottom: 1.5rem;
-}
-
-.btn-primary {
-    background-color: #93a46b;
-    border: none;
-}
-
-.btn-primary:hover {
-    background-color: #7e925e;
-}
-
-.btn-success {
-    background-color: #9db668;
-    border: none;
-}
-
-.btn-success:hover {
-    background-color: #8ca35e;
-}
-
-/* === CARD DE LOGIN / RECUPERAR SENHA === */
-.card-login {
-    background-color: #ffffffd9; /* branco com leve transparência */
-    border-radius: 16px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-    max-width: 400px;
-    width: 100%;
-    animation: slideUp 0.6s ease;
-}
-
-/* === BOTÃO CONFIRMAR === */
-.btn-confirmar {
-    background-color: #9db07b;
-    border: none;
-    color: #fff;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-.btn-confirmar:hover {
-    background-color: #8aa068;
-}
-
-/* === LINK "VOLTAR AO LOGIN" === */
-.link-voltar {
-    color: #666;
-    font-size: 0.9rem;
-    text-decoration: none;
-    transition: color 0.2s ease;
-}
-.link-voltar:hover {
-    color: #9db07b;
-    text-decoration: underline;
-}
-
-/* === ÍCONE DE MOSTRAR/OCULTAR SENHA === */
-.toggle-password i {
-    color: #777;
-    transition: color 0.2s ease;
-}
-.toggle-password i:hover {
-    color: #4a4a4a;
-}
-
-/* === ANIMAÇÕES === */
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(25px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-.fade-in {
-    animation: fadeIn 1s ease forwards;
 }

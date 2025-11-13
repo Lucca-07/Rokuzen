@@ -1,0 +1,79 @@
+/* ============================================
+   LISTARCADASTROS.CSS - Página de Listagem de Cadastros
+   ============================================ */
+
+/* Estilos específicos para a página de listagem de cadastros */
+/* Os estilos globais são importados via global.css */
+
+.preview-container {
+    width: 100%;
+    max-width: 220px;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* Garante que nada vaze */
+    border: 2px solid #93a46b;
+    border-radius: 0.25rem;
+    background-color: #f8f9fa;
+    position: relative;
+}
+
+.preview-img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important; /* Cobre todo o espaço mantendo proporção */
+    object-position: center !important;
+    display: block !important;
+}
+
+/* === CARDS DE LISTAGEM === */
+.card-editar {
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.356);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-editar:hover {
+    transform: translateY(-2px);
+    box-shadow: 5px 7px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* === BOTÕES DE AÇÃO (EDITAR/DELETAR) === */
+.card-editar .mdi-pencil {
+    transition: all 0.2s ease;
+}
+
+.card-editar .mdi-pencil:hover {
+    background-color: #d1e7dd !important;
+    transform: scale(1.1);
+}
+
+.card-editar .mdi-delete {
+    transition: all 0.2s ease;
+}
+
+.card-editar .mdi-delete:hover {
+    background-color: #f8d7da !important;
+    transform: scale(1.1);
+}
+
+/* === IMAGENS DE PERFIL NOS CARDS === */
+.card-editar img {
+    transition: transform 0.2s ease;
+}
+
+.card-editar img:hover {
+    transform: scale(1.05);
+}
+
+/* === RESPONSIVIDADE === */
+@media (max-width: 768px) {
+    .preview-container {
+        max-width: 150px;
+        height: 150px;
+    }
+
+    .card-editar {
+        margin-top: 1rem !important;
+    }
+}
