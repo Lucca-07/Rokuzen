@@ -92,11 +92,11 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <select name="usuarioselect" id="usuarioselect" class="p-1 fs-5" style="cursor: pointer;"
-                        aria-label="Selecionar tipo de usuário para cadastro">
+                    <select name="usuarioselect" id="usuarioselect" class="form-select form-select-lg">
                         <option value="interno">Interno</option>
                         <option value="externo">Externo</option>
                     </select>
+
                 </div>
             </div>
         </div>
@@ -186,8 +186,9 @@
                             <img src="/frontend/img/account-outline.svg"
                                 alt="Placeholder para foto de perfil do usuário"
                                 style="border-radius: 50%; border: 1px solid #000; height: 180px; width: 180px; object-fit: cover;">
-                            <input type="file" name="imagemUsuario" id="imagemUsuario" accept="image/*"
-                                aria-label="Selecionar imagem de perfil">
+                            <input type="file" name="imagemUsuario" class="d-none" id="imagemUsuario" accept="image/*">
+                            <label for="imagemUsuario" class="btn btn-outline-success mt-2">Selecionar
+                                Imagem</label>
                         </div>
                     </div>
                 </div>

@@ -121,8 +121,8 @@ function popupDelete(id) {
                     <p class="fs-5">Tem certeza que deseja excluir este usuário?</p>
                 </div>
                 <div class="modal-footer">
-                    <button id="${modalId}-confirm" type="button" class="btn btn-success">Sim</button>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Não</button>
+                    <button id="${modalId}-confirm" type="button" class="btn btn-success">Sim</button>
                 </div>
             </div>
         </div>
@@ -153,7 +153,7 @@ async function popupEdit(id) {
         });
         const data = await response.json();
         let { nome, email, perfis, unidades, imagem } = data;
-
+        let display = "d-none";
         if (!data) {
             console.log("Erro ao enviar o usuário ao front");
             return;
@@ -162,7 +162,9 @@ async function popupEdit(id) {
         const modalId = `editModal-${id}`;
         const existing = document.getElementById(modalId);
         if (existing) existing.remove();
-
+        if (perfis[0] === "Master" || perfis[0] === "Gerente") {
+            display = "";
+        }
         const editModal = `
         <div class="modal fade" id="${modalId}" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -184,6 +186,7 @@ async function popupEdit(id) {
 
                                     <input type="file" name="imagemUsuario" class="d-none" id="imagemUsuarioEdit-${id}" accept="image/*">
                                     <label for="imagemUsuarioEdit-${id}" class="btn btn-outline-success mt-2">Selecionar Imagem</label>
+                                    <button id="removeImagem-${id}" class='btn btn-outline-danger mt-2'>Remover Imagem</button>
                                 </div>
                                 <!-- restante do modal permanece igual -->
                                 <div class="col-12 col-lg-9">
@@ -208,7 +211,7 @@ async function popupEdit(id) {
                                                         <option value="Terapeuta">Terapeuta</option>
                                                     </select>
                                                 </div>
-                                                <div class="col-12 col-md-6" id="setorcargo-${id}">
+                                                <div class="col-12 col-md-6 ${display}" id="setorcargo-${id}">
                                                     <label for="setorgerente-${id}" class="fs-6">Setor:</label>
                                                     <select id="setorgerente-${id}" class="form-select">
                                                         <option value="" selected>Selecionar:</option>
@@ -304,7 +307,22 @@ async function popupEdit(id) {
         // imagem
         const imagemInput = document.getElementById(`imagemUsuarioEdit-${id}`);
         const previewImg = document.getElementById(`previewImagem-${id}`);
+        const removeImg = document.getElementById(`removeImagem-${id}`);
         if (imagem) imagemInput.dataset.preview = imagem;
+
+        removeImg.addEventListener("click", () => {
+            // Define a imagem padrão
+            const imagemPadrao = "/frontend/img/account-outline.svg";
+
+            // Atualiza a preview para a imagem padrão
+            previewImg.src = imagemPadrao;
+
+            // Atualiza o dataset para a imagem padrão
+            imagemInput.dataset.preview = imagemPadrao;
+
+            // Limpa o input de arquivo
+            imagemInput.value = "";
+        });
 
         imagemInput.addEventListener("change", async (e) => {
             const file = e.target.files && e.target.files[0];
