@@ -849,24 +849,6 @@ app.put("/api/atendimentos/:id/feedback", async (req, res) => {
                 .json({ message: "Atendimento não encontrado" });
         }
 
-        // Ao salvar feedback, adiciona 1 ponto para o colaborador responsável pela sessão
-        try {
-            const colaboradorId = atendimento.colaborador_id;
-            if (colaboradorId && mongoose.Types.ObjectId.isValid(String(colaboradorId))) {
-                const colaboradorAtualizado = await Colaboradores.findByIdAndUpdate(
-                    String(colaboradorId),
-                    { $inc: { pontos: 1 } },
-                    { new: true }
-                );
-                console.log(`Pontos atualizados para colaborador ${colaboradorId}: agora tem ${colaboradorAtualizado?.pontos}`);
-            } else {
-                console.warn("Feedback salvo mas colaborador_id inválido ou ausente, não foi possível incrementar pontos.");
-            }
-        } catch (errPoints) {
-            console.error("Erro ao incrementar pontos do colaborador:", errPoints);
-       
-        }
-
         res.json({ message: "Feedback atualizado com sucesso", atendimento });
     } catch (err) {
         console.error("Erro ao atualizar feedback:", err);
