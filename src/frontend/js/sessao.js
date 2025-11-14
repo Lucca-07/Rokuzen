@@ -235,7 +235,7 @@ async function iniciarTimer(tidParam) {
                 if (novo && novo._id) state.serverId = novo._id;
                 console.log(` iniciarTimer - atendimento criado:`, novo);
             } else {
-                console.warn("Falha ao criar atendimento:", await res.text().catch(()=>""));
+                console.warn("Falha ao criar atendimento:", await res.text().catch(() => ""));
             }
         } else {
             // marca em andamento no servidor
@@ -251,7 +251,7 @@ async function iniciarTimer(tidParam) {
         console.log(` iniciarTimer - antes de loadTimersFromDB, state.pausado=${state.pausado}`);
         await loadTimersFromDB();
         console.log(` iniciarTimer - depois de loadTimersFromDB, state.pausado=${state.pausado}`);
-        
+
         // IMPORTANTE: garante que permaneça como não-pausado após loadTimersFromDB
         // (pois loadTimersFromDB pode ter resincronizado o estado)
         const estadoAposSync = window.__timers__[tid];
@@ -308,7 +308,7 @@ async function reiniciarTimer() {
 
     // Calcula o tempo total baseado em inicio_atendimento e fim_atendimento
     let tempoTotal = 10 * 60; // Fallback: 10 minutos
-    
+
     if (state.inicio_atendimento && state.fim_atendimento) {
         try {
             const inicio = new Date(state.inicio_atendimento);
@@ -338,11 +338,11 @@ async function reiniciarTimer() {
 // Função para restaurar timers quando a página é recarregada
 function restaurarTimers() {
     if (!window.__timers__) return;
-    
+
     // Tenta restaurar o selectedTid que foi salvo antes do reload
     const savedTid = localStorage.getItem("selectedTid");
     console.log(" restaurarTimers - savedTid:", savedTid, "window.__timers__:", window.__timers__);
-    
+
     if (savedTid && window.__timers__[savedTid]) {
         selectedTid = savedTid;
         console.log(" Restaurado selectedTid:", savedTid, "tempo:", window.__timers__[savedTid].tempo);
@@ -397,7 +397,7 @@ function PopUpTerapeutafechado() {
         const inst = bootstrap.Modal.getInstance(popupModalEl);
         if (inst) {
             inst.hide();
-            inst.dispose(); 
+            inst.dispose();
         } else {
             // Se não havia instância, cria, esconde e descarta
             const tmp = new bootstrap.Modal(popupModalEl);
@@ -513,9 +513,9 @@ async function carregarTerapeutas() {
             // (window.__timers__ agora tem chaves de agendamento, não de terapeuta)
             const estadosTerapeutaAtivos = Object.entries(window.__timers__ || {})
                 .filter(([tid, state]) => {
-                    return state && 
-                           String(state.colaborador_id).trim() === terapeuta_id.trim() && 
-                           !state.encerrado;
+                    return state &&
+                        String(state.colaborador_id).trim() === terapeuta_id.trim() &&
+                        !state.encerrado;
                 })
                 .map(([tid, state]) => ({ tid, state }));
 
@@ -594,7 +594,7 @@ async function carregarTerapeutas() {
                     .addEventListener("click", () => {
                         selectedTid = tid;
                         localStorage.setItem("selectedTid", tid);
-                        
+
                         const state = window.__timers__[tid];
 
                         atualizarDisplays(tid);
@@ -649,9 +649,8 @@ function atualizarDisplays(tid) {
     const displayModal = document.getElementById(`timer-display-${tid}`);
     if (displayModal) {
         displayModal.textContent = formataSegundos(state.tempo);
-        displayModal.className = `fw-bold fs-5 ${
-            state.pausado ? "text-secondary" : "text-success"
-        }`;
+        displayModal.className = `fw-bold fs-5 ${state.pausado ? "text-secondary" : "text-success"
+            }`;
     }
 }
 
@@ -745,28 +744,28 @@ let lastFocusTime = Date.now();
 window.addEventListener("focus", async () => {
     const agora = Date.now();
     const tempoDecorrido = Math.floor((agora - lastFocusTime) / 1000); // em segundos
-    
+
     console.log(`Aba voltou ao foco! Tempo que passou: ${tempoDecorrido}s`);
-    
+
     // Atualiza cada timer ativo com o tempo que passou enquanto estava oculto
     if (window.__timers__) {
         Object.keys(window.__timers__).forEach((tid) => {
             const state = window.__timers__[tid];
             if (!state || state.pausado || state.encerrado) return; // Só atualiza se estiver rodando
-            
+
             // Diminui o tempo pelo que passou
             state.tempo = Math.max(0, state.tempo - tempoDecorrido);
             console.log(`   tid=${tid}: tempo agora=${state.tempo}s`);
-            
+
             // Sincroniza com servidor
             syncTimerToServer(tid);
         });
-        
+
         // Atualiza displays
         atualizarDisplays(selectedTid);
         atualizarTimersModal();
     }
-    
+
     // Recarrega dados do banco para garantir consistência
     await loadTimersFromDB();
     atualizarTimersModal();
@@ -913,8 +912,8 @@ async function carregarAgendamentos() {
         <span class="fw-semibold d-block">👤${a.colaborador}</span>
         <small class="text-muted d-block">⏰Início: ${horaFormatada}</small>
         <small class="text-muted d-block">Duração: ${Math.round(
-            tempoSegundos / 60
-        )} min</small>
+                tempoSegundos / 60
+            )} min</small>
     </div>
     <div class="ms-3">
         ${btnSelecionarHTML}
@@ -952,7 +951,7 @@ function selecionarAgendamento(
     // Isto permite múltiplos agendamentos para a mesma pessoa
     const tid = String(id).trim();
     console.log(` selecionarAgendamento - id='${id}' (agendamento) -> tid='${tid}', colaborador='${colaboradorId}'`);
-    
+
     if (!window.__timers__) window.__timers__ = {};
 
     // Se timer já existe, APENAS alterna a seleção (NÃO muda o tempo)
@@ -1141,7 +1140,14 @@ document.getElementById("fb-salvar").addEventListener("click", async () => {
             await syncTimerToServer(tid);
             atualizarDisplays(tid);
             atualizarTimersModal();
-
+            // Garantir que o timer fique pausado e em 10:00 após tudo ser atualizado
+            if (state) {
+                state.pausado = true;
+                state.em_andamento = false;
+                state.tempo = 10 * 60; // reforça o reset
+                // Atualiza o display final já com ele pausado
+                atualizarDisplays(tid);
+            }
             // Atualiza o card visual da sessão iniciada
             const bloco = document.querySelector(
                 `[data-server-id="${state.serverId}"]`
@@ -1160,6 +1166,10 @@ document.getElementById("fb-salvar").addEventListener("click", async () => {
                 // Esconde botão Selecionar
                 const btnSelecionar = bloco.querySelector("button");
                 if (btnSelecionar) btnSelecionar.style.display = "none";
+
+                // Mover pra parte de baixo da lista
+                const lista = bloco.parentElement;
+                lista.appendChild(bloco);
             }
         }
 
