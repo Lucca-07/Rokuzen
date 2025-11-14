@@ -142,21 +142,33 @@
                     </div>
                 </div>
             </div>
-
             <div class="col-12 mt-5">
                 <div class="card shadow border-0" role="region" aria-labelledby="titulo-escala">
                     <div class="card-header bg-light fw-semibold fs-5 text-center py-3">
                         <h4 id="titulo-escala" class="mb-0">Visualizar Escala</h4>
                     </div>
-                    <div class="card-body p-0 overflow-hidden">
-                        <div class="ratio ratio-16x9">
-                            <iframe src="" class="iframe-preview border-0" title="Visualização da Escala de Trabalho"
-                                loading="lazy"></iframe>
-                        </div>
+
+                    <div class="card-body p-0">
+                        <table class="table table-striped table-hover text-center align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Terapeuta</th>
+                                    <th>Horário</th>
+                                    <th>Duração</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-agendamentos">
+                                <tr>
+                                    <td colspan="3" class="text-center py-4 text-muted">
+                                        Carregando...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-        </div>
+
 
     </main>
 

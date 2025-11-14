@@ -217,3 +217,52 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
+// ==================================
+// LISTAR AGENDAMENTOS
+// ==================================
+document.addEventListener("DOMContentLoaded", async () => {
+    const tabela = document.getElementById("tabela-agendamentos");
+    if (!tabela) return;
+
+    const id = localStorage.getItem("userId") || "";
+    const perfis = localStorage.getItem("perfis_usuario") || localStorage.getItem("perfis") || "";
+
+    tabela.innerHTML = `<tr><td colspan="3" class="text-center text-muted py-4">
+        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Carregando...
+    </td></tr>`;
+
+    try {
+        // Envia ambos idUser e userId para compatibilidade com diferentes implementações do servidor
+        const query = `idUser=${encodeURIComponent(id)}&userId=${encodeURIComponent(id)}&perfis_usuario=${encodeURIComponent(perfis)}`;
+        const res = await fetch(`/api/agendamentos?${query}`);
+        if (!res.ok) throw new Error("Falha ao carregar agendamentos");
+
+        const agendamentos = await res.json();
+
+        if (!Array.isArray(agendamentos) || agendamentos.length === 0) {
+            tabela.innerHTML = `<tr><td colspan="3" class="text-center text-muted py-4">Nenhuma sessão encontrada hoje.</td></tr>`;
+            return;
+        }
+
+        // Ordena por início
+        agendamentos.sort((a, b) => new Date(a.inicio_atendimento) - new Date(b.inicio_atendimento));
+
+        const rows = agendamentos.map(a => {
+            const inicio = a.inicio_atendimento ? new Date(a.inicio_atendimento).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "-";
+            const fim = a.fim_atendimento ? new Date(a.fim_atendimento).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "-";
+            const duracao = a.tempo ?? (a.fim_atendimento && a.inicio_atendimento ? Math.round((new Date(a.fim_atendimento) - new Date(a.inicio_atendimento)) / 60000) : "-");
+            const colaborador = a.colaborador || a.nome_colaborador || "Desconhecido";
+            return `<tr>
+                <td class="text-start ps-4">${colaborador}</td>
+                <td>${inicio} - ${fim}</td>
+                <td>${duracao} ${typeof duracao === "number" ? "min" : ""}</td>
+            </tr>`;
+        }).join("");
+
+        tabela.innerHTML = rows;
+    } catch (err) {
+        console.error("Erro ao carregar agendamentos:", err);
+        tabela.innerHTML = `<tr><td colspan="3" class="text-center text-danger py-4">Erro ao carregar agendamentos.</td></tr>`;
+    }
+});
+
