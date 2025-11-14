@@ -1,3 +1,4 @@
+
 document.getElementById("sairbutton").addEventListener("click", () => {
     localStorage.removeItem("token");
     window.location.href = "/";
@@ -90,8 +91,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(
-                    `Erro ${response.status}: ${
-                        errorData.erro || errorData.error
+                    `Erro ${response.status}: ${errorData.erro || errorData.error
                     }`
                 );
             }
@@ -110,6 +110,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             `;
         }
     }
+
 
     function preencherTabelaEquipamentos(equipamentos) {
         const tbody = document.getElementById("tabela-equipamentos");
@@ -232,7 +233,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     </td></tr>`;
 
     try {
-        // Envia ambos idUser e userId para compatibilidade com diferentes implementações do servidor
         const query = `idUser=${encodeURIComponent(id)}&userId=${encodeURIComponent(id)}&perfis_usuario=${encodeURIComponent(perfis)}`;
         const res = await fetch(`/api/agendamentos?${query}`);
         if (!res.ok) throw new Error("Falha ao carregar agendamentos");
@@ -248,16 +248,40 @@ document.addEventListener("DOMContentLoaded", async () => {
         agendamentos.sort((a, b) => new Date(a.inicio_atendimento) - new Date(b.inicio_atendimento));
 
         const rows = agendamentos.map(a => {
-            const inicio = a.inicio_atendimento ? new Date(a.inicio_atendimento).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "-";
-            const fim = a.fim_atendimento ? new Date(a.fim_atendimento).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "-";
-            const duracao = a.tempo ?? (a.fim_atendimento && a.inicio_atendimento ? Math.round((new Date(a.fim_atendimento) - new Date(a.inicio_atendimento)) / 60000) : "-");
+
+            // Corrige UTC para horário do Brasil
+            const toLocalBR = (dateString) => {
+                if (!dateString) return null;
+                const d = new Date(dateString);
+                d.setHours(d.getHours() + 3);
+                return d;
+            };
+
+            const inicioDate = toLocalBR(a.inicio_atendimento);
+            const fimDate = toLocalBR(a.fim_atendimento);
+
+            const inicio = inicioDate
+                ? inicioDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                : "-";
+
+            const fim = fimDate
+                ? fimDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                : "-";
+
+            const data = inicioDate
+                ? inicioDate.toLocaleDateString("pt-BR")
+                : "-";
+
             const colaborador = a.colaborador || a.nome_colaborador || "Desconhecido";
-            return `<tr>
-                <td class="text-start ps-4">${colaborador}</td>
-                <td>${inicio} - ${fim}</td>
-                <td>${duracao} ${typeof duracao === "number" ? "min" : ""}</td>
-            </tr>`;
+
+            return `
+        <tr>
+            <td class="text-start ps-4">${colaborador}</td>
+            <td>${inicio} - ${fim}</td>
+            <td>${data}</td>
+        </tr>`;
         }).join("");
+
 
         tabela.innerHTML = rows;
     } catch (err) {
