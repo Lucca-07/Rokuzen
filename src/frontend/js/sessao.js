@@ -1144,9 +1144,8 @@ document.getElementById("fb-salvar").addEventListener("click", async () => {
             if (state) {
                 state.pausado = true;
                 state.em_andamento = false;
-                state.tempo = 10 * 60; 
-
-            // Atualiza o display final já com ele pausado
+                state.tempo = 10 * 60; // reforça o reset
+                // Atualiza o display final já com ele pausado
                 atualizarDisplays(tid);
             }
             // Atualiza o card visual da sessão iniciada
