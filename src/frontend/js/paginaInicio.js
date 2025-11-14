@@ -1,3 +1,4 @@
+
 document.getElementById("sairbutton").addEventListener("click", () => {
     localStorage.removeItem("token");
     window.location.href = "/";
@@ -90,8 +91,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(
-                    `Erro ${response.status}: ${
-                        errorData.erro || errorData.error
+                    `Erro ${response.status}: ${errorData.erro || errorData.error
                     }`
                 );
             }
@@ -110,6 +110,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             `;
         }
     }
+
 
     function preencherTabelaEquipamentos(equipamentos) {
         const tbody = document.getElementById("tabela-equipamentos");
@@ -214,6 +215,105 @@ document.addEventListener("DOMContentLoaded", async () => {
             `
             )
             .join("");
+    }
+});
+
+// ==================================
+// LISTAR AGENDAMENTOS
+// ==================================
+// ==================================
+// LISTAR AGENDAMENTOS
+// ==================================
+document.addEventListener("DOMContentLoaded", async () => {
+    const tabela = document.getElementById("tabela-agendamentos");
+    if (!tabela) return;
+
+    const id = localStorage.getItem("userId") || "";
+    const perfis = localStorage.getItem("perfis_usuario") || localStorage.getItem("perfis") || "";
+
+    tabela.innerHTML = `<tr><td colspan="3" class="text-center text-muted py-4">
+        <span class="spinner-border spinner-border-sm me-2"></span>Carregando...
+    </td></tr>`;
+
+    try {
+        const query = `idUser=${encodeURIComponent(id)}&userId=${encodeURIComponent(id)}&perfis_usuario=${encodeURIComponent(perfis)}`;
+        const res = await fetch(`/api/agendamentos?${query}`);
+        if (!res.ok) throw new Error("Falha ao carregar agendamentos");
+
+        let agendamentos = await res.json();
+
+        // Nada vindo do servidor
+        if (!Array.isArray(agendamentos) || agendamentos.length === 0) {
+            tabela.innerHTML = `<tr><td colspan="3" class="text-center text-muted py-4">Não há agendamentos futuros.</td></tr>`;
+            return;
+        }
+
+        // ================================
+        // 1) Converter datas para horário BR
+        // ================================
+        const toLocalBR = (dateString) => {
+            if (!dateString) return null;
+            const d = new Date(dateString);
+            d.setHours(d.getHours() + 3);
+            return d;
+        };
+
+        // ================================
+        // 2) Remover atendimentos já finalizados
+        // ================================
+        const agora = new Date();
+
+        agendamentos = agendamentos.filter(a => {
+            const fim = toLocalBR(a.fim_atendimento);
+            return fim && fim >= agora; // mantém só quem ainda não acabou
+        });
+
+        if (agendamentos.length === 0) {
+            tabela.innerHTML = `<tr><td colspan="3" class="text-center text-muted py-4">Não há agendamentos futuros.</td></tr>`;
+            return;
+        }
+
+        // ================================
+        // 3) Ordenar por horário de início
+        // ================================
+        agendamentos.sort((a, b) =>
+            new Date(a.inicio_atendimento) - new Date(b.inicio_atendimento)
+        );
+
+        // ================================
+        // 4) Montar tabela
+        // ================================
+        const rows = agendamentos.map(a => {
+            const inicioDate = toLocalBR(a.inicio_atendimento);
+            const fimDate = toLocalBR(a.fim_atendimento);
+
+            const inicio = inicioDate
+                ? inicioDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+                : "-";
+
+            const fim = fimDate
+                ? fimDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+                : "-";
+
+            const data = inicioDate
+                ? inicioDate.toLocaleDateString("pt-BR")
+                : "-";
+
+            const colaborador = a.colaborador || a.nome_colaborador || "Desconhecido";
+
+            return `
+            <tr>
+                <td class="text-start ps-4">${colaborador}</td>
+                <td>${inicio} - ${fim}</td>
+                <td>${data}</td>
+            </tr>`;
+        }).join("");
+
+
+        tabela.innerHTML = rows;
+    } catch (err) {
+        console.error("Erro ao carregar agendamentos:", err);
+        tabela.innerHTML = `<tr><td colspan="3" class="text-center text-danger py-4">Erro ao carregar agendamentos.</td></tr>`;
     }
 });
 
