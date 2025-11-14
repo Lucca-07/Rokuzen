@@ -28,7 +28,7 @@ document.getElementById("acessar").addEventListener("click", () => {
             <div class="alert alert-warning alert-dismissible fade show py-2" role="alert">
                 <i class="mdi mdi-alert-circle-outline me-1"></i>
                 Selecione uma unidade válida!
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                <button type="button" class="btn-close align-self-center p-3" data-bs-dismiss="alert" aria-label="Fechar"></button>
             </div>`;
     }
 });
@@ -51,7 +51,7 @@ async function validarUsuario() {
             <div class="alert alert-warning alert-dismissible fade show py-2" role="alert">
                 <i class="mdi mdi-alert-circle-outline me-1"></i>
                 Preencha todos os campos.
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <button type="button" class="btn-close align-self-center p-3" data-bs-dismiss="alert"></button>
             </div>`;
         return;
     }
@@ -108,7 +108,7 @@ async function validarUsuario() {
                 <div class="alert alert-danger alert-dismissible fade show py-2" role="alert">
                     <i class="mdi mdi-close-circle-outline me-1"></i>
                     Usuário ou senha inválidos.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                    <button type="button" class="btn-close align-self-center p-3" data-bs-dismiss="alert" aria-label="Fechar"></button>
                 </div>`;
         }
     } catch (error) {
@@ -117,7 +117,7 @@ async function validarUsuario() {
             <div class="alert alert-danger alert-dismissible fade show py-2" role="alert">
                 <i class="mdi mdi-alert me-1"></i>
                 Erro ao tentar fazer login. Tente novamente.
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                <button type="button" class="btn-close align-self-center p-3" data-bs-dismiss="alert" aria-label="Fechar"></button>
             </div>`;
     }
 }
@@ -154,7 +154,7 @@ async function recuperarSenha() {
                 <div class="alert alert-danger alert-dismissible fade show py-2" role="alert">
                     <i class="mdi mdi-close-circle-outline me-1"></i>
                     ${data.msg || "Email inválido!"}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <button type="button" class="btn-close align-self-center p-3" data-bs-dismiss="alert"></button>
                 </div>`;
         }
     } catch (error) {
@@ -163,7 +163,7 @@ async function recuperarSenha() {
             <div class="alert alert-danger alert-dismissible fade show py-2" role="alert">
                 <i class="mdi mdi-alert me-1"></i>
                 Ocorreu um erro. Tente novamente.
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <button type="button" class="btn-close align-self-center p-3" data-bs-dismiss="alert"></button>
             </div>`;
     }
 }

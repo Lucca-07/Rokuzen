@@ -95,7 +95,7 @@ function mostrarErro(msg) {
         <div class="alert alert-danger alert-dismissible fade show py-2" role="alert">
             <i class="mdi mdi-close-circle-outline me-1"></i>
             ${msg}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            <button type="button" class="btn-close align-self-center p-3" data-bs-dismiss="alert" aria-label="Fechar"></button>
         </div>`;
 }
 
@@ -104,6 +104,6 @@ function mostrarSucesso(msg) {
         <div class="alert alert-success alert-dismissible fade show py-2" role="alert">
             <i class="mdi mdi-check-circle-outline me-1"></i>
             ${msg}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            <button type="button" class="btn-close align-self-center p-3" data-bs-dismiss="alert" aria-label="Fechar"></button>
         </div>`;
 }

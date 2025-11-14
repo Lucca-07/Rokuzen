@@ -34,7 +34,7 @@
       <div class="mb-3 text-start">
         <div class="input-group">
           <input type="password" id="pass" class="form-control" placeholder="Senha" required />
-          <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('pass','toggle-senha-icon')">
+          <button class="btn btn-outline-secondary border border-end" type="button" onclick="togglePassword('pass','toggle-senha-icon')">
             <i class="mdi mdi-eye-off" id="toggle-senha-icon"></i>
           </button>
         </div>
@@ -44,7 +44,7 @@
         Entrar <i class="mdi mdi-arrow-right ms-2"></i>
       </button>
 
-      <a href="#" id="esqueci" class="link-secondary small">Esqueci minha senha</a>
+      <a  id="esqueci" class="link-secondary small" style="cursor: pointer;">Esqueci minha senha</a>
     </div>
 
     <!-- RECUPERAR SENHA -->
@@ -58,8 +58,8 @@
       </div>
 
       <div class="d-flex gap-2">
-        <button id="recuperarButton" class="btn btn-primary flex-fill">Enviar</button>
         <button id="voltarLogin" class="btn btn-outline-secondary flex-fill">Voltar</button>
+        <button id="recuperarButton" class="btn btn-success flex-fill">Enviar</button>
       </div>
     </div>
 
