@@ -63,8 +63,13 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 selectUser.addEventListener("change", () => {
-    userExterno.classList.toggle("d-none");
-    userInterno.classList.toggle("d-none");
+    if (selectUser.value === "interno") {
+        userInterno.classList.remove("d-none");
+        userExterno.classList.add("d-none");
+    } else {
+        userExterno.classList.remove("d-none");
+        userInterno.classList.add("d-none");
+    }
 });
 
 cargoselect.addEventListener("change", () => {
@@ -80,7 +85,7 @@ cargoselect.addEventListener("change", () => {
 
 document.addEventListener("DOMContentLoaded", async () => {
     // pega o id da URL: /inicio/:id
-    const id = localStorage.getItem("userId")
+    const id = localStorage.getItem("userId");
 
     const token = localStorage.getItem("token");
     if (!token) {
