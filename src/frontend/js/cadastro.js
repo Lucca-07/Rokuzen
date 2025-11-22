@@ -45,6 +45,8 @@ function compressImage(file, maxSize = 800, quality = 0.7) {
 document.addEventListener("DOMContentLoaded", () => {
     const imagemInput = document.getElementById("imagemUsuario");
     const previewImg = document.querySelector("#foto img");
+    const removeBtn = document.getElementById("removeImagem-${id}");
+
     if (imagemInput && previewImg) {
         imagemInput.addEventListener("change", async (e) => {
             const file = e.target.files && e.target.files[0];
@@ -58,6 +60,18 @@ document.addEventListener("DOMContentLoaded", () => {
             } catch (err) {
                 console.error("Erro ao processar imagem:", err);
             }
+        });
+    }
+
+    // Adicionar listener para remover imagem
+    if (removeBtn && previewImg && imagemInput) {
+        removeBtn.addEventListener("click", () => {
+            // Limpar o input de arquivo
+            imagemInput.value = "";
+            // Remover o preview armazenado
+            delete imagemInput.dataset.preview;
+            // Restaurar a imagem padrão
+            previewImg.src = "/frontend/img/account-outline.svg";
         });
     }
 });
@@ -77,7 +91,7 @@ cargoselect.addEventListener("change", () => {
         cargoselect.options[cargoselect.selectedIndex].text === "Gerente" ||
         cargoselect.options[cargoselect.selectedIndex].text === "Master"
     ) {
-        setorcargo.classList.toggle("d-none");
+        setorcargo.classList.remove("d-none");
     } else {
         setorcargo.classList.add("d-none");
     }
