@@ -167,9 +167,9 @@ async function popupEdit(id) {
         <div class="modal fade" id="${modalId}" tabindex="-1" aria-hidden="true">
           <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content border-0 shadow rounded-4">
-              <div class="modal-header bg-success text-white">
+              <div class="modal-header text-truncate">
                 <h5 class="modal-title">Editar colaborador</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                <button type="button" class="btn-close " data-bs-dismiss="modal" aria-label="Fechar"></button>
               </div>
               <div class="modal-body">
                 <div class="row g-4">
@@ -206,7 +206,7 @@ async function popupEdit(id) {
                         </select>
                       </div>
                       <div class="col-12 col-md-6 ${
-                          showSetor ? "" : "d-none"
+                        showSetor ? "" : "d-none"
                       }" id="setorcargo-${id}">
                         <label class="form-label" for="setorgerente-${id}">Setor</label>
                         <select id="setorgerente-${id}" class="form-select">
