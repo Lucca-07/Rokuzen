@@ -92,7 +92,7 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <select name="usuarioselect" id="usuarioselect" class="form-select form-select-lg">
+                    <select name="usuarioselect" id="usuarioselect" class="form-select">
                         <option value="interno">Interno</option>
                         <option value="externo">Externo</option>
                     </select>
@@ -187,14 +187,16 @@
                                 alt="Placeholder para foto de perfil do usuário"
                                 style="border-radius: 50%; border: 1px solid #000; height: 180px; width: 180px; object-fit: cover;">
                             <input type="file" name="imagemUsuario" class="d-none" id="imagemUsuario" accept="image/*">
-                            <label for="imagemUsuario" class="btn btn-outline-success mt-2">Selecionar
+                            <label for="imagemUsuario" class="btn btn-outline-success w-100">Selecionar
                                 Imagem</label>
+                            <button id="removeImagem-${id}" type="button" class="btn btn-outline-danger w-100">Remover
+                                imagem</button>
                         </div>
                     </div>
                 </div>
                 <div class="row mt-4">
                     <div class="col-12 text-center">
-                        <button id="enviarColaborador" type="submit" class="enviar mt-1 px-3 py-1 fs-4"
+                        <button id="enviarColaborador" type="submit" class="btn btn-success btn-lg"
                             onclick="salvarColaborador(event)"
                             aria-label="Salvar Cadastro do Colaborador">Salvar</button>
                     </div>
@@ -274,7 +276,7 @@
                     </div>
 
                     <div class="col-12 text-center mt-4">
-                        <button type="submit" class="enviar px-3 py-1 fs-4" onclick="salvarCliente(event)"
+                        <button type="submit" class="btn btn-success btn-lg" onclick="salvarCliente(event)"
                             aria-label="Salvar Cadastro do Cliente">Salvar</button>
                     </div>
                 </div>
