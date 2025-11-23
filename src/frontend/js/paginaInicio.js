@@ -221,9 +221,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 // ==================================
 // LISTAR AGENDAMENTOS
 // ==================================
-// ==================================
-// LISTAR AGENDAMENTOS
-// ==================================
+
 document.addEventListener("DOMContentLoaded", async () => {
     const tabela = document.getElementById("tabela-agendamentos");
     if (!tabela) return;
