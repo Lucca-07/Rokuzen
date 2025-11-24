@@ -201,7 +201,7 @@ async function popupEdit(id) {
                           <option disabled>Selecionar:</option>
                           <option value="Master">Master</option>
                           <option value="Gerente">Gerente</option>
-                          <option value="Recepção">Recepção</option>
+                          <option value="Recepcao">Recepção</option>
                           <option value="Terapeuta">Terapeuta</option>
                         </select>
                       </div>
@@ -210,7 +210,7 @@ async function popupEdit(id) {
                       }" id="setorcargo-${id}">
                         <label class="form-label" for="setorgerente-${id}">Setor</label>
                         <select id="setorgerente-${id}" class="form-select">
-                          <option value="Recepção">Recepção</option>
+                          <option value="Recepcao">Recepção</option>
                           <option value="Terapeuta">Terapeuta</option>
                         </select>
                       </div>
