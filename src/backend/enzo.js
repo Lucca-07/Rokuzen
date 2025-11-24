@@ -325,7 +325,7 @@ app.post("/escala/atendimento", async (req, res) => {
       em_andamento: false,
       inicio_real: null,
       fim_real: null,
-      tempoRestante: 120,
+      tempoRestante: 600,
       encerrado: false,
     });
 
