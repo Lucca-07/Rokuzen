@@ -10,19 +10,19 @@
 
 /* === TOGGLE DE VISUALIZAÇÃO === */
 .btn-group .btn-check:checked + .btn-outline-success {
-    background-color: #9db668;
-    border-color: #9db668;
+    background-color: #198754;
+    border-color: #198754;
     color: white;
 }
 
 .btn-outline-success {
-    color: #9db668;
-    border-color: #9db668;
+    color: #198754;
+    border-color: #198754;
 }
 
 .btn-outline-success:hover {
-    background-color: #b3ce78;
-    border-color: #b3ce78;
+    background-color: #157347;
+    border-color: #157347;
     color: white;
 }
 
@@ -41,8 +41,8 @@
     border: none;
     border-radius: 5px;
     background-color: white;
-    color: #9db668;
-    border: 2px solid #9db668;
+    color: #157347;
+    border: 2px solid #157347;
     cursor: pointer;
     transition: all 0.3s;
     display: flex;
@@ -53,8 +53,8 @@
 #btn-anterior:hover,
 #btn-proximo:hover {
     background-color: white;
-    color: #b3ce78;
-    border: 2px solid #b3ce78;
+    color: #36b178;
+    border: 2px solid #36b178;
     transform: translateY(-2px);
 }
 
@@ -62,7 +62,7 @@
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
-    background-color: #9db668;
+    background-color: #198754;
     color: white;
     cursor: pointer;
     transition: all 0.3s;
@@ -73,7 +73,7 @@
 }
 
 #btn-hoje:hover {
-    background-color: #b6d377;
+    background-color: #36b178;
     transform: translateY(-2px);
 }
 
@@ -165,7 +165,7 @@
     position: relative;
     z-index: 10;
     pointer-events: auto;
-    background-color: #8fa25d;
+    background-color: #198754;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
@@ -179,7 +179,7 @@
 
 /* === EVENTOS === */
 .evento {
-    background-color: #8fa25d;
+    background-color: #198754;
     color: white;
     border-radius: 3px;
     padding: 5px;
