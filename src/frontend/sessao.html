@@ -232,7 +232,23 @@
 		crossorigin="anonymous"></script>
 	<script src="/frontend/js/sessao.js"></script>
 	<script src="https://app.embed.im/accessibility.js" defer></script>
+	<script>
+    // Função que remove qualquer text node contendo exatamente "null"
+    function removerNullNodes() {
+        document.body.childNodes.forEach(node => {
+            if (node.nodeType === 3 && node.nodeValue.trim() === "null") {
+                node.remove();
+            }
+        });
+    }
 
+    // Executa na carga da página
+    removerNullNodes();
+
+    // Observa o body para remover caso o VLibras reinjete
+    new MutationObserver(removerNullNodes)
+        .observe(document.body, { childList: true });
+</script>
 </body>
 
 </html>
