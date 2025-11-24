@@ -2,6 +2,7 @@ let dataAtual = new Date();
 let eventos = [];
 let celulaSelecionada = null;
 let eventoEmEdicao = null;
+let tipoVisualizacao = "semanal"; // nova variável global
 
 const HORA_INICIO = 9;
 const HORA_FIM = 23;
@@ -86,6 +87,21 @@ async function carregarEventosDaSemana() {
 }
 
 async function renderizarCalendario() {
+    // Adiciona/remove classe CSS para controlar estilos
+    const tabela = document.getElementById("tabela-calendario");
+
+    if (tipoVisualizacao === "semanal") {
+        tabela.classList.remove("visualizacao-diaria");
+        tabela.classList.add("visualizacao-semanal");
+        await renderizarCalendarioSemanal();
+    } else {
+        tabela.classList.remove("visualizacao-semanal");
+        tabela.classList.add("visualizacao-diaria");
+        await renderizarCalendarioDiario();
+    }
+}
+
+async function renderizarCalendarioSemanal() {
     const inicioSemana = getInicioSemana(dataAtual);
     const diasDaSemana = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
     let datas = [];
@@ -107,7 +123,7 @@ async function renderizarCalendario() {
 
     let tbodyHTML = "";
     const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0); // resetar horas pra comparar só a data
+    hoje.setHours(0, 0, 0, 0);
 
     for (let h = HORA_INICIO; h < HORA_FIM; h++) {
         for (let m = 0; m < 60; m += INTERVALO_MINUTOS) {
@@ -115,8 +131,7 @@ async function renderizarCalendario() {
                 2,
                 "0"
             )}`;
-
-            let linha = `<tr><td>${horario}</td>`;
+            let linha = `<tr><td class="coluna-horario">${horario}</td>`;
 
             datas.forEach((data) => {
                 const dataHoraLocal = new Date(
@@ -139,18 +154,13 @@ async function renderizarCalendario() {
                 );
                 const dataKey = `${ano}-${mes}-${dia}T${hora}:${minuto}`;
 
-                // verifica se é hoje
                 let classeHoje =
                     data.toDateString() === new Date().toDateString()
                         ? "hoje"
                         : "";
-
-                // verifica se já passou
                 const agora = new Date();
                 const dataHoraCompleta = new Date(dataKey);
                 const jaPassou = dataHoraCompleta < agora;
-
-                // adiciona classe se passou
                 let classePassado = jaPassou ? "passado" : "";
 
                 linha += `<td class="horario-celula ${classeHoje} ${classePassado}" data-time="${dataKey}" ${
@@ -161,10 +171,97 @@ async function renderizarCalendario() {
             linha += "</tr>";
             tbodyHTML += linha;
         }
-        tabelaCalendario.querySelector("tbody").innerHTML = tbodyHTML;
+    }
 
-        await carregarEventosDaSemana();
-        adicionarListenersCelulas();
+    tabelaCalendario.querySelector("tbody").innerHTML = tbodyHTML;
+    await carregarEventosDaSemana();
+    adicionarListenersCelulas();
+}
+
+async function renderizarCalendarioDiario() {
+    const dataAtualCopia = new Date(dataAtual);
+    dataAtualCopia.setHours(0, 0, 0, 0);
+
+    const diasDaSemana = [
+        "Domingo",
+        "Segunda",
+        "Terça",
+        "Quarta",
+        "Quinta",
+        "Sexta",
+        "Sábado",
+    ];
+    const diaNome = diasDaSemana[dataAtualCopia.getDay()];
+    const dataFormatada = dataAtualCopia.toLocaleDateString("pt-BR");
+
+    let theadHTML = `<tr><th class="coluna-horario">Horário</th><th class="coluna-agendamento">${diaNome} (${dataFormatada})</th></tr>`;
+    tabelaCalendario.querySelector("thead").innerHTML = theadHTML;
+
+    let tbodyHTML = "";
+    const agora = new Date();
+
+    for (let h = HORA_INICIO; h < HORA_FIM; h++) {
+        for (let m = 0; m < 60; m += INTERVALO_MINUTOS) {
+            const horario = `${String(h).padStart(2, "0")}:${String(m).padStart(
+                2,
+                "0"
+            )}`;
+
+            const dataHoraLocal = new Date(
+                dataAtualCopia.getFullYear(),
+                dataAtualCopia.getMonth(),
+                dataAtualCopia.getDate(),
+                h,
+                m
+            );
+
+            const ano = dataHoraLocal.getFullYear();
+            const mes = String(dataHoraLocal.getMonth() + 1).padStart(2, "0");
+            const dia = String(dataHoraLocal.getDate()).padStart(2, "0");
+            const hora = String(dataHoraLocal.getHours()).padStart(2, "0");
+            const minuto = String(dataHoraLocal.getMinutes()).padStart(2, "0");
+            const dataKey = `${ano}-${mes}-${dia}T${hora}:${minuto}`;
+
+            let classeHoje =
+                dataAtualCopia.toDateString() === new Date().toDateString()
+                    ? "hoje"
+                    : "";
+            const dataHoraCompleta = new Date(dataKey);
+            const jaPassou = dataHoraCompleta < agora;
+            let classePassado = jaPassou ? "passado" : "";
+
+            tbodyHTML += `
+                <tr>
+                    <td class="coluna-horario">${horario}</td>
+                    <td class="horario-celula coluna-agendamento ${classeHoje} ${classePassado}" data-time="${dataKey}" ${
+                jaPassou ? 'data-passado="true"' : ""
+            }></td>
+                </tr>
+            `;
+        }
+    }
+
+    tabelaCalendario.querySelector("tbody").innerHTML = tbodyHTML;
+    await carregarEventosDaSemana();
+    adicionarListenersCelulas();
+}
+
+function atualizarLabelsNavegacao() {
+    const labelAnterior = document.getElementById("label-anterior");
+    const labelHoje = document.getElementById("label-hoje");
+    const labelProximo = document.getElementById("label-proximo");
+    const titulo = document.getElementById("servicosh1");
+
+    if (tipoVisualizacao === "semanal") {
+        labelAnterior.textContent = "Semana Anterior";
+        labelHoje.textContent = "Semana Atual";
+        labelProximo.textContent = "Próxima Semana";
+        titulo.textContent = "Serviços da Semana";
+    } else {
+        labelAnterior.textContent = "Dia Anterior";
+        labelHoje.textContent = "Dia Atual";
+        labelProximo.textContent = "Próximo Dia";
+        titulo.textContent = "Serviços do Dia";
     }
 }
 
@@ -208,7 +305,6 @@ async function carregarEquipamentos(
         }
 
         const equipamentos = await response.json();
-
 
         // verifica se é array
         if (!Array.isArray(equipamentos)) {
@@ -344,7 +440,6 @@ async function inicializarFormularioEUnidade() {
 
     // caso 2: tem unidade no localStorage
     try {
-
         // busca a unidade pelo nome
         const response = await fetch(
             `/api/unidade-por-nome?nome=${encodeURIComponent(nomeUnidadeSalva)}`
@@ -770,12 +865,20 @@ function fecharModalLimparFormulario() {
 }
 
 document.getElementById("btn-anterior").addEventListener("click", () => {
-    dataAtual.setDate(dataAtual.getDate() - 7);
+    if (tipoVisualizacao === "semanal") {
+        dataAtual.setDate(dataAtual.getDate() - 7);
+    } else {
+        dataAtual.setDate(dataAtual.getDate() - 1);
+    }
     renderizarCalendario();
 });
 
 document.getElementById("btn-proximo").addEventListener("click", () => {
-    dataAtual.setDate(dataAtual.getDate() + 7);
+    if (tipoVisualizacao === "semanal") {
+        dataAtual.setDate(dataAtual.getDate() + 7);
+    } else {
+        dataAtual.setDate(dataAtual.getDate() + 1);
+    }
     renderizarCalendario();
 });
 
@@ -790,6 +893,24 @@ document.addEventListener("DOMContentLoaded", () => {
         if (linkCadastro) linkCadastro.parentElement.style.display = "none";
         if (linkUsuarios) linkUsuarios.parentElement.style.display = "none";
     }
+
+    // Event listeners para o toggle de visualização
+    document.getElementById("viewSemanal").addEventListener("change", (e) => {
+        if (e.target.checked) {
+            tipoVisualizacao = "semanal";
+            atualizarLabelsNavegacao();
+            renderizarCalendario();
+        }
+    });
+
+    document.getElementById("viewDiaria").addEventListener("change", (e) => {
+        if (e.target.checked) {
+            tipoVisualizacao = "diaria";
+            atualizarLabelsNavegacao();
+            renderizarCalendario();
+        }
+    });
+
     // inicializa modal bootstrap uma vez só
     if (modal) {
         bsModal = new bootstrap.Modal(modal, {
@@ -797,24 +918,24 @@ document.addEventListener("DOMContentLoaded", () => {
             keyboard: true,
         });
 
-        // quando fecha o modal, limpa formulário
         modal.addEventListener("hidden.bs.modal", function () {
             fecharModalLimparFormulario();
         });
     }
 
+    atualizarLabelsNavegacao();
     renderizarCalendario();
-    // carrega formulário
     inicializarFormularioEUnidade();
+
     const pathParts = window.location.pathname.split("/");
     const id = pathParts[pathParts.length - 1];
 
     const token = localStorage.getItem("token");
     if (!token) {
-        // sem token: volta pra login
         window.location.href = "/";
         return;
     }
+
     const links = {
         escala: document.querySelector('a[href^="/escala"]'),
         postos: document.querySelector('a[href^="/postosatendimento"]'),

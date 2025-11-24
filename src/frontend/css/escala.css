@@ -8,7 +8,23 @@
     margin-bottom: 25px;
 }
 
+/* === TOGGLE DE VISUALIZAÇÃO === */
+.btn-group .btn-check:checked + .btn-outline-success {
+    background-color: #198754;
+    border-color: #198754;
+    color: white;
+}
 
+.btn-outline-success {
+    color: #198754;
+    border-color: #198754;
+}
+
+.btn-outline-success:hover {
+    background-color: #157347;
+    border-color: #157347;
+    color: white;
+}
 
 /* === NAVEGAÇÃO DE SEMANAS === */
 .nav-botoes {
@@ -25,61 +41,97 @@
     border: none;
     border-radius: 5px;
     background-color: white;
-    color: #9db668;
-    border: 2px solid #9db668;
+    color: #157347;
+    border: 2px solid #157347;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 #btn-anterior:hover,
 #btn-proximo:hover {
     background-color: white;
-    color: #b3ce78;
-    border: 2px solid #b3ce78;
+    color: #36b178;
+    border: 2px solid #36b178;
+    transform: translateY(-2px);
 }
 
 #btn-hoje {
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
-    background-color: #9db668;
+    background-color: #198754;
     color: white;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all 0.3s;
     font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 #btn-hoje:hover {
-    background-color: #b6d377;
+    background-color: #36b178;
+    transform: translateY(-2px);
 }
 
 /* === TABELA DO CALENDÁRIO === */
 .calendario-container {
     overflow-x: auto;
-    background-color: white;
-    border-radius: 8px;
-    padding: 10px;
+    margin: 20px auto;
+    max-width: 95%;
 }
 
 #tabela-calendario {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed;
-    min-width: 900px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 #tabela-calendario th,
 #tabela-calendario td {
     border: 1px solid #ddd;
-    padding: 10px;
+    padding: 12px;
     text-align: center;
-    height: 50px;
 }
 
 #tabela-calendario thead th {
-    background-color: #e9ecef;
-    font-weight:400;
-    color: #495057;
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* === PROPORÇÕES PARA VISUALIZAÇÃO DIÁRIA === */
+#tabela-calendario.visualizacao-diaria thead th:first-child {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+#tabela-calendario.visualizacao-diaria th:first-child,
+#tabela-calendario.visualizacao-diaria td:first-child {
+    width: 30%;
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+#tabela-calendario.visualizacao-diaria th:nth-child(2),
+#tabela-calendario.visualizacao-diaria td:nth-child(2) {
+    width: 70%;
+}
+
+/* === PROPORÇÕES PARA VISUALIZAÇÃO SEMANAL === */
+#tabela-calendario.visualizacao-semanal th:first-child,
+#tabela-calendario.visualizacao-semanal td:first-child {
+    width: auto;
+    min-width: 80px;
+    font-weight: 600;
+    background-color: #f8f9fa;
 }
 
 /* === CÉLULAS DE HORÁRIOS === */
@@ -113,7 +165,7 @@
     position: relative;
     z-index: 10;
     pointer-events: auto;
-    background-color: #8fa25d;
+    background-color: #198754;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
@@ -127,7 +179,7 @@
 
 /* === EVENTOS === */
 .evento {
-    background-color: #8fa25d;
+    background-color: #198754;
     color: white;
     border-radius: 3px;
     padding: 5px;
