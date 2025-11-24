@@ -7,53 +7,67 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="/frontend/css/global.css">
     <link rel="stylesheet" href="/frontend/css/cadastro.css">
+    <link rel="stylesheet" href="/frontend/css/dropdown-navbar.css">
     <link rel="shortcut icon" href="/frontend/img/logoFavicon.png" sizes="32x32" type="image/png"
         alt="Ícone da Logo Rokuzen" aria-hidden="true">
     <title>Cadastro | Rokuzen</title>
 </head>
 
 <body class="roboto">
-    <nav class="navbar navbar-expand-lg bg-white roboto border-bottom h-auto" role="navigation"
-        aria-label="Menu principal de navegação do sistema">
-        <div class="container-fluid h-100">
-            <a class="navbar-brand mx-auto mx-lg-0 me-lg-0 ms-lg-5" href="/inicio/:id">
+    <nav class="navbar navbar-expand-lg bg-white roboto border-bottom" style="height: auto; min-height: 100px;"
+        role="navigation" aria-label="Menu principal de navegação do sistema">
+        <div class="container-fluid h-100 position-relative">
+            <a class="navbar-brand mx-auto mx-lg-0 me-lg-0 ms-lg-5" href="/inicio/:id" aria-current="page">
                 <img src="https://rokuzen.com.br/wp-content/uploads/2021/09/cropped-logomarca_pequena2.png"
-                    alt="Logo Rokuzen. Clique para ir à página inicial." height="80">
+                    alt="Logo Rokuzen. Clique para ir à página inicial." height="80" loading="lazy" />
             </a>
 
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false"
-                aria-label="Abrir e fechar menu de navegação">
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Abrir e fechar menu de navegação">
                 <i class="mdi mdi-menu fs-1 text-secondary" aria-hidden="true"></i>
             </button>
 
-            <div class="collapse navbar-collapse bg-white border-top border-bottom border-lg-0 h-100"
-                id="navbarContent">
-                <ul class="navbar-nav align-items-center w-100 justify-content-around h-100" role="list">
-                    <li class="nav-item" role="listitem">
-                        <a class="nav-link text-secondary fs-6" href="/escala/:id" aria-current="false">Visualizar
-                            Escala</a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav w-100 justify-content-evenly ms-auto" role="list">
+                    <!-- Dropdown Atendimento -->
+                    <li class="nav-item dropdown" role="listitem">
+                        <a class="nav-link text-secondary dropdown-toggle" href="#" id="atendimentoDropdown"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Atendimento
+                        </a>
+                        <ul class="dropdown-menu dropdown-content" aria-labelledby="atendimentoDropdown">
+                            <li><a class="dropdown-item nav-link text-secondary" href="/escala/:id"><i
+                                        class="fas fa-angle-right me-2"></i>Visualizar Escala</a></li>
+                            <li><a class="dropdown-item nav-link text-secondary" href="/sessao/:id"><i
+                                        class="fas fa-angle-right me-2"></i>Gerenciar Sessão</a></li>
+                            <li><a class="dropdown-item nav-link text-secondary" href="/listarterapeutas/:id"><i
+                                        class="fas fa-angle-right me-2"></i>Listar Terapeutas</a></li>
+                        </ul>
                     </li>
+
+                    <!-- Links normais -->
                     <li class="nav-item" role="listitem">
-                        <a class="nav-link text-secondary fs-6" href="/postosatendimento/:id"
-                            aria-current="false">Postos de Atendimento</a>
+                        <a class="nav-link text-secondary" href="/postosatendimento/:id" aria-current="false">Postos de
+                            Trabalho</a>
                     </li>
-                    <li class="nav-item" role="listitem">
-                        <a class="nav-link text-secondary fs-6" href="/sessao/:id" aria-current="false">Gerenciar
-                            Sessão</a>
+
+                    <li class="nav-item" id="link-cadastro" role="listitem">
+                        <a class="nav-link text-secondary" href="/cadastrar/:id" aria-current="false">Cadastro</a>
                     </li>
-                    <li class="nav-item" role="listitem">
-                        <a class="nav-link text-secondary fs-6" href="/cadastrar/:id" aria-current="page">Cadastro</a>
+
+                    <li class="nav-item" id="link-usuarios" role="listitem">
+                        <a class="nav-link text-secondary" href="/user/listar/:id" aria-current="false">Usuários</a>
                     </li>
+
+                    <!-- Botão Sair -->
                     <li class="nav-item" role="listitem">
-                        <a class="nav-link text-secondary fs-6" href="/user/listar/:id"
-                            aria-current="false">Usuários</a>
-                    </li>
-                    <li class="nav-item" role="listitem">
-                        <button id="sairbutton" class="btn btn-outline-secondary px-4 my-2" role="button"
-                            aria-label="Botão para Sair do Sistema">Sair</button>
+                        <button id="sairbutton" class="btn btn-outline-secondary px-4" role="button"
+                            aria-label="Botão para Sair do Sistema">
+                            Sair
+                        </button>
                     </li>
                 </ul>
             </div>

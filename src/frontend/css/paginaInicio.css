@@ -10,3 +10,24 @@
     height: 10%;
     max-height: 13%;
 }
+@keyframes aparecer {
+    0% {
+        opacity: 0;
+        transform: translateY(300px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}

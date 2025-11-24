@@ -1,6 +1,9 @@
-/* ============================================
-   LISTARTERAPEUTAS.CSS - Página de Listagem de Terapeutas
-   ============================================ */
+/* Estilo para cards de terapeuta */
+.cardtera {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
 
-/* Estilos específicos para a página de listagem de terapeutas */
-/* Os estilos globais são importados via global.css */
+.cardtera:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
