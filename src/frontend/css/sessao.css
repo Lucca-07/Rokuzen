@@ -55,7 +55,8 @@
 
 .card-agendamento:hover {
     background-color: #f0f5f0;
-    transform: scale(1.02);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
 }
 
 .agendamento-info {
@@ -72,6 +73,19 @@
     margin-top: 0.5rem;
     width: 100%;
 }
+
+/* Mantém as duas colunas do mesmo tamanho */
+.col-12.col-lg-6 {
+    min-height: 500px;
+}
+
+/* Deixa a lista de agendamentos com scroll e altura fixa */
+#agendamentos {
+    max-height: 500px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
 
 /* === POPUP DE FEEDBACK === */
 .fb-frame {
