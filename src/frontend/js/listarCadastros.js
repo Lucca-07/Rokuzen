@@ -85,15 +85,15 @@ async function listarColaboradores() {
                             ${perfisRender}
                         </div>
                         <div class="mt-auto d-flex flex-wrap gap-2 justify-content-center">
+                        <button type="button"
+                            class="btn btn-sm btn-danger d-flex align-items-center gap-1"
+                            onclick="popupDelete('${user._id}')">
+                            <i class="mdi mdi-delete"></i> Excluir
+                        </button>
                             <button type="button"
                                 class="btn btn-sm btn-success d-flex align-items-center gap-1"
                                 onclick="popupEdit('${user._id}')">
                                 <i class="mdi mdi-pencil"></i> Editar
-                            </button>
-                            <button type="button"
-                                class="btn btn-sm btn-danger d-flex align-items-center gap-1"
-                                onclick="popupDelete('${user._id}')">
-                                <i class="mdi mdi-delete"></i> Excluir
                             </button>
                         </div>
                     </div>
@@ -158,7 +158,7 @@ async function popupEdit(id) {
 
         let { nome, email, perfis, unidades, imagem } = data;
         perfis = Array.isArray(perfis) ? perfis : [];
-        const showSetor = ["Master", "Gerente"].includes(perfis[0]);
+        const showSetor = ["Gerente"].includes(perfis[0]);
 
         const modalId = `editModal-${id}`;
         document.getElementById(modalId)?.remove();
@@ -174,7 +174,7 @@ async function popupEdit(id) {
               <div class="modal-body">
                 <div class="row g-4">
                   <div class="col-12 col-lg-4">
-                    <div class="d-flex flex-column align-items-center">
+                    <div class="d-flex flex-column align-items-center justify-content-center h-100">
                       <div class="rounded-4 bg-light border shadow-sm mb-3 d-flex align-items-center justify-content-center overflow-hidden" style="width:160px;height:160px;">
                         <img id="previewImagem-${id}" src="${
             imagem || "/frontend/img/account-outline.svg"
@@ -186,7 +186,7 @@ async function popupEdit(id) {
                     </div>
                   </div>
                   <div class="col-12 col-lg-8">
-                    <div class="row g-3">
+                    <div class="row g-3 justify-content-center">
                       <div class="col-12 col-md-6">
                         <label class="form-label" for="nome-${id}">Nome</label>
                         <input id="nome-${id}" type="text" class="form-control" value="${nome}">
@@ -206,7 +206,7 @@ async function popupEdit(id) {
                         </select>
                       </div>
                       <div class="col-12 col-md-6 ${
-                        showSetor ? "" : "d-none"
+                          showSetor ? "" : "d-none"
                       }" id="setorcargo-${id}">
                         <label class="form-label" for="setorgerente-${id}">Setor</label>
                         <select id="setorgerente-${id}" class="form-select">
@@ -216,7 +216,7 @@ async function popupEdit(id) {
                       </div>
                       <div class="col-12">
                         <label class="form-label">Unidades</label>
-                        <div id="unidadesdiv-${id}" class="row g-2">
+                        <div id="unidadesdiv-${id}" class="list-group">
                           ${[
                               "Golden Square",
                               "Mooca Plaza",
@@ -225,18 +225,14 @@ async function popupEdit(id) {
                           ]
                               .map(
                                   (u) => `
-                            <div class="col-6 col-md-3">
-                              <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="${u.replace(
-                                    / /g,
-                                    ""
-                                )}-${id}" value="${u}" name="unidades">
-                                <label class="form-check-label text-truncate" for="${u.replace(
-                                    / /g,
-                                    ""
-                                )}-${id}">${u}</label>
-                              </div>
-                            </div>
+                            <label class="list-group-item d-flex align-items-center gap-2">
+                              <input class="form-check-input m-0" type="checkbox"
+                                     id="${u.replace(
+                                         / /g,
+                                         ""
+                                     )}-${id}" value="${u}" name="unidades">
+                              <span class="flex-grow-1">${u}</span>
+                            </label>
                           `
                               )
                               .join("")}
@@ -269,14 +265,14 @@ async function popupEdit(id) {
                 cargoSelect.selectedIndex = i;
             }
         }
-        if (["Gerente", "Master"].includes(perfis[0])) {
+        if (["Gerente"].includes(perfis[0])) {
             setorSelect.value = perfis[1] || "";
             setorDiv.classList.remove("d-none");
         }
 
         cargoSelect.addEventListener("change", () => {
             const val = cargoSelect.value;
-            if (["Gerente", "Master"].includes(val)) {
+            if (["Gerente"].includes(val)) {
                 setorDiv.classList.remove("d-none");
             } else {
                 setorDiv.classList.add("d-none");
