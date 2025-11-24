@@ -8,6 +8,11 @@ async function buscarColaboradores() {
     try {
         container.innerHTML = "";
 
+        // Cria uma row para os cards
+        const row = document.createElement("div");
+        row.className = "row g-3";
+        container.appendChild(row);
+
         // Obtém a unidade do localStorage
         const unidadeNome = localStorage.getItem("unidade");
 
@@ -83,7 +88,11 @@ async function buscarColaboradores() {
                 terapeuta.em_andamento
             ); // DEBUG
 
+            // Converte para UTC para comparação correta
             const agora = new Date();
+            const agoraUTC = new Date(
+                agora.getTime() + agora.getTimezoneOffset() * 60000
+            );
 
             const inicioAtendimento = terapeuta.inicio_atendimento
                 ? new Date(terapeuta.inicio_atendimento)
@@ -102,32 +111,32 @@ async function buscarColaboradores() {
                 terapeuta.em_andamento === true
             ) {
                 // EM ATENDIMENTO - card vermelho
-                back = "#ff5c5c";
+                back = "bg-danger-subtle";
                 statusDisplay = "Em atendimento";
                 textoHorario = "Disponível às:";
             } else if (inicioAtendimento && fimAtendimento) {
-                const sessaoComecou = agora >= inicioAtendimento;
-                const sessaoTerminou = agora >= fimAtendimento;
+                const sessaoComecou = agoraUTC >= inicioAtendimento;
+                const sessaoTerminou = agoraUTC >= fimAtendimento;
 
                 if (sessaoComecou && !sessaoTerminou) {
                     // Se estiver no horário da sessão - EM ATENDIMENTO
-                    back = "#ff5c5c";
+                    back = "bg-danger-subtle";
                     statusDisplay = "Em atendimento";
                     textoHorario = "Disponível às:";
                 } else if (!sessaoComecou) {
                     // Se a sessão ainda vai começar - DISPONÍVEL
-                    back = "#aaff64ff";
+                    back = "bg-success-subtle";
                     statusDisplay = "Disponível";
                     textoHorario = "Próxima Sessão:";
                 } else {
                     // Se a sessão já terminou - DISPONÍVEL
-                    back = "#aaff64ff";
+                    back = "bg-success-subtle";
                     statusDisplay = "Disponível";
                     textoHorario = "Próxima Sessão:";
                 }
             } else {
                 // Se não tiver nenhuma sessão agendada - DISPONÍVEL
-                back = "#aaff64ff";
+                back = "bg-success-subtle";
                 statusDisplay = "Disponível";
                 textoHorario = "Próxima Sessão:";
             }
@@ -175,39 +184,45 @@ async function buscarColaboradores() {
                 horarioExibir = { hora: "-", data: "-" };
             }
 
+            const statusBadgeClass =
+                statusDisplay === "Em atendimento" ? "bg-danger" : "bg-success";
+
             const card = `
-                <div class="cardtera row w-100 p-3 mt-3 border h-25 d-flex align-content-center"
-                    style="border-radius: 30px; background: ${back};" 
-                    id="cardtera-${terapeuta.colaborador_id}">
-                    <div class="col-12 col-md-6 col-lg-3 d-flex align-self-center align-items-center justify-content-center mb-3 mb-lg-0">
-                        <img src="${
-                            terapeuta.imagem ||
-                            "/frontend/img/default-avatar.png"
-                        }" 
-                            alt="Foto de ${terapeuta.nome}"
-                            class="img-fluid"
-                            style="border-radius: 25px; border: 1px solid black; height: 100px; width: 100px; object-fit: cover;">
-                    </div>
-                    <div class="col-12 col-md-6 col-lg-9 d-flex flex-column flex-lg-row align-items-center justify-content-center text-center gap-3 gap-lg-4">
-                        <div class="w-100 w-lg-50">
-                            <p class="fs-3 fs-md-2 fw-bold mb-2">${
+                <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body ${back} d-flex flex-column rounded rounded-3">
+                            <div class="d-flex flex-column align-items-center mb-3">
+                                <div class="rounded-4 border shadow-sm overflow-hidden mb-2" style="width:120px;height:120px;">
+                                    <img src="${
+                                        terapeuta.imagem ||
+                                        "/frontend/img/default-avatar.png"
+                                    }" 
+                                        alt="Foto de ${terapeuta.nome}"
+                                        class="w-100 h-100 object-fit-cover">
+                                </div>
+                            </div>
+                            <h6 class="fw-semibold text-center text-truncate mb-2" title="${
                                 terapeuta.nome
-                            }</p>
-                            <p class="fs-5 fs-md-3 mb-0">${statusDisplay}</p>
-                        </div>
-                        <div class="w-100 w-lg-50">
-                            <p class="fs-4 fs-md-2 fw-semibold mb-2">${textoHorario}</p>
-                            <p class="fs-6 fs-md-4 mb-0">${
-                                horarioExibir.hora !== "-"
-                                    ? `${horarioExibir.hora} - ${horarioExibir.data}`
-                                    : "Sem horário marcado"
-                            }</p>
+                            }">${terapeuta.nome}</h6>
+                            <div class="d-flex justify-content-center mb-3">
+                                <span class="badge ${statusBadgeClass} fw-medium">${statusDisplay}</span>
+                            </div>
+                            <div class="mt-auto text-center">
+                                <small class="text-muted d-block mb-2">${textoHorario}</small>
+                                <p class="fw-semibold mb-0">
+                                    ${
+                                        horarioExibir.hora !== "-"
+                                            ? `${horarioExibir.hora}<br><small class="fw-normal">${horarioExibir.data}</small>`
+                                            : "Sem horário marcado"
+                                    }
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
             `;
 
-            container.insertAdjacentHTML("beforeend", card);
+            row.insertAdjacentHTML("beforeend", card);
         });
     } catch (error) {
         console.error("Erro ao carregar os terapeutas:", error);
