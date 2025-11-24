@@ -59,10 +59,32 @@
   <main role="main" aria-label="Calendário semanal de agendamentos de serviço">
     <header class="header-escala" role="region" aria-labelledby="servicosh1">
       <h2 id="servicosh1" class="mt-2 pt-2 fw-light">Serviços da Semana</h2>
+
+      <!-- Toggle de Visualização -->
+      <div class="d-flex justify-content-center align-items-center gap-3 mb-3">
+        <div class="btn-group" role="group" aria-label="Escolher visualização">
+          <input type="radio" class="btn-check" name="tipoVisualizacao" id="viewSemanal" value="semanal" checked>
+          <label class="btn btn-outline-success" for="viewSemanal">
+            <i class="mdi mdi-calendar-week"></i> Semanal
+          </label>
+
+          <input type="radio" class="btn-check" name="tipoVisualizacao" id="viewDiaria" value="diaria">
+          <label class="btn btn-outline-success" for="viewDiaria">
+            <i class="mdi mdi-calendar-today"></i> Diária
+          </label>
+        </div>
+      </div>
+
       <div class="nav-botoes" role="group" aria-label="Navegação de semanas">
-        <button id="btn-anterior" aria-label="Ir para Semana Anterior">Semana Anterior</button>
-        <button id="btn-hoje" aria-label="Voltar para Semana Atual">Semana Atual</button>
-        <button id="btn-proximo" aria-label="Ir para Próxima Semana">Próxima Semana</button>
+        <button id="btn-anterior" aria-label="Ir para Semana Anterior">
+          <i class="mdi mdi-chevron-left"></i> <span id="label-anterior">Semana Anterior</span>
+        </button>
+        <button id="btn-hoje" aria-label="Voltar para Semana Atual">
+          <i class="mdi mdi-calendar-today"></i> <span id="label-hoje">Semana Atual</span>
+        </button>
+        <button id="btn-proximo" aria-label="Ir para Próxima Semana">
+          <span id="label-proximo">Próxima Semana</span> <i class="mdi mdi-chevron-right"></i>
+        </button>
       </div>
     </header>
 
