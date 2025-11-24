@@ -23,7 +23,6 @@
         transform: translateY(0);
       }
     }
-
   </style>
   <title>Terapeutas | Rokuzen</title>
 </head>
@@ -44,15 +43,20 @@
 
       <div class="collapse navbar-collapse bg-white border-top border-bottom border-lg-0 h-100" id="navbarContent">
         <ul class="navbar-nav align-items-center w-100 justify-content-around h-100" role="list">
-          <li class="nav-item" role="listitem">
-            <a class="nav-link text-secondary fs-6" href="/escala/:id" aria-current="false">Visualizar Escala</a>
+          <li class="nav-item dropdown" role="listitem">
+            <a class="nav-link dropdown-toggle text-secondary fs-6" href="#" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              Atendimento
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/escala/:id">Visualizar Escala</a></li>
+              <li><a class="dropdown-item" href="/sessao/:id">Gerenciar Sessão</a></li>
+              <li><a class="dropdown-item" href="/listarterapeutas/:id">Listar Terapeutas</a></li>
+            </ul>
           </li>
           <li class="nav-item" role="listitem">
             <a class="nav-link text-secondary fs-6" href="/postosatendimento/:id" aria-current="false">Postos de
               Atendimento</a>
-          </li>
-          <li class="nav-item" role="listitem">
-            <a class="nav-link text-secondary fs-6" href="/sessao/:id" aria-current="false">Gerenciar Sessão</a>
           </li>
           <li class="nav-item" role="listitem">
             <a class="nav-link text-secondary fs-6" href="/cadastrar/:id" aria-current="false">Cadastro</a>
@@ -78,14 +82,14 @@
   </main>
 
   <footer class="bg-light border-top mt-5 py-4 shadow-sm" role="contentinfo" aria-label="Rodapé do site">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-12 text-center">
-                    <p class="text-muted mb-0 fs-6">&copy; 2025 Rokuzen. Todos os direitos reservados.</p>
-                </div>
-            </div>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12 text-center">
+          <p class="text-muted mb-0 fs-6">&copy; 2025 Rokuzen. Todos os direitos reservados.</p>
         </div>
-    </footer>
+      </div>
+    </div>
+  </footer>
 
   <div vw class="enabled">
     <div vw-access-button class="active"></div>

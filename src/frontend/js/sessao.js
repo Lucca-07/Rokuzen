@@ -132,7 +132,6 @@ async function loadTimersFromDB() {
                 // Apenas usa tempoRestante se o tempo em memória está em um estado inválido (0, null, undefined)
                 if (!state.tempo || state.tempo <= 0) {
                     state.tempo = a.tempoRestante ?? 600;
-
                 }
                 state.pausado = !a.em_andamento;
                 // se estiver em andamento e não estiver com interval, inicia
@@ -198,13 +197,11 @@ async function iniciarTimer(tidParam) {
     // Marca como ativo localmente
     state.pausado = false;
 
-
     // se chamado pelo usuário, atualiza selectedTid
     if (!predefinido) selectedTid = tid;
 
     // Atualiza botões na UI apenas se o usuário é quem iniciou (evita alertas/errôneos durante sync)
     if (!predefinido) {
-
         btnIniciar?.classList.add("d-none");
         btnPausar?.classList.remove("d-none");
         btnReiniciar?.classList.remove("d-none");
@@ -253,7 +250,6 @@ async function iniciarTimer(tidParam) {
         // sempre re-sync local com servidor para garantir consistência do modal/UI
 
         await loadTimersFromDB();
-
 
         // IMPORTANTE: garante que permaneça como não-pausado após loadTimersFromDB
         // (pois loadTimersFromDB pode ter resincronizado o estado)
@@ -345,10 +341,8 @@ function restaurarTimers() {
     // Tenta restaurar o selectedTid que foi salvo antes do reload
     const savedTid = localStorage.getItem("selectedTid");
 
-
     if (savedTid && window.__timers__[savedTid]) {
         selectedTid = savedTid;
-
     } else {
         // Fallback para a lógica anterior se não tiver savedTid
         const userId = localStorage.getItem("userId");
@@ -446,10 +440,42 @@ document.addEventListener("DOMContentLoaded", () => {
         // Oculta links de Cadastro e Usuários no menu
         const linkCadastro = document.querySelector('a[href*="/cadastrar"]');
         const linkUsuarios = document.querySelector('a[href*="/user/listar"]');
+        const dropdownAtendimento =
+            document.querySelector(".nav-item.dropdown");
 
         if (linkCadastro) linkCadastro.parentElement.style.display = "none";
         if (linkUsuarios) linkUsuarios.parentElement.style.display = "none";
+
+        // Remove o dropdown e adiciona os links individuais
+        if (dropdownAtendimento) {
+            const navbar = dropdownAtendimento.parentElement; // ul.navbar-nav
+
+            // Cria links individuais
+            const escalaLi = document.createElement("li");
+            escalaLi.className = "nav-item";
+            escalaLi.innerHTML =
+                '<a class="nav-link text-secondary fs-6" href="/escala/:id">Visualizar Escala</a>';
+
+            const sessaoLi = document.createElement("li");
+            sessaoLi.className = "nav-item";
+            sessaoLi.innerHTML =
+                '<a class="nav-link text-secondary fs-6" href="/sessao/:id">Gerenciar Sessão</a>';
+
+            const terapeutasLi = document.createElement("li");
+            terapeutasLi.className = "nav-item";
+            terapeutasLi.innerHTML =
+                '<a class="nav-link text-secondary fs-6" href="/listarterapeutas/:id">Listar Terapeutas</a>';
+
+            // Insere os novos links antes do dropdown
+            navbar.insertBefore(terapeutasLi, dropdownAtendimento);
+            navbar.insertBefore(sessaoLi, dropdownAtendimento);
+            navbar.insertBefore(escalaLi, dropdownAtendimento);
+
+            // Remove o dropdown
+            dropdownAtendimento.remove();
+        }
     }
+
     const btnAdicionar1 = document.getElementById("Adicionar1min");
     const btnAdicionar5 = document.getElementById("Adicionar5min");
     const btnAdicionar10 = document.getElementById("Adicionar10min");
@@ -457,6 +483,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btnAdicionar1?.addEventListener("click", () => adicionarTempo(60));
     btnAdicionar5?.addEventListener("click", () => adicionarTempo(5 * 60));
     btnAdicionar10?.addEventListener("click", () => adicionarTempo(10 * 60));
+
     const id = localStorage.getItem("userId");
 
     const token = localStorage.getItem("token");
@@ -465,10 +492,12 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = "/";
         return;
     }
+
     const links = {
         escala: document.querySelector('a[href^="/escala"]'),
         postos: document.querySelector('a[href^="/postosatendimento"]'),
         sessao: document.querySelector('a[href^="/sessao"]'),
+        terapeutas: document.querySelector('a[href^="/listarterapeutas"]'),
         cadastro: document.querySelector('a[href^="/cadastrar"]'),
         listar: document.querySelector('a[href^="/user/listar"]'),
         inicio: document.querySelector('a[href^="/inicio"]'),
@@ -477,6 +506,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (links.escala) links.escala.href = `/escala/${id}`;
     if (links.postos) links.postos.href = `/postosatendimento/${id}`;
     if (links.sessao) links.sessao.href = `/sessao/${id}`;
+    if (links.terapeutas) links.terapeutas.href = `/listarterapeutas/${id}`;
     if (links.inicio) links.inicio.href = `/inicio/${id}`;
     if (links.cadastro) links.cadastro.href = `/cadastrar/${id}`;
     if (links.listar) links.listar.href = `/user/listar/${id}`;
@@ -536,7 +566,6 @@ async function carregarTerapeutas() {
                     );
                 })
                 .map(([tid, state]) => ({ tid, state }));
-
 
             // Se não tem timer rodando, mostra "Sem atendimento"
             if (estadosTerapeutaAtivos.length === 0) {
@@ -995,7 +1024,7 @@ function selecionarAgendamento(
             colaborador_id: colaboradorId || null,
             encerrado: false,
             em_andamento: true,
-        }
+        };
     }
 
     // Define o selecionado

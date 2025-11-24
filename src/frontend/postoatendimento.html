@@ -31,17 +31,20 @@
 
             <div class="collapse navbar-collapse bg-white border-lg-0 h-100" id="navbarContent">
                 <ul class="navbar-nav align-items-center w-100 justify-content-around h-100 " role="list">
-                    <li class="nav-item" role="listitem">
-                        <a class="nav-link text-secondary fs-6" href="/escala/:id" aria-current="false">Visualizar
-                            Escala</a>
+                    <li class="nav-item dropdown" role="listitem">
+                        <a class="nav-link dropdown-toggle text-secondary fs-6" href="#" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Atendimento
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/escala/:id">Visualizar Escala</a></li>
+                            <li><a class="dropdown-item" href="/sessao/:id">Gerenciar Sessão</a></li>
+                            <li><a class="dropdown-item" href="/listarterapeutas/:id">Listar Terapeutas</a></li>
+                        </ul>
                     </li>
                     <li class="nav-item" role="listitem">
                         <a class="nav-link text-secondary fs-6" href="/postosatendimento/:id" aria-current="page">Postos
                             de Atendimento</a>
-                    </li>
-                    <li class="nav-item" role="listitem">
-                        <a class="nav-link text-secondary fs-6" href="/sessao/:id" aria-current="false">Gerenciar
-                            Sessão</a>
                     </li>
                     <li class="nav-item" role="listitem">
                         <a class="nav-link text-secondary fs-6" href="/cadastrar/:id" aria-current="false">Cadastro</a>
@@ -67,8 +70,8 @@
 
                 <!-- Cadeira Quick -->
                 <div class="col-6 col-md-4 col-lg-3 w-auto">
-                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="max-width: 350px;" role="button" data-bs-toggle="modal"
-                        data-bs-target="#popup-cadeira">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="max-width: 350px;"
+                        role="button" data-bs-toggle="modal" data-bs-target="#popup-cadeira">
                         <img src="/frontend/img/Quick.jpg" class="img-fluid"
                             alt="Cadeira Quick para atendimento rápido">
                     </div>
@@ -76,16 +79,16 @@
 
                 <!-- Maca -->
                 <div class="col-6 col-md-4 col-lg-3 w-auto">
-                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="max-width: 350px;" role="button" data-bs-toggle="modal"
-                        data-bs-target="#popup-maca">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="max-width: 350px;"
+                        role="button" data-bs-toggle="modal" data-bs-target="#popup-maca">
                         <img src="/frontend/img/Maca.jpg" class="img-fluid" alt="Maca para terapias longas">
                     </div>
                 </div>
 
                 <!-- Poltrona -->
                 <div class="col-6 col-md-4 col-lg-3 w-auto">
-                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="max-width: 350px;" role="button" data-bs-toggle="modal"
-                        data-bs-target="#popup-poltrona">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="max-width: 350px;"
+                        role="button" data-bs-toggle="modal" data-bs-target="#popup-poltrona">
                         <img src="/frontend/img/Poltrona.jpg" class="img-fluid" alt="Poltrona para reflexologia">
                     </div>
                 </div>

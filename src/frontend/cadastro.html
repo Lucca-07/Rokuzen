@@ -32,17 +32,20 @@
             <div class="collapse navbar-collapse bg-white border-top border-bottom border-lg-0 h-100"
                 id="navbarContent">
                 <ul class="navbar-nav align-items-center w-100 justify-content-around h-100" role="list">
-                    <li class="nav-item" role="listitem">
-                        <a class="nav-link text-secondary fs-6" href="/escala/:id" aria-current="false">Visualizar
-                            Escala</a>
+                    <li class="nav-item dropdown" role="listitem">
+                        <a class="nav-link dropdown-toggle text-secondary fs-6" href="#" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Atendimento
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/escala/:id">Visualizar Escala</a></li>
+                            <li><a class="dropdown-item" href="/sessao/:id">Gerenciar Sessão</a></li>
+                            <li><a class="dropdown-item" href="/listarterapeutas/:id">Listar Terapeutas</a></li>
+                        </ul>
                     </li>
                     <li class="nav-item" role="listitem">
                         <a class="nav-link text-secondary fs-6" href="/postosatendimento/:id"
                             aria-current="false">Postos de Atendimento</a>
-                    </li>
-                    <li class="nav-item" role="listitem">
-                        <a class="nav-link text-secondary fs-6" href="/sessao/:id" aria-current="false">Gerenciar
-                            Sessão</a>
                     </li>
                     <li class="nav-item" role="listitem">
                         <a class="nav-link text-secondary fs-6" href="/cadastrar/:id" aria-current="page">Cadastro</a>

@@ -37,7 +37,6 @@ app.use("/frontend", express.static(path.join(dirname, "frontend")));
 app.use("/api/equipamentos", equipamentoRoutes); // ✅ Esta linha precisa estar aqui
 app.use("/api/colaboradores", colaboradoresRoutes);
 
-
 // GETS
 // Rota da Página de Login
 app.get("/", (req, res) => {
@@ -84,7 +83,9 @@ app.get("/sessao/:id", async (req, res) => {
     res.sendFile(path.join(dirname, "frontend", "sessao.html"));
 });
 
-app.get("/listarterapeutas", async (req, res) => {
+app.get("/listarterapeutas/:id", async (req, res) => {
+    const id = req.params.id;
+    if (!id) return res.redirect("/");
     res.sendFile(path.join(dirname, "frontend", "listarTerapeutas.html"));
 });
 
@@ -124,7 +125,8 @@ app.get("/api/listarterapeutas", async (req, res) => {
                 inicio_atendimento: { $gt: agoraUTC },
                 encerrado: false,
             }).sort({ inicio_atendimento: 1 });
-            // Prepara os dados do terapeuta
+
+            // Prepara os dados do terapeuta - INCLUINDO unidades_trabalha
             const terapeutaInfo = {
                 colaborador_id: terapeuta._id,
                 nome: terapeuta.nome_colaborador,
@@ -133,6 +135,7 @@ app.get("/api/listarterapeutas", async (req, res) => {
                 inicio_atendimento: null,
                 fim_atendimento: null,
                 em_andamento: false,
+                unidades_trabalha: terapeuta.unidades_trabalha || [], // ADICIONA AS UNIDADES
             };
 
             // Determina o status e horários
@@ -639,10 +642,14 @@ app.get("/api/atendimentos", async (req, res) => {
             .populate("servico_id", "nome_servico _id");
 
         // Transforma o resultado para manter colaborador_id como ID
-        const atendimentosFormatados = atendimentos.map(att => {
+        const atendimentosFormatados = atendimentos.map((att) => {
             const obj = att.toObject();
             // Se colaborador_id foi populado, extrai o _id
-            if (obj.colaborador_id && typeof obj.colaborador_id === 'object' && obj.colaborador_id._id) {
+            if (
+                obj.colaborador_id &&
+                typeof obj.colaborador_id === "object" &&
+                obj.colaborador_id._id
+            ) {
                 obj.colaborador_id = obj.colaborador_id._id;
             }
             return obj;
