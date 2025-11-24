@@ -1,4 +1,3 @@
-
 document.getElementById("sairbutton").addEventListener("click", () => {
     localStorage.removeItem("token");
     window.location.href = "/";
@@ -63,6 +62,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 // LISTAR E FILTRAR EQUIPAMENTOS POR UNIDADE
 // ==================================
 document.addEventListener("DOMContentLoaded", async () => {
+    const tipoUser = localStorage.getItem("tipoUser");
+
+    if (tipoUser !== "admin") {
+        // Oculta links de Cadastro e Usuários no menu
+        const linkCadastro = document.querySelector('a[href*="/cadastrar"]');
+        const linkUsuarios = document.querySelector('a[href*="/user/listar"]');
+
+        if (linkCadastro) linkCadastro.parentElement.style.display = "none";
+        if (linkUsuarios) linkUsuarios.parentElement.style.display = "none";
+    }
     const tabela = document.getElementById("tabela-equipamentos");
     const unidade = localStorage.getItem("unidade");
 
@@ -75,10 +84,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     async function buscarEquipamentosDisponiveis() {
         try {
+            const unidade = localStorage.getItem("unidade");
 
-            const unidade = localStorage.getItem("unidade")
 
-            console.log("Buscando equipamentos da unidade:", unidade);
 
             const response = await fetch("/api/equipamentos/disponiveis", {
                 method: "POST",
@@ -91,13 +99,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(
-                    `Erro ${response.status}: ${errorData.erro || errorData.error
+                    `Erro ${response.status}: ${
+                        errorData.erro || errorData.error
                     }`
                 );
             }
 
             const equipamentos = await response.json();
-            console.log("Equipamentos recebidos:", equipamentos);
             preencherTabelaEquipamentos(equipamentos);
         } catch (error) {
             console.error("Erro ao buscar equipamentos:", error);
@@ -110,7 +118,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             `;
         }
     }
-
 
     function preencherTabelaEquipamentos(equipamentos) {
         const tbody = document.getElementById("tabela-equipamentos");
@@ -148,10 +155,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 // ==================================
 document.addEventListener("DOMContentLoaded", async () => {
     const unidade = localStorage.getItem("unidade");
-    const tabelaPontuacao = document.querySelector(".table.table-striped.table-hover.text-center.align-middle.mb-0");
+    const tabelaPontuacao = document.querySelector(
+        ".table.table-striped.table-hover.text-center.align-middle.mb-0"
+    );
 
     if (!unidade) {
-        console.error("Nenhuma unidade encontrada no localStorage para pontuação");
+        console.error(
+            "Nenhuma unidade encontrada no localStorage para pontuação"
+        );
         return;
     }
 
@@ -178,7 +189,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function preencherTabelaPontuacao(terapeutas) {
         // Seleciona o <table> certo com base no cabeçalho "Pontuação dos Terapeutas"
-        const tabela = document.querySelector("#titulo-terapeutas")
+        const tabela = document
+            .querySelector("#titulo-terapeutas")
             ?.closest(".card")
             ?.querySelector("table");
 
@@ -227,14 +239,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!tabela) return;
 
     const id = localStorage.getItem("userId") || "";
-    const perfis = localStorage.getItem("perfis_usuario") || localStorage.getItem("perfis") || "";
+    const perfis =
+        localStorage.getItem("perfis_usuario") ||
+        localStorage.getItem("perfis") ||
+        "";
 
     tabela.innerHTML = `<tr><td colspan="3" class="text-center text-muted py-4">
         <span class="spinner-border spinner-border-sm me-2"></span>Carregando...
     </td></tr>`;
 
     try {
-        const query = `idUser=${encodeURIComponent(id)}&userId=${encodeURIComponent(id)}&perfis_usuario=${encodeURIComponent(perfis)}`;
+        const query = `idUser=${encodeURIComponent(
+            id
+        )}&userId=${encodeURIComponent(id)}&perfis_usuario=${encodeURIComponent(
+            perfis
+        )}`;
         const res = await fetch(`/api/agendamentos?${query}`);
         if (!res.ok) throw new Error("Falha ao carregar agendamentos");
 
@@ -261,7 +280,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // ================================
         const agora = new Date();
 
-        agendamentos = agendamentos.filter(a => {
+        agendamentos = agendamentos.filter((a) => {
             const fim = toLocalBR(a.fim_atendimento);
             return fim && fim >= agora; // mantém só quem ainda não acabou
         });
@@ -274,39 +293,48 @@ document.addEventListener("DOMContentLoaded", async () => {
         // ================================
         // 3) Ordenar por horário de início
         // ================================
-        agendamentos.sort((a, b) =>
-            new Date(a.inicio_atendimento) - new Date(b.inicio_atendimento)
+        agendamentos.sort(
+            (a, b) =>
+                new Date(a.inicio_atendimento) - new Date(b.inicio_atendimento)
         );
 
         // ================================
         // 4) Montar tabela
         // ================================
-        const rows = agendamentos.map(a => {
-            const inicioDate = toLocalBR(a.inicio_atendimento);
-            const fimDate = toLocalBR(a.fim_atendimento);
+        const rows = agendamentos
+            .map((a) => {
+                const inicioDate = toLocalBR(a.inicio_atendimento);
+                const fimDate = toLocalBR(a.fim_atendimento);
 
-            const inicio = inicioDate
-                ? inicioDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-                : "-";
+                const inicio = inicioDate
+                    ? inicioDate.toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                      })
+                    : "-";
 
-            const fim = fimDate
-                ? fimDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-                : "-";
+                const fim = fimDate
+                    ? fimDate.toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                      })
+                    : "-";
 
-            const data = inicioDate
-                ? inicioDate.toLocaleDateString("pt-BR")
-                : "-";
+                const data = inicioDate
+                    ? inicioDate.toLocaleDateString("pt-BR")
+                    : "-";
 
-            const colaborador = a.colaborador || a.nome_colaborador || "Desconhecido";
+                const colaborador =
+                    a.colaborador || a.nome_colaborador || "Desconhecido";
 
-            return `
+                return `
             <tr>
                 <td class="text-start ps-4">${colaborador}</td>
                 <td>${inicio} - ${fim}</td>
                 <td>${data}</td>
             </tr>`;
-        }).join("");
-
+            })
+            .join("");
 
         tabela.innerHTML = rows;
     } catch (err) {
@@ -314,4 +342,3 @@ document.addEventListener("DOMContentLoaded", async () => {
         tabela.innerHTML = `<tr><td colspan="3" class="text-center text-danger py-4">Erro ao carregar agendamentos.</td></tr>`;
     }
 });
-

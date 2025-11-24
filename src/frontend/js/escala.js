@@ -208,7 +208,7 @@ async function carregarEquipamentos(
         }
 
         const equipamentos = await response.json();
-        console.log("🔎 Retorno da API de equipamentos:", equipamentos);
+
 
         // verifica se é array
         if (!Array.isArray(equipamentos)) {
@@ -331,9 +331,6 @@ async function inicializarFormularioEUnidade() {
 
     // caso 1: não tem unidade no localStorage
     if (!nomeUnidadeSalva) {
-        console.log(
-            "Nenhuma unidade no localStorage. Carregando formulário para seleção manual."
-        );
         await carregarOpcoesDoFormulario();
         // adiciona listener pra escolher
         document
@@ -347,9 +344,6 @@ async function inicializarFormularioEUnidade() {
 
     // caso 2: tem unidade no localStorage
     try {
-        console.log(
-            `Unidade encontrada no localStorage: ${nomeUnidadeSalva}. A configurar automaticamente...`
-        );
 
         // busca a unidade pelo nome
         const response = await fetch(
@@ -375,9 +369,6 @@ async function inicializarFormularioEUnidade() {
 
         // carrega equipamentos
         await carregarEquipamentos(unidade._id);
-        console.log(
-            "Configuração automática da unidade concluída com sucesso!"
-        );
     } catch (error) {
         console.error("Erro ao configurar unidade do localStorage:", error);
         alert(
@@ -789,6 +780,16 @@ document.getElementById("btn-proximo").addEventListener("click", () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+    const tipoUser = localStorage.getItem("tipoUser");
+
+    if (tipoUser !== "admin") {
+        // Oculta links de Cadastro e Usuários no menu
+        const linkCadastro = document.querySelector('a[href*="/cadastrar"]');
+        const linkUsuarios = document.querySelector('a[href*="/user/listar"]');
+
+        if (linkCadastro) linkCadastro.parentElement.style.display = "none";
+        if (linkUsuarios) linkUsuarios.parentElement.style.display = "none";
+    }
     // inicializa modal bootstrap uma vez só
     if (modal) {
         bsModal = new bootstrap.Modal(modal, {

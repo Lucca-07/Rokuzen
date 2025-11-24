@@ -97,11 +97,26 @@ cargoselect.addEventListener("change", () => {
 document.addEventListener("DOMContentLoaded", async () => {
     // pega o id da URL: /inicio/:id
     const id = localStorage.getItem("userId");
+    const tipoUser = localStorage.getItem("tipoUser");
 
     const token = localStorage.getItem("token");
     if (!token) {
         // sem token: volta pra login
         window.location.href = "/";
+        return;
+    }
+
+    // Verifica se é admin
+    if (tipoUser !== "admin") {
+        const linkCadastro = document.querySelector('a[href*="/cadastrar"]');
+        const linkUsuarios = document.querySelector('a[href*="/user/listar"]');
+
+        if (linkCadastro) linkCadastro.parentElement.style.display = "none";
+        if (linkUsuarios) linkUsuarios.parentElement.style.display = "none";
+        alert(
+            "Acesso negado. Apenas administradores podem acessar esta página."
+        );
+        window.location.href = `/inicio/${id}`;
         return;
     }
 
@@ -251,7 +266,6 @@ async function salvarCliente(event) {
         document.getElementById("dores").value,
     ];
     const observacoes = document.getElementById("textobservacoes").value;
-    console.log(respostasSaude);
     try {
         const response = await fetch("/auth/client/register", {
             method: "POST",

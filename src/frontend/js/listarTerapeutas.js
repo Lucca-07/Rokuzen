@@ -6,7 +6,7 @@ async function buscarColaboradores() {
     }
 
     try {
-        console.log("Iniciando busca de terapeutas...");
+
         container.innerHTML = ""; // Limpa o container antes de adicionar novos cards
 
         const response = await fetch("/api/listarterapeutas", {
@@ -22,10 +22,8 @@ async function buscarColaboradores() {
         }
 
         const data = await response.json();
-        console.log("Dados recebidos:", data);
 
         if (!data.terapeutas || data.terapeutas.length === 0) {
-            console.log("Nenhum terapeuta encontrado");
             const mensagem = document.createElement("div");
             mensagem.className = "alert alert-info text-center";
             mensagem.textContent = "Nenhum terapeuta encontrado.";
@@ -38,14 +36,11 @@ async function buscarColaboradores() {
         }
 
         const { terapeutas } = data;
-        console.log("Número de terapeutas:", terapeutas.length);
 
         terapeutas.forEach((terapeuta) => {
-            console.log("Dados do terapeuta:", terapeuta);
 
             // Obter a data atual no fuso horário local
             const agora = new Date();
-            console.log("Hora atual local:", agora.toLocaleString("pt-BR"));
 
             // Converter as datas do atendimento para o fuso horário local
             const inicioAtendimento = terapeuta.inicio_atendimento
@@ -54,27 +49,6 @@ async function buscarColaboradores() {
             const fimAtendimento = terapeuta.fim_atendimento
                 ? new Date(terapeuta.fim_atendimento)
                 : null;
-
-            if (inicioAtendimento) {
-                console.log(
-                    "Início atendimento UTC:",
-                    inicioAtendimento.toISOString()
-                );
-                console.log(
-                    "Início atendimento local:",
-                    inicioAtendimento.toLocaleString("pt-BR")
-                );
-            }
-            if (fimAtendimento) {
-                console.log(
-                    "Fim atendimento UTC:",
-                    fimAtendimento.toISOString()
-                );
-                console.log(
-                    "Fim atendimento local:",
-                    fimAtendimento.toLocaleString("pt-BR")
-                );
-            }
 
             // Define a cor e status do card
             let back;
@@ -109,7 +83,6 @@ async function buscarColaboradores() {
 
                 // Cria uma nova data a partir do timestamp sem conversão de timezone
                 const data = new Date(dataParam);
-                console.log("Data do banco:", dataParam);
 
                 // Formata a hora exatamente como está no banco
                 const hora =
@@ -125,8 +98,6 @@ async function buscarColaboradores() {
                 const ano = data.getUTCFullYear();
                 const dataFormatada = `${dia}/${mes}/${ano}`;
 
-                console.log("Hora formatada (como no banco):", hora);
-                console.log("Data formatada:", dataFormatada);
 
                 return { hora: hora - 1, data: dataFormatada };
             };
@@ -192,10 +163,20 @@ async function atualizarDados() {
 
 // Executa quando a página carregar e configura atualização automática
 document.addEventListener("DOMContentLoaded", () => {
+    const tipoUser = localStorage.getItem("tipoUser");
+
+    if (tipoUser !== "admin") {
+        // Oculta links de Cadastro e Usuários no menu
+        const linkCadastro = document.querySelector('a[href*="/cadastrar"]');
+        const linkUsuarios = document.querySelector('a[href*="/user/listar"]');
+
+        if (linkCadastro) linkCadastro.parentElement.style.display = "none";
+        if (linkUsuarios) linkUsuarios.parentElement.style.display = "none";
+    }
     buscarColaboradores();
     // Atualiza a cada 30 segundos
     setInterval(atualizarDados, 120000);
-    const id = localStorage.getItem("userId")
+    const id = localStorage.getItem("userId");
 
     const token = localStorage.getItem("token");
     if (!token) {
