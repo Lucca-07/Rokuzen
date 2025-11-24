@@ -29,8 +29,7 @@
                 <i class="mdi mdi-menu fs-1 text-secondary" aria-hidden="true"></i>
             </button>
 
-            <div class="collapse navbar-collapse bg-white border-lg-0 h-100"
-                id="navbarContent">
+            <div class="collapse navbar-collapse bg-white border-lg-0 h-100" id="navbarContent">
                 <ul class="navbar-nav align-items-center w-100 justify-content-around h-100 " role="list">
                     <li class="nav-item" role="listitem">
                         <a class="nav-link text-secondary fs-6" href="/escala/:id" aria-current="false">Visualizar
@@ -60,46 +59,37 @@
         </div>
     </nav>
 
-    <main class="container-fluid bg-white py-5 " role="main" aria-label="Seleção dos postos de atendimento disponíveis">
-        <div class="text-center mb-5">
-            <h2 class="fs-2" style="font-weight: 400;">
-                Postos de Atendimento
-            </h2>
-        </div>
+    <main class="py-5" role="main" aria-label="Seleção dos postos de atendimento disponíveis">
+        <div class="container">
+            <h2 class="fw-semibold text-center mb-5">Postos de Atendimento</h2>
 
-        <div class="w-75 p-4 p-lg-5 bg-body" style="margin: auto; border-radius: 30px;" role="region"
-            aria-label="Selecione um dos tipos de posto de atendimento">
-            <div class="row justify-content-center g-5 text-center">
+            <div class="row g-4 justify-content-center">
 
-                <div class="col-12 col-md-6 col-xl-4">
-                    <div class="card border-0 shadow-sm" role="button" data-bs-toggle="modal"
-                        data-bs-target="#popup-cadeira" style="border-radius: 20px;" tabindex="0"
-                        aria-label="Abrir detalhes e selecionar a Cadeira Quick">
-                        <img src="/frontend/img/Quick.jpg" class="card-img-top"
-                            alt="Cadeira Quick para massagem ou atendimento rápido"
-                            style="border-radius: 20px;  box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.164);" />
+                <!-- Cadeira Quick -->
+                <div class="col-6 col-md-4 col-lg-3 w-auto">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="max-width: 350px;" role="button" data-bs-toggle="modal"
+                        data-bs-target="#popup-cadeira">
+                        <img src="/frontend/img/Quick.jpg" class="img-fluid"
+                            alt="Cadeira Quick para atendimento rápido">
                     </div>
                 </div>
 
-                <div class="col-12 col-md-6 col-xl-4">
-                    <div class="card border-0 shadow-sm" role="button" data-bs-toggle="modal"
-                        data-bs-target="#popup-maca" style="border-radius: 20px;" tabindex="0"
-                        aria-label="Abrir detalhes e selecionar a Maca">
-                        <img src="/frontend/img/Maca.jpg" class="card-img-top"
-                            alt="Maca para massagem ou terapias longas"
-                            style="border-radius: 20px;  box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.164);" />
+                <!-- Maca -->
+                <div class="col-6 col-md-4 col-lg-3 w-auto">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="max-width: 350px;" role="button" data-bs-toggle="modal"
+                        data-bs-target="#popup-maca">
+                        <img src="/frontend/img/Maca.jpg" class="img-fluid" alt="Maca para terapias longas">
                     </div>
                 </div>
 
-                <div class="col-12 col-md-6 col-xl-4">
-                    <div class="card border-0 shadow-sm" role="button" data-bs-toggle="modal"
-                        data-bs-target="#popup-poltrona" style="border-radius: 20px;" tabindex="0"
-                        aria-label="Abrir detalhes e selecionar a Poltrona de Reflexologia">
-                        <img src="/frontend/img/Poltrona.jpg" class="card-img-top"
-                            alt="Poltrona para reflexologia ou massagem nos pés"
-                            style="border-radius: 20px;  box-shadow: 15px 15px 15px rgba(0, 0, 0, 0.164);" />
+                <!-- Poltrona -->
+                <div class="col-6 col-md-4 col-lg-3 w-auto">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="max-width: 350px;" role="button" data-bs-toggle="modal"
+                        data-bs-target="#popup-poltrona">
+                        <img src="/frontend/img/Poltrona.jpg" class="img-fluid" alt="Poltrona para reflexologia">
                     </div>
                 </div>
+
             </div>
         </div>
     </main>
