@@ -307,7 +307,7 @@ async function reiniciarTimer() {
     if (!state) return alert("Terapeuta não tem atendimento ativo");
 
     // Calcula o tempo total baseado em inicio_atendimento e fim_atendimento
-    let tempoTotal = 10 * 60; // Fallback: 10 minutos
+    let tempoTotal = 10 * 60; // caso nao consiga calcular fica 10 minutos
 
     if (state.inicio_atendimento && state.fim_atendimento) {
         try {
