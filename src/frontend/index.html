@@ -34,7 +34,8 @@
       <div class="mb-3 text-start">
         <div class="input-group">
           <input type="password" id="pass" class="form-control" placeholder="Senha" required />
-          <button class="btn btn-outline-secondary border border-end" type="button" onclick="togglePassword('pass','toggle-senha-icon')">
+          <button class="btn btn-outline-secondary border border-end" type="button"
+            onclick="togglePassword('pass','toggle-senha-icon')">
             <i class="mdi mdi-eye-off" id="toggle-senha-icon"></i>
           </button>
         </div>
@@ -44,11 +45,12 @@
         Entrar <i class="mdi mdi-arrow-right ms-2"></i>
       </button>
 
-      <a  id="esqueci" class="link-secondary small" style="cursor: pointer;">Esqueci minha senha</a>
+      <a id="esqueci" class="link-secondary small" style="cursor: pointer;">Esqueci minha senha</a>
     </div>
 
     <!-- RECUPERAR SENHA -->
     <div id="cardSenha" class="card-custom d-none">
+      <img src="/frontend/img/logo.png" class="imglogo" alt="Logo Rokuzen" />
       <h5 class="mb-3">Recuperar senha</h5>
       <div id="erroRecuperacao"></div>
       <div id="sucessoRecuperacao"></div>
