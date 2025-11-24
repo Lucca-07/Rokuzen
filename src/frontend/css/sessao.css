@@ -81,7 +81,7 @@
 
 /* Deixa a lista de agendamentos com scroll e altura fixa */
 #agendamentos {
-    max-height: 500px;
+    max-height: 450px;
     overflow-y: auto;
     overflow-x: hidden;
 }
