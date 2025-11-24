@@ -131,7 +131,7 @@ async function loadTimersFromDB() {
                 // IMPORTANTE: NÃO sobrescreve state.tempo se já está rodando em memória
                 // Apenas usa tempoRestante se o tempo em memória está em um estado inválido (0, null, undefined)
                 if (!state.tempo || state.tempo <= 0) {
-                    state.tempo = a.tempoRestante ?? 600;
+                    state.tempo = a.tempoRestante ?? 3600;
                 }
                 state.pausado = !a.em_andamento;
                 // se estiver em andamento e não estiver com interval, inicia
@@ -149,7 +149,7 @@ async function loadTimersFromDB() {
                     colaboradorId = colaboradorId._id;
                 }
                 window.__timers__[tid] = {
-                    tempo: a.tempoRestante ?? 600,
+                    tempo: a.tempoRestante ?? 3600,
                     pausado: !a.em_andamento,
                     interval: null,
                     serverId: a._id,
