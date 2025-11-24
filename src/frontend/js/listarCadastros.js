@@ -396,10 +396,27 @@ async function deleteColaborador(id) {
 document.addEventListener("DOMContentLoaded", () => {
     const id = localStorage.getItem("userId");
     const token = localStorage.getItem("token");
+    const tipoUser = localStorage.getItem("tipoUser");
+
     if (!token) {
         window.location.href = "/";
         return;
     }
+
+    // Verifica se é admin
+    if (tipoUser !== "admin") {
+        const linkCadastro = document.querySelector('a[href*="/cadastrar"]');
+        const linkUsuarios = document.querySelector('a[href*="/user/listar"]');
+
+        if (linkCadastro) linkCadastro.parentElement.style.display = "none";
+        if (linkUsuarios) linkUsuarios.parentElement.style.display = "none";
+        alert(
+            "Acesso negado. Apenas administradores podem acessar esta página."
+        );
+        window.location.href = `/inicio/${id}`;
+        return;
+    }
+
     const links = {
         escala: document.querySelector('a[href^="/escala"]'),
         postos: document.querySelector('a[href^="/postosatendimento"]'),

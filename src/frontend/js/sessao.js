@@ -54,7 +54,8 @@ if (!window.__timers__) window.__timers__ = {};
     if (!popupModalEl) return;
     try {
         // oculta e remove instâncias/handlers do bootstrap
-        const inst = (window.bootstrap && bootstrap.Modal.getInstance(popupModalEl));
+        const inst =
+            window.bootstrap && bootstrap.Modal.getInstance(popupModalEl);
         if (inst) {
             inst.hide();
             inst.dispose();
@@ -68,7 +69,6 @@ if (!window.__timers__) window.__timers__ = {};
     document.querySelectorAll(".modal-backdrop").forEach((el) => el.remove());
     document.body.classList.remove("modal-open");
 })();
-
 
 const timerDisplay = document.getElementById("timer");
 const btnIniciar = document.getElementById("btnIniciar");
@@ -105,13 +105,10 @@ async function loadTimersFromDB() {
         }
 
         const atendimentos = await res.json();
-        console.log(" Timers sincronizados com o banco:", atendimentos);
-        console.log(` Total de atendimentos retornados: ${atendimentos.length}`);
 
         if (!window.__timers__) window.__timers__ = {};
 
         atendimentos.forEach((a) => {
-            console.log(`  Analisando atendimento: colaborador_id=${a.colaborador_id}, encerrado=${a.encerrado}, tempoRestante=${a.tempoRestante}`);
             if (!a.colaborador_id) {
                 console.warn("tendimento sem colaborador_id:", a);
                 return;
@@ -123,30 +120,33 @@ async function loadTimersFromDB() {
             // IMPORTANTE: usar serverId (ID do atendimento) como chave, não colaborador_id
             // Isto permite múltiplos agendamentos para a mesma pessoa
             const tid = String(a._id).trim();
-            console.log(` loadTimersFromDB - processando tid='${tid}' (atendimento), tempoRestante=${a.tempoRestante}, em_andamento=${a.em_andamento}`);
 
             if (window.__timers__[tid]) {
                 const state = window.__timers__[tid];
                 state.serverId = a._id;
                 state.nome_colaborador =
-                    a.nome_colaborador || state.nome_colaborador || "Desconhecido";
+                    a.nome_colaborador ||
+                    state.nome_colaborador ||
+                    "Desconhecido";
                 // IMPORTANTE: NÃO sobrescreve state.tempo se já está rodando em memória
                 // Apenas usa tempoRestante se o tempo em memória está em um estado inválido (0, null, undefined)
                 if (!state.tempo || state.tempo <= 0) {
                     state.tempo = a.tempoRestante ?? 600;
-                    console.log(`   Timer já existe - tempo restaurado=${state.tempo}`);
-                } else {
-                    console.log(`   Timer já existe - tempo mantido=${state.tempo}s (ignorando banco=${a.tempoRestante})`);
+
                 }
                 state.pausado = !a.em_andamento;
                 // se estiver em andamento e não estiver com interval, inicia
-                if (a.em_andamento && state.pausado === false && !state.interval) {
+                if (
+                    a.em_andamento &&
+                    state.pausado === false &&
+                    !state.interval
+                ) {
                     iniciarTimer(tid);
                 }
             } else {
                 // Extrai colaborador_id corretamente
                 let colaboradorId = a.colaborador_id;
-                if (typeof colaboradorId === 'object' && colaboradorId._id) {
+                if (typeof colaboradorId === "object" && colaboradorId._id) {
                     colaboradorId = colaboradorId._id;
                 }
                 window.__timers__[tid] = {
@@ -160,7 +160,6 @@ async function loadTimersFromDB() {
                     inicio_atendimento: a.inicio_atendimento,
                     fim_atendimento: a.fim_atendimento,
                 };
-                console.log(`   Timer criado - tempo=${a.tempoRestante ?? 600}, tid=${tid}, window.__timers__ agora tem:`, Object.keys(window.__timers__));
                 if (a.em_andamento) iniciarTimer(tid);
             }
         });
@@ -198,14 +197,14 @@ async function iniciarTimer(tidParam) {
 
     // Marca como ativo localmente
     state.pausado = false;
-    console.log(`▶️ iniciarTimer(${tid}) - marcado como não pausado, estado agora:`, state);
+
 
     // se chamado pelo usuário, atualiza selectedTid
     if (!predefinido) selectedTid = tid;
 
     // Atualiza botões na UI apenas se o usuário é quem iniciou (evita alertas/errôneos durante sync)
     if (!predefinido) {
-        console.log(`▶️ iniciarTimer - chamado pelo usuário, atualizando botões`);
+
         btnIniciar?.classList.add("d-none");
         btnPausar?.classList.remove("d-none");
         btnReiniciar?.classList.remove("d-none");
@@ -223,7 +222,7 @@ async function iniciarTimer(tidParam) {
                 nome_colaborador: state.nome_colaborador,
                 tempoRestante: state.tempo,
                 em_andamento: true,
-                inicio_atendimento: new Date().toISOString()
+                inicio_atendimento: new Date().toISOString(),
             };
             const res = await fetch("/api/atendimentos", {
                 method: "POST",
@@ -233,31 +232,34 @@ async function iniciarTimer(tidParam) {
             if (res.ok) {
                 const novo = await res.json();
                 if (novo && novo._id) state.serverId = novo._id;
-                console.log(` iniciarTimer - atendimento criado:`, novo);
             } else {
-                console.warn("Falha ao criar atendimento:", await res.text().catch(() => ""));
+                console.warn(
+                    "Falha ao criar atendimento:",
+                    await res.text().catch(() => "")
+                );
             }
         } else {
             // marca em andamento no servidor
-            console.log(` iniciarTimer - atualizando atendimento existente ${state.serverId}`);
             await fetch(`/api/atendimentos/${state.serverId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ tempoRestante: state.tempo, em_andamento: true }),
+                body: JSON.stringify({
+                    tempoRestante: state.tempo,
+                    em_andamento: true,
+                }),
             }).catch((e) => console.warn("PUT /api/atendimentos falhou", e));
         }
 
         // sempre re-sync local com servidor para garantir consistência do modal/UI
-        console.log(` iniciarTimer - antes de loadTimersFromDB, state.pausado=${state.pausado}`);
+
         await loadTimersFromDB();
-        console.log(` iniciarTimer - depois de loadTimersFromDB, state.pausado=${state.pausado}`);
+
 
         // IMPORTANTE: garante que permaneça como não-pausado após loadTimersFromDB
         // (pois loadTimersFromDB pode ter resincronizado o estado)
         const estadoAposSync = window.__timers__[tid];
         if (estadoAposSync) {
             estadoAposSync.pausado = false;
-            console.log(` iniciarTimer - forcando pausado=false após sync, estado agora:`, estadoAposSync);
         }
     } catch (err) {
         console.error("Erro ao criar/atualizar atendimento no servidor:", err);
@@ -315,12 +317,13 @@ async function reiniciarTimer() {
             const fim = new Date(state.fim_atendimento);
             const diferencaMs = fim - inicio;
             tempoTotal = Math.max(0, Math.round(diferencaMs / 1000)); // Converte para segundos
-            console.log(`Reiniciar timer - tempo total calculado: ${tempoTotal}s (${Math.floor(tempoTotal / 60)}m)`);
         } catch (err) {
             console.warn("Erro ao calcular tempo total:", err);
         }
     } else {
-        console.warn("Estado não possui inicio_atendimento ou fim_atendimento, usando fallback de 10 minutos");
+        console.warn(
+            "Estado não possui inicio_atendimento ou fim_atendimento, usando fallback de 10 minutos"
+        );
     }
 
     state.tempo = tempoTotal;
@@ -341,11 +344,11 @@ function restaurarTimers() {
 
     // Tenta restaurar o selectedTid que foi salvo antes do reload
     const savedTid = localStorage.getItem("selectedTid");
-    console.log(" restaurarTimers - savedTid:", savedTid, "window.__timers__:", window.__timers__);
+
 
     if (savedTid && window.__timers__[savedTid]) {
         selectedTid = savedTid;
-        console.log(" Restaurado selectedTid:", savedTid, "tempo:", window.__timers__[savedTid].tempo);
+
     } else {
         // Fallback para a lógica anterior se não tiver savedTid
         const userId = localStorage.getItem("userId");
@@ -354,10 +357,14 @@ function restaurarTimers() {
         } else {
             const tids = Object.keys(window.__timers__);
             const running = tids.find(
-                (tid) => window.__timers__[tid] && !window.__timers__[tid].pausado && !window.__timers__[tid].encerrado
+                (tid) =>
+                    window.__timers__[tid] &&
+                    !window.__timers__[tid].pausado &&
+                    !window.__timers__[tid].encerrado
             );
             const anyNotClosed = tids.find(
-                (tid) => window.__timers__[tid] && !window.__timers__[tid].encerrado
+                (tid) =>
+                    window.__timers__[tid] && !window.__timers__[tid].encerrado
             );
             selectedTid = running || anyNotClosed || null;
 
@@ -387,7 +394,7 @@ function restaurarTimers() {
     }
 }
 
-// Função para garantir que oa seleçao do terapeuta esteja fechada 
+// Função para garantir que oa seleçao do terapeuta esteja fechada
 function PopUpTerapeutafechado() {
     const popupModalEl = document.getElementById("popupTerapeuta");
     if (!popupModalEl) return;
@@ -423,9 +430,7 @@ if (popupEl && !popupTerapeutaListenerAttached) {
     popupEl.addEventListener("show.bs.modal", () => {
         // FORÇA sincronização com o banco antes de carregar
         setTimeout(() => {
-            console.log(" Modal aberto - antes de loadTimersFromDB, window.__timers__:", window.__timers__);
             loadTimersFromDB().then(() => {
-                console.log("Modal aberto - depois de loadTimersFromDB, window.__timers__:", window.__timers__);
                 carregarTerapeutas();
             });
         }, 100);
@@ -435,6 +440,16 @@ if (popupEl && !popupTerapeutaListenerAttached) {
 // Botões de adicionar tempo
 // Seleciona os botões
 document.addEventListener("DOMContentLoaded", () => {
+    const tipoUser = localStorage.getItem("tipoUser");
+
+    if (tipoUser !== "admin") {
+        // Oculta links de Cadastro e Usuários no menu
+        const linkCadastro = document.querySelector('a[href*="/cadastrar"]');
+        const linkUsuarios = document.querySelector('a[href*="/user/listar"]');
+
+        if (linkCadastro) linkCadastro.parentElement.style.display = "none";
+        if (linkUsuarios) linkUsuarios.parentElement.style.display = "none";
+    }
     const btnAdicionar1 = document.getElementById("Adicionar1min");
     const btnAdicionar5 = document.getElementById("Adicionar5min");
     const btnAdicionar10 = document.getElementById("Adicionar10min");
@@ -442,7 +457,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btnAdicionar1?.addEventListener("click", () => adicionarTempo(60));
     btnAdicionar5?.addEventListener("click", () => adicionarTempo(5 * 60));
     btnAdicionar10?.addEventListener("click", () => adicionarTempo(10 * 60));
-    const id = localStorage.getItem("userId")
+    const id = localStorage.getItem("userId");
 
     const token = localStorage.getItem("token");
     if (!token) {
@@ -504,22 +519,24 @@ async function carregarTerapeutas() {
 
         container.innerHTML = "";
 
-        console.log(" carregarTerapeutas - window.__timers__:", window.__timers__);
-
         terapeutas.forEach((t) => {
             const terapeuta_id = String(t._id);
 
             // Encontra TODOS os agendamentos ativos para este terapeuta
             // (window.__timers__ agora tem chaves de agendamento, não de terapeuta)
-            const estadosTerapeutaAtivos = Object.entries(window.__timers__ || {})
+            const estadosTerapeutaAtivos = Object.entries(
+                window.__timers__ || {}
+            )
                 .filter(([tid, state]) => {
-                    return state &&
-                        String(state.colaborador_id).trim() === terapeuta_id.trim() &&
-                        !state.encerrado;
+                    return (
+                        state &&
+                        String(state.colaborador_id).trim() ===
+                            terapeuta_id.trim() &&
+                        !state.encerrado
+                    );
                 })
                 .map(([tid, state]) => ({ tid, state }));
 
-            console.log(`👤 Terapeuta ${t.nome_colaborador} (id=${terapeuta_id}): encontrados ${estadosTerapeutaAtivos.length} agendamento(s) ativo(s)`);
 
             // Se não tem timer rodando, mostra "Sem atendimento"
             if (estadosTerapeutaAtivos.length === 0) {
@@ -564,20 +581,27 @@ async function carregarTerapeutas() {
                         : "Não informada.";
 
                 // Se há múltiplos agendamentos, mostra indicador
-                const multipleLabel = estadosTerapeutaAtivos.length > 1 ? ` (${index + 1}/${estadosTerapeutaAtivos.length})` : "";
+                const multipleLabel =
+                    estadosTerapeutaAtivos.length > 1
+                        ? ` (${index + 1}/${estadosTerapeutaAtivos.length})`
+                        : "";
 
                 card.innerHTML = `
     <div class="d-flex align-items-center flex-grow-1 gap-2">
         <img src="/api/colaboradores/${t._id}/imagem" class="avatar border">
         <div class="d-flex flex-column">
-            <span class="fw-semibold text-dark">${t.nome_colaborador}${multipleLabel}</span>
+            <span class="fw-semibold text-dark">${
+                t.nome_colaborador
+            }${multipleLabel}</span>
             <small class="text-muted mb-0">Unidade: ${unidades}</small>
             <small class="text-muted">Tipo: ${t.tipo_colaborador}</small>
         </div>
     </div>
     <div class="text-end flex-shrink-0">
         <div class="fw-semibold text-secondary small">Timer:</div>
-        <div class="fw-bold fs-5 ${state.pausado ? "text-secondary" : "text-success"}" id="timer-display-${tid}">
+        <div class="fw-bold fs-5 ${
+            state.pausado ? "text-secondary" : "text-success"
+        }" id="timer-display-${tid}">
             ${formataSegundos(state.tempo)}
         </div>
         <div class="small ${state.pausado ? "text-warning" : "text-success"}">
@@ -619,7 +643,8 @@ async function carregarTerapeutas() {
                         }
                         btnReiniciar.classList.remove("d-none");
 
-                        const modalEl = document.getElementById("popupTerapeuta");
+                        const modalEl =
+                            document.getElementById("popupTerapeuta");
                         bootstrap.Modal.getInstance(modalEl)?.hide();
                     });
             });
@@ -649,8 +674,9 @@ function atualizarDisplays(tid) {
     const displayModal = document.getElementById(`timer-display-${tid}`);
     if (displayModal) {
         displayModal.textContent = formataSegundos(state.tempo);
-        displayModal.className = `fw-bold fs-5 ${state.pausado ? "text-secondary" : "text-success"
-            }`;
+        displayModal.className = `fw-bold fs-5 ${
+            state.pausado ? "text-secondary" : "text-success"
+        }`;
     }
 }
 
@@ -713,7 +739,8 @@ setInterval(async () => {
                     "encerrarSessaoModal"
                 );
                 if (encerrarModalEl) {
-                    const encerrarModal = bootstrap.Modal.getOrCreateInstance(encerrarModalEl);
+                    const encerrarModal =
+                        bootstrap.Modal.getOrCreateInstance(encerrarModalEl);
                     encerrarModal.show();
                 }
 
@@ -732,7 +759,6 @@ setInterval(async () => {
     });
 
     // Atualiza modal de terapeutas se aberto
-    console.log("AAAA");
     if (modalAbertoTerapeuta) {
         await loadTimersFromDB();
         atualizarTimersModal();
@@ -745,8 +771,6 @@ window.addEventListener("focus", async () => {
     const agora = Date.now();
     const tempoDecorrido = Math.floor((agora - lastFocusTime) / 1000); // em segundos
 
-    console.log(`Aba voltou ao foco! Tempo que passou: ${tempoDecorrido}s`);
-
     // Atualiza cada timer ativo com o tempo que passou enquanto estava oculto
     if (window.__timers__) {
         Object.keys(window.__timers__).forEach((tid) => {
@@ -755,7 +779,6 @@ window.addEventListener("focus", async () => {
 
             // Diminui o tempo pelo que passou
             state.tempo = Math.max(0, state.tempo - tempoDecorrido);
-            console.log(`   tid=${tid}: tempo agora=${state.tempo}s`);
 
             // Sincroniza com servidor
             syncTimerToServer(tid);
@@ -773,7 +796,6 @@ window.addEventListener("focus", async () => {
 
 window.addEventListener("blur", () => {
     lastFocusTime = Date.now();
-    console.log(" Aba perdeu o foco");
 });
 
 // chama quando abrir o modal - AGORA FORÇA sincronização com o servidor
@@ -832,9 +854,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // aguarda loadTimersFromDB terminar ANTES de restaurar o timer
     loadTimersFromDB().then(async () => {
         await carregarAgendamentos();
-        console.log(" DOMContentLoaded: após carregarAgendamentos, window.__timers__:", window.__timers__);
         await carregarTerapeutas();
-        console.log(" DOMContentLoaded: após carregarTerapeutas");
         restaurarTimers(); // restaura DEPOIS que loadTimersFromDB populou window.__timers__
     });
 });
@@ -912,8 +932,8 @@ async function carregarAgendamentos() {
         <span class="fw-semibold d-block">👤${a.colaborador}</span>
         <small class="text-muted d-block">⏰Início: ${horaFormatada}</small>
         <small class="text-muted d-block">Duração: ${Math.round(
-                tempoSegundos / 60
-            )} min</small>
+            tempoSegundos / 60
+        )} min</small>
     </div>
     <div class="ms-3">
         ${btnSelecionarHTML}
@@ -950,7 +970,6 @@ function selecionarAgendamento(
     // IMPORTANTE: usar id do agendamento como tid, não colaborador_id
     // Isto permite múltiplos agendamentos para a mesma pessoa
     const tid = String(id).trim();
-    console.log(` selecionarAgendamento - id='${id}' (agendamento) -> tid='${tid}', colaborador='${colaboradorId}'`);
 
     if (!window.__timers__) window.__timers__ = {};
 
@@ -965,8 +984,6 @@ function selecionarAgendamento(
         state.nome_colaborador =
             colaboradorNome || state.nome_colaborador || "Desconhecido";
         state.colaborador_id = colaboradorId || state.colaborador_id;
-
-        console.log(` Timer já existe para tid=${tid}, tempo mantido=${state.tempo}s`);
     } else {
         // Cria novo timer - PRIMEIRA VEZ que este agendamento é selecionado
         window.__timers__[tid] = {
@@ -978,8 +995,7 @@ function selecionarAgendamento(
             colaborador_id: colaboradorId || null,
             encerrado: false,
             em_andamento: true,
-        };
-        console.log(` Timer criado para tid=${tid}, tempo inicial=${tempoSegundos}s`);
+        }
     }
 
     // Define o selecionado
@@ -1050,7 +1066,9 @@ document
         if (!nomeColaborador && state?.colaborador_id) {
             fbNomeEl.textContent = "👤 Carregando...";
             try {
-                const resCol = await fetch(`/api/colaboradores/${state.colaborador_id}`);
+                const resCol = await fetch(
+                    `/api/colaboradores/${state.colaborador_id}`
+                );
                 if (resCol.ok) {
                     const colaborador = await resCol.json();
                     nomeColaborador = colaborador.nome_colaborador || null;

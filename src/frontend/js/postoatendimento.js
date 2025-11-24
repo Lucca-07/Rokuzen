@@ -118,7 +118,6 @@ async function buscarPostos() {
         if (!response.ok)
             throw new Error(`Erro na requisição: ${response.status}`);
         const data = await response.json();
-        console.log("📬 Dados recebidos do backend:", data);
         renderizarPostos(data);
     } catch (err) {
         console.error("Erro ao buscar postos:", err);
@@ -142,7 +141,6 @@ async function confirmarAlteracoes(popup) {
                 body: JSON.stringify(item),
             });
             const result = await res.json();
-            console.log("Resultado backend:", result);
         }
         alert("Status alterado com sucesso!");
         popup.style.display = "none";
@@ -154,6 +152,16 @@ async function confirmarAlteracoes(popup) {
 
 // Inicialização
 document.addEventListener("DOMContentLoaded", async () => {
+    const tipoUser = localStorage.getItem("tipoUser");
+
+    if (tipoUser !== "admin") {
+        // Oculta links de Cadastro e Usuários no menu
+        const linkCadastro = document.querySelector('a[href*="/cadastrar"]');
+        const linkUsuarios = document.querySelector('a[href*="/user/listar"]');
+
+        if (linkCadastro) linkCadastro.parentElement.style.display = "none";
+        if (linkUsuarios) linkUsuarios.parentElement.style.display = "none";
+    }
     // Seleciona todos os botões de confirmar nos modais
     document.querySelectorAll(".confirmar").forEach((btnConfirmar) => {
         btnConfirmar.addEventListener("click", async () => {
@@ -188,7 +196,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                     }
 
                     const result = await response.json();
-                    console.log("Resultado backend:", result);
                 }
 
                 alert("Status alterado com sucesso!");
