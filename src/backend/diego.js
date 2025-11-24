@@ -204,9 +204,9 @@ app.post("/api/atendimentos", async (req, res) => {
       tipo_colaborador: data.tipo_colaborador || "",
       servico_id: data.servico_id || new mongoose.Types.ObjectId().toString(),
       inicio_atendimento: data.inicio_atendimento || new Date(),
-      fim_atendimento: data.fim_atendimento || new Date(Date.now() + 60 * 60 * 1000), // +1 hora
+      fim_atendimento: data.fim_atendimento || new Date(Date.now() + 60 * 60 * 1000),
       observacao_cliente: data.observacao_cliente || "",
-      tempoRestante: typeof data.tempoRestante === "number" ? data.tempoRestante : 600,
+      tempoRestante: typeof data.tempoRestante === "number" ? data.tempoRestante : 3600,
       em_andamento: !!data.em_andamento,
       inicio_real: data.inicio_real || null,
       fim_real: data.fim_real || null
@@ -264,18 +264,19 @@ app.get("/api/agendamentos", async (req, res) => {
     const amanha = new Date(hoje);
     amanha.setDate(hoje.getDate() + 1);
 
-    // Pegando dados simulados do localStorage (no front você envia via headers ou query)
-    const idUser = req.query.idUser; // ou via header
+    // Pegando dados simulados do localStorage (no front  envia via headers ou query)
+    const idUser = req.query.idUser || req.query.userId;
     const perfisUsuario = req.query.perfis_usuario?.split(",") || [];
 
     let filtro = {
       inicio_atendimento: { $gte: hoje, $lt: amanha },
     };
 
-    // Se NÃO tiver perfil Master/Gerente/Recepcionista, só vê os próprios
-    const temAcessoTotal = perfisUsuario.some(p => ["Master", "Gerente", "Recepcionista"].includes(p));
+    // Se NÃO tiver perfil Master/Gerente/Recepção, só vê os próprios
+    const temAcessoTotal = perfisUsuario.some(p => ["Master", "Gerente", "Recepcao", "Recepção", "recepcao"].includes(p));
+
     if (!temAcessoTotal) {
-      filtro.colaborador_id = idUser;
+      filtro.colaborador_id = new mongoose.Types.ObjectId(idUser);
     }
 
     const agendamentos = await Atendimentos.find(filtro)
@@ -288,8 +289,8 @@ app.get("/api/agendamentos", async (req, res) => {
       colaborador: a.colaborador_id?.nome_colaborador || "Desconhecido",
       colaborador_id: a.colaborador_id?._id || null,
       tipo: a.tipo_colaborador || "Serviço",
-      inicio_atendimento: a.inicio_atendimento, 
-      fim_atendimento: a.fim_atendimento,      
+      inicio_atendimento: a.inicio_atendimento,
+      fim_atendimento: a.fim_atendimento,
       tempo: Math.round((new Date(a.fim_atendimento) - new Date(a.inicio_atendimento)) / 60000),
       observacao: a.observacao_cliente || "-",
       em_andamento: !!a.em_andamento,
@@ -407,8 +408,8 @@ app.put("/api/atendimentos/:id/encerrar", async (req, res) => {
         em_andamento: false,
         tempoRestante: 0,
         fim_real: new Date(),
-        encerrado: true,      
-        status: "encerrado"    
+        encerrado: true,
+        status: "encerrado"
       },
       { new: true }
     );

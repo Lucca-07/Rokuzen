@@ -205,7 +205,6 @@ app.put("/api/atendimentos/:id/timer", async (req, res) => {
 app.get("/api/colaboradores/:id", checkToken, async (req, res) => {
     const id = req.params.id;
     try {
-        // Opcional: garantir que o id do token bate com o id pedido (ou tratar roles/admin)
         if (req.userId !== id) {
             return res.status(403).json({ msg: "Acesso proibido." });
         }
@@ -545,7 +544,7 @@ app.post("/escala/atendimento", async (req, res) => {
             em_andamento: false,
             inicio_real: null,
             fim_real: null,
-            tempoRestante: 600,
+            tempoRestante: 3600,
             encerrado: false,
         });
 
@@ -684,7 +683,7 @@ app.post("/api/atendimentos", async (req, res) => {
             tempoRestante:
                 typeof data.tempoRestante === "number"
                     ? data.tempoRestante
-                    : 600,
+                    : 3600,
             em_andamento: !!data.em_andamento,
             inicio_real: data.inicio_real || null,
             fim_real: data.fim_real || null,
@@ -752,7 +751,7 @@ app.get("/api/agendamentos", async (req, res) => {
         amanha.setDate(hoje.getDate() + 1);
 
         // Pegando dados simulados do localStorage (no front você envia via headers ou query)
-        const idUser = req.query.idUser; // ou via header
+        const idUser = req.query.idUser || req.query.userId;
         const perfisUsuario = req.query.perfis_usuario?.split(",") || [];
 
         let filtro = {
@@ -761,12 +760,12 @@ app.get("/api/agendamentos", async (req, res) => {
 
         // Se NÃO tiver perfil Master/Gerente/Recepcionista, só vê os próprios
         const temAcessoTotal = perfisUsuario.some((p) =>
-            ["Master", "Gerente", "Recepcionista"].includes(p)
+            ["Master", "Gerente", "Recepcao", "Recepção", "recepcao"].includes(p)
         );
-        if (!temAcessoTotal) {
-            filtro.colaborador_id = idUser;
-        }
 
+        if (!temAcessoTotal) {
+            filtro.colaborador_id = new mongoose.Types.ObjectId(idUser);
+        }
         const agendamentos = await Atendimentos.find(filtro)
             .populate("colaborador_id", "nome_colaborador")
             .sort({ inicio_atendimento: 1 })
@@ -781,7 +780,7 @@ app.get("/api/agendamentos", async (req, res) => {
             fim_atendimento: a.fim_atendimento,
             tempo: Math.round(
                 (new Date(a.fim_atendimento) - new Date(a.inicio_atendimento)) /
-                    60000
+                60000
             ),
             observacao: a.observacao_cliente || "-",
             em_andamento: !!a.em_andamento,
