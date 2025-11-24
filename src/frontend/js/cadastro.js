@@ -87,10 +87,7 @@ selectUser.addEventListener("change", () => {
 });
 
 cargoselect.addEventListener("change", () => {
-    if (
-        cargoselect.options[cargoselect.selectedIndex].text === "Gerente" ||
-        cargoselect.options[cargoselect.selectedIndex].text === "Master"
-    ) {
+    if (cargoselect.options[cargoselect.selectedIndex].text === "Gerente") {
         setorcargo.classList.remove("d-none");
     } else {
         setorcargo.classList.add("d-none");
@@ -170,8 +167,10 @@ async function salvarColaborador(event) {
     }
     if (cargoSelecionado === "Gerente" || cargoSelecionado === "Master") {
         tipo_colaborador = "admin";
-        const setorSelect = document.getElementById("setorgerente");
-        setor = setorSelect.options[setorSelect.selectedIndex].text;
+        if (cargoSelecionado === "Gerente") {
+            const setorSelect = document.getElementById("setorgerente");
+            setor = setorSelect.options[setorSelect.selectedIndex].text;
+        }
     }
     const checkboxes = document.querySelectorAll(
         "input[name='unidades']:checked"
