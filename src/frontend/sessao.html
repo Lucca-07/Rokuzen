@@ -69,13 +69,12 @@
 				class="col-12 col-lg-6 d-flex flex-column align-items-center align-items-lg-start text-center text-lg-start px-3">
 
 				<button id="btnAbrirModal"
-					class="btn btn-light border rounded-3 px-4 py-3 fs-5 mb-4 w-100 w-md-auto d-none"
+					class="btn btn-light border rounded-3 px-4 py-3 fs-5 mb-4 w-auto w-md-auto d-none m-auto"
 					style="background-color: #F6F6F6;" data-bs-toggle="modal" data-bs-target="#popupTerapeuta"
 					aria-haspopup="dialog" aria-expanded="false" aria-controls="popupTerapeuta"
 					aria-label="Visualizar Horário e Selecionar Sessões">
-					Visualizar Horário Sessões
-					<i class="mdi mdi-arrow-down-drop-circle position-relative" style="left: 23%"
-						aria-hidden="true"></i>
+					Visualizar timers
+					<i class="mdi mdi-arrow-down-drop-circle-outline"></i>
 				</button>
 
 				<div class="d-flex flex-column justify-content-center align-items-center w-100" role="region"
@@ -101,8 +100,8 @@
 					</div>
 
 					<div class="text-center">
-						<button id="btnIniciar" onclick="iniciarTimer()" class="btn rounded-pill px-5 py-3"
-							style="background-color: #9db668 ;color:white; border: 1px solid black"
+						<button id="btnIniciar" onclick="iniciarTimer()" class="btn btn-success rounded-pill px-5 py-3"
+							style="border: 1px solid black"
 							aria-label="Iniciar o Timer">
 							<i class="mdi mdi-play" aria-hidden="true"></i> Iniciar
 						</button>
