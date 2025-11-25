@@ -2,55 +2,101 @@
 <html lang="pt-br">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
-    <link rel="stylesheet" type="text/css" href="/frontend/css/style.css">
-    <title>Login</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Rokuzen</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Material Design Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css" rel="stylesheet" />
+  <!-- Fonte -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/frontend/css/global.css">
+  <link rel="stylesheet" href="/frontend/css/index.css">
+  <link rel="shortcut icon" href="/frontend/img/logoFavicon.png" sizes="32x32" type="image/png">
 </head>
 
-<body class="roboto">
-    <div class="back container-fluid">
-        <img class="imglogo mb-3" src="/frontend/img/logo.png" alt="">
-        <div class="anima row d-flex align-items-center justify-content-center">
-            <div id="cardLogin" class="card d-flex justify-content-center h-100 gap-2">
-                <input id="email" class="p-2 px-3 mt-3 w-100" type="text" placeholder="Email">
-                <input id="pass" class="p-2 px-3 mt-2 w-100" type="text" placeholder="Senha">
-                <p id="erroLogin" class="text-danger text-center mt-1 mb-1"></p>
-                <button id="proximo" class="acessar align-self-center p-2 px-3 border-1">UNIDADES<i
-                        class="mdi mdi-arrow-right"></i></button>
-                <a id="esqueci" class="fs-6 fst-italic d-flex align-self-center p-0 mb-3 mt-1"
-                    style="cursor: pointer;">Esqueci a senha</a>
-            </div>
-            <div id="cardSenha" class="card senha d-flex justify-content-center h-100 gap-2 d-none">
-                <p id="sucessoRecuperacao" class="text-success text-center mt-1 mb-1"></p>
-                <input id="emailRecuperacao" class="p-2 px-3" type="text" placeholder="Email">
-                <p id="erroRecuperacao" class="text-danger text-center mt-1 mb-1"></p>
-                <button id="recuperarButton" class="acessar align-self-center p-2 px-3 border-1">Recuperar
-                    senha</button>
-                <a id="voltarLogin" class="fs-6 fst-italic d-flex align-self-center p-0 mb-0"
-                    style="cursor: pointer;">Voltar</a>
-            </div>
-            <div id="cardUnidades" class="card d-flex justify-content-center h-100 gap-2 p-3 d-none">
-                <p class="fs-4 text-center">Em qual unidade você quer logar?</p>
-                <select name="" id="unidades" class="p-2">
-                    <option value="" selected disabled>Selecionar</option>
-                </select>
-                <p id="erroUnidade" class="text-danger text-center mt-1 mb-1"></p>
-                <button id="acessar" class="acessar align-self-center p-2 px-3 border-1">ACESSAR</button>
-            </div>
+<body>
+  <main class="container d-flex justify-content-center align-items-center" role="main"
+    aria-label="Área principal de login">
+    <!-- LOGIN -->
+    <div id="cardLogin" class="card-custom">
+      <img src="/frontend/img/logo.png" class="imglogo" alt="Logo Rokuzen" />
+
+      <div id="erroLogin"></div>
+
+      <div class="mb-3 text-start">
+        <input type="email" id="email" class="form-control" placeholder="Email" required />
+      </div>
+
+      <div class="mb-3 text-start">
+        <div class="input-group">
+          <input type="password" id="pass" class="form-control" placeholder="Senha" required />
+          <button class="btn btn-outline-secondary border border-end" type="button"
+            onclick="togglePassword('pass','toggle-senha-icon')">
+            <i class="mdi mdi-eye-off" id="toggle-senha-icon"></i>
+          </button>
         </div>
+      </div>
+
+      <button id="proximo" class="btn btn-success w-100 mb-2">
+        Entrar <i class="mdi mdi-arrow-right ms-2"></i>
+      </button>
+
+      <a id="esqueci" class="link-secondary small" style="cursor: pointer;">Esqueci minha senha</a>
     </div>
 
+    <!-- RECUPERAR SENHA -->
+    <div id="cardSenha" class="card-custom d-none">
+      <img src="/frontend/img/logo.png" class="imglogo" alt="Logo Rokuzen" />
+      <h5 class="mb-3">Recuperar senha</h5>
+      <div id="erroRecuperacao"></div>
+      <div id="sucessoRecuperacao"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
-        crossorigin="anonymous"></script>
+      <div class="mb-3 text-start">
+        <input type="email" id="emailRecuperacao" class="form-control" placeholder="Digite seu email" required />
+      </div>
 
-    <script src="/frontend/js/login.js"></script>
-    
+      <div class="d-flex gap-2">
+        <button id="voltarLogin" class="btn btn-outline-secondary flex-fill">Voltar</button>
+        <button id="recuperarButton" class="btn btn-success flex-fill">Enviar</button>
+      </div>
+    </div>
 
-</body>
+    <!-- UNIDADES -->
+    <div id="cardUnidades" class="card-custom d-none">
+      <img src="/frontend/img/logo.png" class="imglogo" alt="Logo Rokuzen" />
+      <h5 class="mb-3 fw-bold">Selecione a unidade</h5>
+      <div id="erroUnidade"></div>
+
+      <div class="mb-3">
+        <select id="unidades" class="form-select">
+          <option value="" selected disabled>Selecionar</option>
+        </select>
+      </div>
+
+      <button id="acessar" class="btn btn-success w-100">
+        Acessar <i class="mdi mdi-login ms-2"></i>
+      </button>
+    </div>
+  </main>
+  <!-- VRLIBRAS -->
+  <div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+      <div class="vw-plugin-topwrapper"></div>
+    </div>
+  </div>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"> </script>
+  <script>new window.VLibras.Widget('https://vlibras.gov.br/app')</script>
+
+  <!-- Bootstrap -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script src="/frontend/js/login.js"></script>
+
+  <script src="https://app.embed.im/accessibility.js" defer></script>
+
 </html>

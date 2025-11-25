@@ -1,0 +1,146 @@
+/* ============================================
+   CADASTRO.CSS - Página de Cadastro
+   ============================================ */
+
+/* === CONTAINERS DE CADASTRO === */
+#containerColaborador,
+#containerCliente {
+    background-color: #f8f9fa;
+    border-radius: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    font-family: "Roboto", sans-serif;
+}
+
+/* === INPUTS E SELECTS === */
+#containerColaborador input[type="text"],
+#containerColaborador input[type="email"],
+#containerColaborador input[type="password"],
+#containerColaborador select,
+#containerCliente input[type="text"],
+#containerCliente input[type="email"],
+#containerCliente input[type="password"],
+#containerCliente input[type="date"],
+#containerCliente textarea,
+#containerCliente select {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 6px 10px;
+    font-size: 1rem;
+    color: #333;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    min-width: 160px;
+    padding-right: 25px;
+}
+
+#containerColaborador input:focus,
+#containerCliente input:focus,
+#containerColaborador select:focus,
+#containerCliente select:focus,
+#containerCliente textarea:focus {
+    border-color: #93a46b;
+    box-shadow: 0 0 0 2px rgba(147, 164, 107, 0.3);
+    outline: none;
+}
+
+/* === BOTÕES SALVAR === */
+#containerColaborador .enviar,
+#containerCliente .enviar {
+    background-color: #93a46b;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#containerColaborador .enviar:hover,
+#containerCliente .enviar:hover {
+    background-color: #7e925e;
+    transform: scale(1.03);
+}
+
+.enviar {
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+/* === FOTO === */
+#foto img {
+    border: 2px solid #93a46b;
+    background-color: #fff;
+}
+
+/* === TEXTOS DAS SEÇÕES === */
+#unidades p,
+#saude p,
+#observacoes p {
+    font-weight: 600;
+    color: #222;
+}
+
+/* === CAMPOS === */
+.campos {
+    font-weight: 500;
+    color: #333;
+    font-size: 1rem;
+}
+
+/* === LAYOUT === */
+#setorcargo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#setorgerente {
+    min-width: 160px;
+}
+
+#containerfundo {
+    box-shadow: 10px 10px 10px #a8a8a879;
+}
+
+#usuarioselect {
+    background-color: #c7ed79;
+}
+
+/* === CARDS === */
+.card-cadastro {
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.76);
+}
+
+.card-editar {
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.356);
+}
+
+/* === PREVIEW DE IMAGEM === */
+.preview-container {
+    width: 100%;
+    max-width: 220px;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0.25rem;
+}
+
+/* === RESPONSIVIDADE === */
+@media (min-width: 992px) {
+    .me-lg-6 {
+        margin-inline-end: 4rem !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .me-xl-6 {
+        margin-inline-end: 12rem !important;
+    }
+}

@@ -1,57 +1,55 @@
 import express from "express";
 import dotenv from "dotenv";
-dotenv.config();
-import get_all_users from "./User.js"; // Importa a função de busca
-
-// Importa o módulo de conexão com o DB
+import get_all_users from "./User.js"; // Função que busca todos os usuários
 import connectDB from "../modules/connect.js";
+import cors from "cors";
+app.use(cors());
 
-// Importa os roteadores
-import userRoutes from "./routes/user.routes.js"; // Novo arquivo
-import clientRoutes from "./routes/client.routes.js"; // Novo arquivo
+
+// Importa as rotas
+import userRoutes from "./routes/user.routes.js";
+import clientRoutes from "./routes/client.routes.js";
+import equipamentoRoutes from "./routes/equipamento.routes.js";
+
+dotenv.config();
 
 const app = express();
 
-let users = {
-    data: [],
-    getNames: () => [],
-    getLogin: () => [],
-    getType: () => [],
-    getState: () => [],
-    getPermissions: () => [],
-    getUnidades: () => [],
-};
-(async function loadInitialUserData() {
-    users = await get_all_users();
-})();
-
-// Inicia a conexão com o banco de dados
-connectDB();
-
-// Middleware para permitir que o Express processe corpos de requisição em formato JSON
+// --- Configurações iniciais ---
 app.use(express.json());
 
-// --- Rotas de Usuários Internos ---
-// O roteador 'userRoutes' será responsável por todas as rotas que começam com '/' (no contexto da API)
-// Mantendo a rota base ('/') para usuários internos, como estava.
+// --- Conexão com o MongoDB ---
+connectDB();
+
+// --- Dados iniciais ---
+let users = {
+  data: [],
+  getNames: () => [],
+  getLogin: () => [],
+  getType: () => [],
+  getState: () => [],
+  getPermissions: () => [],
+  getUnidades: () => [],
+};
+(async function loadInitialUserData() {
+  users = await get_all_users();
+})();
+
+// --- Rotas da API ---
 app.use(
-    "/users",
-    (req, res, next) => {
-        req.app.locals.users = users;
-        next();
-    },
-    userRoutes
+  "/users",
+  (req, res, next) => {
+    req.app.locals.users = users;
+    next();
+  },
+  userRoutes
 );
 
-// --- Rotas de Clientes ---
-// O roteador 'clientRoutes' será responsável por todas as rotas que começam com '/clients'
 app.use("/clients", clientRoutes);
+app.use("/api/equipamentos", equipamentoRoutes);
 
 // --- Inicialização do Servidor ---
-
-// Inicia o servidor Express e o faz escutar na porta especificada.
-// A parte do código original que carregava os dados (await get_all_users() etc.)
-// foi movida para dentro dos respectivos arquivos de rota (user.routes.js e client.routes.js).
-app.listen(1234, () => {
-    console.log("Servidor Rodando na porta 1234");
+const PORT = process.env.PORT || 1234;
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor rodando na porta ${PORT}`);
 });

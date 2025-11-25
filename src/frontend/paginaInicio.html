@@ -2,103 +2,191 @@
 <html lang="pt-br">
 
 <head>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Controle | Rokuzen</title>
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
-  <link rel="stylesheet" href="/frontend/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="/frontend/css/global.css">
+    <link rel="stylesheet" href="/frontend/css/paginaInicio.css">
+    <link rel="stylesheet" href="/frontend/css/dropdown-navbar.css">
+    <link rel="shortcut icon" href="/frontend/img/logoFavicon.png" sizes="32x32" type="image/png"
+        alt="Ícone da Logo Rokuzen" aria-hidden="true">
 </head>
 
-<body>
-  <nav class=" navbar container-fluid roboto" style="background: #FFF;">
-    <div class="row m-0 w-100 justify-content-center justify-content-lg-start">
-      <div class="logo col-sm-12 col-lg-3 mb-1 mb-lg-0 text-center align-self-center"> <!-- ! LOGO-->
-        <a href="/inicio/:id"><img src="https://rokuzen.com.br/wp-content/uploads/2021/09/cropped-logomarca_pequena2.png"
-            alt="" height="80px"></a>
-      </div>
-      <div class="menu col-sm-12 col-lg-9 text-center d-flex align-items-center"> <!-- ! MENU DA NAVBAR-->
-        <ul class="list-unstyled d-none d-lg-flex w-100 m-0 justify-content-around align-items-center flex-wrap">
-          <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="/escala/:id"><i class="mdi mdi-calendar fs-3"></i></a>
-          </li>
-          <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="/postosatendimento/:id"><i class="mdi mdi-chair-rolling fs-3"></i></a></li>
-          <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="/sessao/:id"><i class="mdi mdi-clock fs-3"></i></a>
-          </li>
-          <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="/sessao/:id"><i class="mdi mdi-account-plus fs-3"></i></a>
-          </li>
-          <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="/sessao/:id"><i class="mdi mdi-account fs-3"></i></a>
-          </li>
-          <li><button class="sair px-4 fs my-2 align-self-center">Sair</button></li>
-        </ul>
-      </div>
-      <div id="menubtn" role="button" class="sidebar col-1 d-lg-none text-center">
-        <!-- ! BOTAO PARA ABRIR MENU EM TELAS PEQUENAS-->
-        <i onclick="abrirMenu()" class="mdi mdi-menu fs-1"></i>
-      </div>
+<body class="roboto">
+    <nav class="navbar navbar-expand-lg bg-white roboto border-bottom" style="height: auto; min-height: 100px;"
+        role="navigation" aria-label="Menu principal de navegação do sistema">
+        <div class="container-fluid h-100 position-relative">
+            <a class="navbar-brand mx-auto mx-lg-0 me-lg-0 ms-lg-5" href="/inicio/:id" aria-current="page">
+                <img src="https://rokuzen.com.br/wp-content/uploads/2021/09/cropped-logomarca_pequena2.png"
+                    alt="Logo Rokuzen. Clique para ir à página inicial." height="80" loading="lazy" />
+            </a>
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Abrir e fechar menu de navegação">
+                <i class="mdi mdi-menu fs-1 text-secondary" aria-hidden="true"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav w-100 justify-content-evenly ms-auto" role="list">
+                    <!-- Dropdown Atendimento -->
+                    <li class="nav-item dropdown" role="listitem">
+                        <a class="nav-link text-secondary dropdown-toggle" href="#" id="atendimentoDropdown"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Atendimento
+                        </a>
+                        <ul class="dropdown-menu dropdown-content" aria-labelledby="atendimentoDropdown">
+                            <li><a class="dropdown-item nav-link text-secondary" href="/escala/:id"><i
+                                        class="fas fa-angle-right me-2"></i>Visualizar Escala</a></li>
+                            <li><a class="dropdown-item nav-link text-secondary" href="/sessao/:id"><i
+                                        class="fas fa-angle-right me-2"></i>Gerenciar Sessão</a></li>
+                            <li><a class="dropdown-item nav-link text-secondary" href="/listarterapeutas/:id"><i
+                                        class="fas fa-angle-right me-2"></i>Listar Terapeutas</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Links normais -->
+                    <li class="nav-item" role="listitem">
+                        <a class="nav-link text-secondary" href="/postosatendimento/:id" aria-current="false">Postos de
+                            Trabalho</a>
+                    </li>
+
+                    <li class="nav-item" id="link-cadastro" role="listitem">
+                        <a class="nav-link text-secondary" href="/cadastrar/:id" aria-current="false">Cadastro</a>
+                    </li>
+
+                    <li class="nav-item" id="link-usuarios" role="listitem">
+                        <a class="nav-link text-secondary" href="/user/listar/:id" aria-current="false">Usuários</a>
+                    </li>
+
+                    <!-- Botão Sair -->
+                    <li class="nav-item" role="listitem">
+                        <button id="sairbutton" class="btn btn-outline-secondary px-4" role="button"
+                            aria-label="Botão para Sair do Sistema">
+                            Sair
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container-fluid my-5 px-3 px-md-5" role="main" aria-label="Painel de Controle - Página Inicial">
+        <div class="row g-4">
+            <div class="col-12 col-lg-6">
+                <div class="card shadow-sm border-0 h-100" role="region" aria-labelledby="titulo-terapeutas">
+                    <div class="card-header bg-light fw-semibold fs-5 text-center py-3">
+                        <h4 id="titulo-terapeutas" class="mb-0 fw-semibold">Pontuação dos Terapeutas</h4>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover text-center align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">Terapeuta</th>
+                                        <th scope="col">Quant. Pontos</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <div class="card shadow-sm border-0 h-100" role="region" aria-labelledby="titulo-equipamentos">
+                    <div class="card-header bg-light fw-semibold fs-5 text-center py-3">
+                        <h4 id="titulo-equipamentos" class="mb-0">Equipamentos Disponíveis</h4>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover text-center align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">Equipamento</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabela-equipamentos">
+                                    <tr>
+                                        <td colspan="2" class="text-center text-muted py-4">
+                                            <span class="spinner-border spinner-border-sm me-2" role="status"
+                                                aria-hidden="true"></span>
+                                            Carregando...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 mt-5">
+                <div class="card shadow border-0" role="region" aria-labelledby="titulo-escala">
+                    <div class="card-header bg-light fw-semibold fs-5 text-center py-3">
+                        <h4 id="titulo-escala" class="mb-0">Próximos Agendamentos - Panorama Diário</h4>
+                    </div>
+
+                    <div class="card-body p-0">
+                        <table class="table table-striped table-hover text-center align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Terapeuta</th>
+                                    <th>Horário</th>
+                                    <th>Data</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-agendamentos">
+                                <tr>
+                                    <td colspan="3" class="text-center py-4 text-muted">
+                                        Carregando...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-light border-top mt-5 py-4 shadow-sm" role="contentinfo" aria-label="Rodapé do site">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="text-muted mb-0 fs-6">&copy; 2025 Rokuzen. Todos os direitos reservados.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- VLibras ANTES do Bootstrap -->
+    <div vw class="enabled">
+        <div vw-access-button class="active"></div>
+        <div vw-plugin-wrapper>
+            <div class="vw-plugin-top-wrapper"></div>
+        </div>
     </div>
-  </nav>
-  <div id="dropcnt" class="dropcnt container-fluid p-0 d-none w-100 d-lg-none">
-    <!-- ! CONTEÚDO DO BOTAO DE ABRIR MENU-->
-    <div class="dropopt container-fluid d-flex align-items-center justify-content-center">
-      <a class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
-        href="" style="height: 100%;">Visualizar escala</a>
-    </div>
-    <div class="dropopt container-fluid d-flex align-items-center justify-content-center">
-      <a class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
-        href="" style="height: 100%;">Postos de atendimento</a>
-    </div>
-    <div class="dropopt container-fluid d-flex align-items-center justify-content-center">
-      <a class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
-        href="" style="height: 100%;">Gerenciar sessão</a>
-    </div>
-  </div>
 
-  <main class="container my-5">
-    <div class="row justify-content-center g-5">
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js" defer></script>
+    <script defer>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof VLibras !== 'undefined' && window.VLibras && window.VLibras.Widget) {
+                new window.VLibras.Widget('https://vlibras.gov.br/app');
+            } else {
+                console.warn('VLibras não carregou corretamente');
+            }
+        });
+    </script>
 
-      <div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center">
-        <a href="#" class="text-decoration-none">
-          <div class="cardinicio text-center shadow border-0 p-3" style="width: 270px; height: 360px;">
-            <div class="cardinicio-image"
-              style="background-image: url('/frontend/img/escalaHorario.jpg'); background-size: cover; background-position: center;">
-            </div>
-            <div class="cardinicio-body">
-              <h3 class="fs-5 text-dark">Visualizar Escala</h3>
-            </div>
-          </div>
-        </a>
-      </div>
-
-      <div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center">
-        <a href="#" class="text-decoration-none">
-          <div class="cardinicio text-center shadow border-0 p-3" style="width: 270px; height: 360px;">
-            <div class="cardinicio-image"
-              style="background-image: url('/frontend/img/imagemPostosAtendimento.jpg'); background-size: cover; background-position: center;">
-            </div>
-            <div class="cardinicio-body">
-              <h3 class="fs-5 text-dark">Postos de Atendimento</h3>
-            </div>
-          </div>
-        </a>
-      </div>
-
-      <div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center">
-        <a href="#" class="text-decoration-none">
-          <div class="cardinicio text-center shadow border-0 p-3" style="width: 270px; height: 360px;">
-            <div class="cardinicio-image" style="background-image: url('/frontend/img/imagemSessoes.jpg'); background-size: cover;">
-            </div>
-            <div class="cardinicio-body">
-              <h3 class="fs-5 text-dark">Gerenciar Sessão</h3>
-            </div>
-          </div>
-        </a>
-      </div>
-
-    </div>
-  </main>
-
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="/frontend/js/paginaInicio.js"></script>
+    <!-- Bootstrap SEM integrity -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="/frontend/js/paginaInicio.js" defer></script>
+    <script src="https://app.embed.im/accessibility.js" defer></script>
 </body>
 
 </html>

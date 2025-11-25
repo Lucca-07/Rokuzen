@@ -1,36 +1,38 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+/* ============================================
+   STYLE.CSS - Estilos Globais e Compartilhados
+   ============================================ */
 
-.roboto {
-    font-family: "Roboto", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 100;
-    font-style: normal;
-    font-variation-settings:
-        "wdth" 100;
-}
+/* Importa estilos globais compartilhados */
+@import url("global.css");
 
+/* === ESTILOS LEGADOS E ESPECÍFICOS === */
+
+/* === BACKGROUND E LAYOUT === */
 .back {
     height: 100vh;
-    background-image: url("/frontend/img/fundoImagem.jpg");
-    background-size: cover;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-flow: column;
-    overflow-y: hidden;
+    overflow-y: auto;
 }
 
+.imgfundo {
+    height: 100vh;
+    z-index: 0;
+}
+
+/* === CARDS LEGADOS === */
 .card {
     max-height: 300px;
     min-height: 200px;
-    height: 40vh;
-    width: 25%;
-    min-width: 300px;
+    height: auto;
+    width: 100%;
+    max-width: 420px;
     border-radius: 20px;
     background-color: whitesmoke;
     border: 1px solid black;
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.342);
-    animation: aparecer 0.3s ease-in forwards;
 }
 
 .card input {
@@ -47,90 +49,15 @@
 }
 
 .imglogo {
-    display: flex;
-    align-self: center;
-    justify-self: center;
-    /* border: 1px solid red; */
-    min-height: 5%;
-    height: 10%;
-    max-height: 13%;
-    animation: aparecer 0.3s ease-in forwards;
+    display: block;
+    margin: 0 auto;
+    max-width: 250px;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
 }
 
-.sair {
-    background-color: #c7ed79;
-    height: 40px;
-    border-radius: 10px;
-}
-
-.sair:hover {
-    background: #cbff63;
-}
-
-.navbar {
-    border-top: 5px solid #9db668;
-    border-bottom: 5px solid #e9eaee;
-    height: 150px;
-}
-
-.menu a:hover {
-    color: #9db668 !important;
-}
-
-.dropcnt {
-    border: 5px solid #e9eaee;
-    border-top: none;
-    height: 305px;
-    /* position: fixed; */
-    top: 150px;
-    z-index: 999 !important;
-}
-
-.dropopt {
-    height: 100px;
-    border: 1px solid #e9eaee;
-    background-color: white;
-}
-
-.dropopt a:hover {
-    color: #9db668 !important;
-}
-
-.campos {
-    font-size: 1.5rem;
-}
-
-.enviar {
-    border: 1px solid black;
-    border-radius: 10px;
-}
-
-#containerfundo {
-    box-shadow: 10px 10px 10px #a8a8a879;
-}
-
-#usuarioselect {
-    background-color: #c7ed79;
-}
-
-#containerColaborador,
-#containerCliente {
-    animation: aparecer 0.3s ease-in forwards;
-}
-
-/* Animação para o card aparecer */
-@keyframes aparecer {
-    0% {
-        opacity: 0;
-        transform: translateY(300px);
-    }
-
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
+/* === CARDS DE INÍCIO === */
 .cardinicio-image {
     width: 100%;
     height: 260px;
@@ -154,9 +81,7 @@ a.text-decoration-none:hover h3 {
 }
 
 .cardposto img {
-    /* width: 100%; */
     height: 100%;
-    /* object-fit: cover; */
 }
 
 .cardposto {
@@ -177,7 +102,7 @@ a.text-decoration-none:hover h3 {
     font-size: 999px;
 }
 
-/* === POPUP === */
+/* === POPUP LEGADO === */
 .popup-bg {
     position: fixed;
     top: 0;
@@ -225,22 +150,6 @@ a.text-decoration-none:hover h3 {
     font-weight: 600;
 }
 
-.verde {
-    background-color: #7fff7f;
-}
-
-.amarelo {
-    background-color: #ffef75;
-}
-
-.vermelho {
-    background-color: #ff5959;
-}
-
-.laranja {
-    background-color: #ff964f;
-}
-
 .btncustom {
     background: #a0af68;
     color: white;
@@ -268,223 +177,52 @@ a.text-decoration-none:hover h3 {
     cursor: pointer;
 }
 
-.header-escala {
-    text-align: center;
-    margin-bottom: 25px;
+/* === RESPONSIVIDADE === */
+@media (max-width: 991.98px) {
+    .back .row.position-relative {
+        position: relative;
+    }
+
+    #cardConteudos {
+        position: absolute !important;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 92%;
+        max-width: 420px;
+        z-index: 1050;
+        padding: 0;
+    }
+
+    .imgfundo {
+        overflow: hidden;
+        height: 100vh;
+        z-index: 1;
+        filter: brightness(0.65) saturate(0.95);
+    }
+
+    #conteudos {
+        background-color: rgba(255, 255, 255, 0.95);
+        padding: 1.25rem;
+        border-radius: 12px;
+    }
 }
 
-.nav-botoes {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    margin-top: 15px;
-}
+@media (min-width: 992px) {
+    #cardConteudos {
+        position: static !important;
+        transform: none;
+        width: auto;
+        z-index: auto;
+    }
 
-#btn-anterior,
-#btn-proximo {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    background-color: #9db668;
-    /* Azul primário */
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
+    .imgfundo {
+        height: auto;
+        filter: none;
+    }
 
-#btn-anterior:hover,
-#btn-proximo:hover {
-    background-color: #0056b3;
-}
-
-/* Estilo da Tabela do Calendário */
-.calendario-container {
-    overflow-x: auto;
-    /* Permite rolagem lateral em telas menores */
-    background-color: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    padding: 10px;
-}
-
-#tabela-calendario {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-    /* Ajuda a manter a largura das colunas consistente */
-    min-width: 900px;
-    /* Garante que a tabela tenha um tamanho mínimo */
-}
-
-#tabela-calendario th,
-#tabela-calendario td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: center;
-    height: 50px;
-    /* Altura padrão da célula de horário */
-}
-
-#tabela-calendario thead th {
-    background-color: #e9ecef;
-    /* Cor do cabeçalho */
-    font-weight: bold;
-    color: #495057;
-}
-
-/* Células de horários disponíveis */
-.horario-celula {
-    cursor: pointer;
-    transition: background-color 0.2s;
-    position: relative;
-    padding: 10px;
-}
-
-.horario-celula:hover {
-    background-color: #ffe8cc;
-}
-
-.evento {
-    background-color: #28a745;
-    color: white;
-    border-radius: 3px;
-    padding: 5px;
-    font-size: 0.8em;
-    font-weight: bold;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    margin-bottom: 5px;
-    position: static;
-    width: 100%;
-    min-height: 20px;
-    cursor: pointer;
-}
-
-
-.modalescala {
-    display: none;
-    /* Escondido por padrão */
-    position: fixed;
-    z-index: 100;
-    /* Fica acima de tudo */
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
-    /* Fundo escuro transparente */
-}
-
-.modalescala-conteudo {
-    background-color: #fff;
-    margin: 10% auto;
-    /* 10% do topo e centralizado */
-    padding: 25px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 500px;
-    border-radius: 10px;
-    position: relative;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-.fechar-btn {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.fechar-btn:hover,
-.fechar-btn:focus {
-    color: #333;
-    text-decoration: none;
-}
-
-/* Estilos do Formulário */
-#form-agendamento label {
-    display: block;
-    margin-top: 15px;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-#form-agendamento select,
-#form-agendamento input[type="text"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-.btn-salvar {
-    width: 100%;
-    padding: 12px;
-    background-color: #ffc107;
-    /* Amarelo/Laranja, Cor de destaque */
-    color: #333;
-    border: none;
-    border-radius: 5px;
-    margin-top: 20px;
-    font-size: 1.1em;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.btn-salvar:hover {
-    background-color: #e0a800;
-}
-
-#btn-hoje {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    background-color: #ffc107;
-    /* Amarelo/Laranja, Cor de destaque */
-    color: #333;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    font-weight: bold;
-}
-
-#btn-hoje:hover {
-    background-color: #e0a800;
-}
-
-/* style.css (Adicione no final) */
-.btn-excluir {
-    width: 100%;
-    padding: 12px;
-    background-color: #dc3545;
-    /* Vermelho para exclusão */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    margin-top: 10px;
-    font-size: 1.1em;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.btn-excluir:hover {
-    background-color: #c82333;
-}
-
-
-.card-cadastro {
-    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.76);
-}
-
-.card-editar {
-    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.356);
+    #conteudos {
+        background-color: var(--bs-body-bg);
+        padding: 2rem;
+    }
 }

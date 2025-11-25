@@ -4,130 +4,199 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>calendário de massagens</title>
+  <title>Visualizar Escala | Rokuzen</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/frontend/css/global.css" />
   <link rel="stylesheet" href="/frontend/css/escala.css" />
-  <link rel="stylesheet" href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" />
+  <link rel="stylesheet" href="/frontend/css/dropdown-navbar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <link rel="shortcut icon" href="/frontend/img/logoFavicon.png" sizes="32x32" type="image/png"
+    alt="Ícone da Logo Rokuzen" aria-hidden="true" />
 </head>
 
 <body class="roboto">
-  <div class="codigoNavbar">
-    <nav class="navbar container-fluid roboto" style="background: #fff">
-      <div class="row m-0 w-100 justify-content-center justify-content-lg-start">
-        <div class="logo col-sm-12 col-lg-3 mb-1 mb-lg-0 text-center align-self-center">
-          <!-- ! LOGO-->
-          <a href="/inicio"><img src="/frontend/img/logo.png" alt="" height="80px" /></a>
-        </div>
-        <div class="menu col-sm-12 col-lg-9 text-center d-flex align-items-center">
-          <!-- ! MENU DA NAVBAR-->
-          <ul class="list-unstyled d-none d-lg-flex w-100 m-0 justify-content-around align-items-center flex-wrap">
-            <li class="my-2">
-              <a class="text-secondary text-decoration-none p-2 fs-5" href="/escala">Visualizar escala</a>
-            </li>
-            <li class="my-2">
-              <a class="text-secondary text-decoration-none p-2 fs-5" href="/postosatendimento">Postos de
-                atendimento</a>
-            </li>
-            <li class="my-2">
-              <a class="text-secondary text-decoration-none p-2 fs-5" href="/sessao">Gerenciar sessão</a>
-            </li>
-            <li>
-              <button class="sair px-4 fs my-2 align-self-center">
-                Sair
-              </button>
-            </li>
-          </ul>
-        </div>
-        <div id="menubtn" role="button" class="sidebar col-1 d-lg-none text-center">
-          <!-- ! BOTAO PARA ABRIR MENU EM TELAS PEQUENAS-->
-          <i onclick="abrirMenu()" class="mdi mdi-menu fs-1"></i>
-        </div>
-      </div>
-    </nav>
-    <div id="dropcnt" class="dropcnt container-fluid p-0 d-none w-100 d-lg-none">
-      <!-- ! CONTEÚDO DO BOTAO DE ABRIR MENU-->
-      <div class="dropopt container-fluid d-flex align-items-center justify-content-center">
-        <a class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
-          href="" style="height: 100%">Visualizar escala</a>
-      </div>
-      <div class="dropopt container-fluid d-flex align-items-center justify-content-center">
-        <a class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
-          href="" style="height: 100%">Postos de atendimento</a>
-      </div>
-      <div class="dropopt container-fluid d-flex align-items-center justify-content-center">
-        <a class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
-          href="" style="height: 100%">Gerenciar sessão</a>
+  <nav class="navbar navbar-expand-lg bg-white roboto border-bottom" style="height: auto; min-height: 100px;"
+    role="navigation" aria-label="Menu principal de navegação do sistema">
+    <div class="container-fluid h-100 position-relative">
+      <a class="navbar-brand mx-auto mx-lg-0 me-lg-0 ms-lg-5" href="/inicio/:id" aria-current="page">
+        <img src="https://rokuzen.com.br/wp-content/uploads/2021/09/cropped-logomarca_pequena2.png"
+          alt="Logo Rokuzen. Clique para ir à página inicial." height="80" loading="lazy" />
+      </a>
+
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Abrir e fechar menu de navegação">
+        <i class="mdi mdi-menu fs-1 text-secondary" aria-hidden="true"></i>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav w-100 justify-content-evenly ms-auto" role="list">
+          <!-- Dropdown Atendimento -->
+          <li class="nav-item dropdown" role="listitem">
+            <a class="nav-link text-secondary dropdown-toggle" href="#" id="atendimentoDropdown" role="button"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              Atendimento
+            </a>
+            <ul class="dropdown-menu dropdown-content" aria-labelledby="atendimentoDropdown">
+              <li><a class="dropdown-item nav-link text-secondary" href="/escala/:id"><i
+                    class="fas fa-angle-right me-2"></i>Visualizar Escala</a></li>
+              <li><a class="dropdown-item nav-link text-secondary" href="/sessao/:id"><i
+                    class="fas fa-angle-right me-2"></i>Gerenciar Sessão</a></li>
+              <li><a class="dropdown-item nav-link text-secondary" href="/listarterapeutas/:id"><i
+                    class="fas fa-angle-right me-2"></i>Listar Terapeutas</a></li>
+            </ul>
+          </li>
+
+          <!-- Links normais -->
+          <li class="nav-item" role="listitem">
+            <a class="nav-link text-secondary" href="/postosatendimento/:id" aria-current="false">Postos de Trabalho</a>
+          </li>
+
+          <li class="nav-item" id="link-cadastro" role="listitem">
+            <a class="nav-link text-secondary" href="/cadastrar/:id" aria-current="false">Cadastro</a>
+          </li>
+
+          <li class="nav-item" id="link-usuarios" role="listitem">
+            <a class="nav-link text-secondary" href="/user/listar/:id" aria-current="false">Usuários</a>
+          </li>
+
+          <!-- Botão Sair -->
+          <li class="nav-item" role="listitem">
+            <button id="sairbutton" class="btn btn-outline-secondary px-4" role="button"
+              aria-label="Botão para Sair do Sistema">
+              Sair
+            </button>
+          </li>
+        </ul>
       </div>
     </div>
-  </div>
+  </nav>
 
-  <!-- <div class="calendario-container"> -->
-  <!-- começo codigo calendário -->
-  <header class="header-escala">
-    <h1>Serviços da Semana</h1>
-    <div class="nav-botoes">
-      <button id="btn-anterior">Semana Anterior</button>
-      <button id="btn-hoje">Semana Atual</button>
-      <h2 id="semana-atual"></h2>
-      <button id="btn-proximo">Próxima Semana</button>
-    </div>
-  </header>
+  <main role="main" aria-label="Calendário semanal de agendamentos de serviço">
+    <header class="header-escala" role="region" aria-labelledby="servicosh1">
+      <h2 id="servicosh1" class="mt-2 pt-2 fw-light">Serviços da Semana</h2>
 
-  <div class="calendario-container">
-    <table id="tabela-calendario">
-      <thead>
-        <!-- th, tr e th são as tabelas -->
-        <tr>
-          <th>Horário</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-  <div id="modal-agendamento" class="modal">
-    <div class="modal-conteudo">
-      <span class="fechar-btn">&times;</span>
-      <h2>Novo Agendamento</h2>
-      <p>Horário Selecionado <strong id="horario-selecionado"></strong></p>
+      <!-- Toggle de Visualização -->
+      <div class="d-flex justify-content-center align-items-center gap-3 mb-3">
+        <div class="btn-group" role="group" aria-label="Escolher visualização">
+          <input type="radio" class="btn-check" name="tipoVisualizacao" id="viewSemanal" value="semanal" checked>
+          <label class="btn btn-outline-success" for="viewSemanal">
+            <i class="mdi mdi-calendar-week"></i> Semanal
+          </label>
 
-      <form id="form-agendamento">
-        <label for="funcionario">Profissional</label>
-        <select id="funcionario" required>
-          <option value="selecao" selected disabled>
-            Selecione um Profissional
-          </option>
-        </select>
+          <input type="radio" class="btn-check" name="tipoVisualizacao" id="viewDiaria" value="diaria">
+          <label class="btn btn-outline-success" for="viewDiaria">
+            <i class="mdi mdi-calendar-today"></i> Diária
+          </label>
+        </div>
+      </div>
 
-        <label for="tipo-trabalho">Serviço</label>
-        <select id="tipo-trabalho" required>
-          <option value="selecao" selected disabled>
-            Selecione o Serviço
-          </option>
-        </select>
-
-        <label for="unidade" hidden>Unidade</label>
-        <select id="unidade" hidden>
-          <option value="selecao" selected disabled>
-            Selecione a Unidade
-          </option>
-        </select>
-
-        <label for="equipamento">Equipamento</label>
-        <select id="equipamento" required disabled>
-          <option value="selecao" selected disabled>
-            Carregando equipamentos...
-          </option>
-        </select>
-
-        <button type="submit" id="btn-salvar" class="btn-salvar">
-          Salvar Agendamento
+      <div class="nav-botoes" role="group" aria-label="Navegação de semanas">
+        <button id="btn-anterior" aria-label="Ir para Semana Anterior">
+          <i class="mdi mdi-chevron-left"></i> <span id="label-anterior">Semana Anterior</span>
         </button>
-        <button type="button" id="btn-excluir" class="btn-excluir" style="display: none">
-          Excluir Reserva
+        <button id="btn-hoje" aria-label="Voltar para Semana Atual">
+          <i class="mdi mdi-calendar-today"></i> <span id="label-hoje">Semana Atual</span>
         </button>
-      </form>
+        <button id="btn-proximo" aria-label="Ir para Próxima Semana">
+          <span id="label-proximo">Próxima Semana</span> <i class="mdi mdi-chevron-right"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="calendario-container" role="region" aria-labelledby="tabela-calendario">
+      <table id="tabela-calendario" role="grid" aria-label="Tabela de Horários de Serviço da Semana">
+        <thead>
+          <tr role="row">
+            <th scope="col" role="columnheader">Horário</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Modal Bootstrap -->
+  <div id="modal-agendamento" class="modal fade" tabindex="-1" role="dialog" aria-modal="true"
+    aria-labelledby="titulo-agendamento" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="titulo-agendamento">Novo Agendamento</h5>
+          <button type="button" class="btn-close" aria-label="Fechar Novo Agendamento Modal"
+            data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <p class="mb-3">
+            Horário Selecionado: <strong id="horario-selecionado" aria-live="polite"></strong>
+          </p>
+
+          <form id="form-agendamento" aria-label="Formulário de Agendamento de Serviço">
+            <div class="mb-3">
+              <label for="funcionario" class="form-label">Profissional</label>
+              <select id="funcionario" class="form-select" aria-required="true" aria-label="Selecionar Profissional"
+                required></select>
+            </div>
+
+            <div class="mb-3">
+              <label for="tipo-trabalho" class="form-label">Serviço</label>
+              <select id="tipo-trabalho" class="form-select" aria-required="true" aria-label="Selecionar Serviço"
+                required></select>
+            </div>
+
+            <div class="mb-3 visually-hidden">
+              <label for="unidade" class="form-label">Unidade</label>
+              <select id="unidade" class="form-select" aria-hidden="true" aria-label="Unidade do Agendamento"></select>
+            </div>
+
+            <div class="mb-3">
+              <label for="equipamento" class="form-label">Equipamento</label>
+              <select id="equipamento" class="form-select" aria-required="true" aria-label="Selecionar Equipamento"
+                required disabled>
+                <option value="selecao" selected disabled>
+                  Carregando equipamentos...
+                </option>
+              </select>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="btn-excluir" class="btn btn-danger me-auto" style="display: none"
+            aria-label="Excluir Agendamento">
+            Excluir Agendamento
+          </button>
+          <button type="submit" id="btn-salvar" class="btn btn-success" form="form-agendamento"
+            aria-label="Salvar Agendamento">
+            Salvar Agendamento
+          </button>
+        </div>
+      </div>
     </div>
   </div>
+
+  <footer class="bg-light border-top mt-5 py-4 shadow-sm mt-0" role="contentinfo" aria-label="Rodapé do site">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12 text-center">
+          <p class="text-muted mb-0 fs-6">&copy; 2025 Rokuzen. Todos os direitos reservados.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+      <div class="vw-plugin-topwrapper"></div>
+    </div>
+  </div>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+  <script>
+    new window.VLibras.Widget("https://vlibras.gov.br/app");
+  </script>
 
   <script>
     const menubtn = document.getElementById("menubtn");
@@ -136,6 +205,7 @@
       dropcnt.classList.toggle("d-none");
     }
   </script>
+  <script src="https://app.embed.im/accessibility.js" defer></script>
   <script src="/frontend/js/escala.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

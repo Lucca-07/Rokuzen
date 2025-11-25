@@ -1,76 +1,32 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+/* ============================================
+   ESCALA.CSS - Página de Visualização de Escala
+   ============================================ */
 
-.roboto {
-    font-family: "Roboto", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 100;
-    font-style: normal;
-    font-variation-settings:
-        "wdth" 100;
-}
-
-.navbar {
-    border-top: 5px solid #9db668;
-    border-bottom: 5px solid #e9eaee;
-    height: 150px;
-}
-
-.menu a:hover {
-    color: #9db668 !important;
-}
-
-.dropcnt {
-    border: 5px solid #e9eaee;
-    border-top: none;
-    height: 305px;
-    /* position: fixed; */
-    top: 150px;
-    z-index: 999 !important;
-}
-
-.dropopt {
-    height: 100px;
-    border: 1px solid #e9eaee;
-    background-color: white;
-}
-
-.dropopt a:hover {
-    color: #9db668 !important;
-}
-
-
-.btncustom {
-    background: #a0af68;
-    color: white;
-    border: none;
-    border-radius: 15px;
-    padding: 6px 14px;
-    margin-top: 5px;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.btncustom:hover {
-    background: #8fa25d;
-}
-
-.fechar {
-    position: absolute;
-    top: 5px;
-    right: 10px;
-    background: none;
-    border: none;
-    font-size: 22px;
-    cursor: pointer;
-}
-
+/* === HEADER === */
 .header-escala {
     text-align: center;
     margin-bottom: 25px;
 }
 
+/* === TOGGLE DE VISUALIZAÇÃO === */
+.btn-group .btn-check:checked + .btn-outline-success {
+    background-color: #198754;
+    border-color: #198754;
+    color: white;
+}
+
+.btn-outline-success {
+    color: #198754;
+    border-color: #198754;
+}
+
+.btn-outline-success:hover {
+    background-color: #157347;
+    border-color: #157347;
+    color: white;
+}
+
+/* === NAVEGAÇÃO DE SEMANAS === */
 .nav-botoes {
     display: flex;
     justify-content: center;
@@ -84,54 +40,101 @@
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
-    background-color: #9db668;
-    /* Azul primário */
-    color: white;
+    background-color: white;
+    color: #157347;
+    border: 2px solid #157347;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 #btn-anterior:hover,
 #btn-proximo:hover {
-    background-color: darkgreen;
+    background-color: white;
+    color: #36b178;
+    border: 2px solid #36b178;
+    transform: translateY(-2px);
 }
 
-/* Estilo da Tabela do Calendário */
+#btn-hoje {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #198754;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+#btn-hoje:hover {
+    background-color: #36b178;
+    transform: translateY(-2px);
+}
+
+/* === TABELA DO CALENDÁRIO === */
 .calendario-container {
     overflow-x: auto;
-    /* Permite rolagem lateral em telas menores */
-    background-color: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    padding: 10px;
+    margin: 20px auto;
+    max-width: 95%;
 }
 
 #tabela-calendario {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed;
-    /* Ajuda a manter a largura das colunas consistente */
-    min-width: 900px;
-    /* Garante que a tabela tenha um tamanho mínimo */
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 #tabela-calendario th,
 #tabela-calendario td {
     border: 1px solid #ddd;
-    padding: 10px;
+    padding: 12px;
     text-align: center;
-    height: 50px;
-    /* Altura padrão da célula de horário */
 }
 
 #tabela-calendario thead th {
-    background-color: #e9ecef;
-    /* Cor do cabeçalho */
+    background-color: #f8f9fa;
+    color: #333;
     font-weight: bold;
-    color: #495057;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
-/* Células de horários disponíveis */
+/* === PROPORÇÕES PARA VISUALIZAÇÃO DIÁRIA === */
+#tabela-calendario.visualizacao-diaria thead th:first-child {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+#tabela-calendario.visualizacao-diaria th:first-child,
+#tabela-calendario.visualizacao-diaria td:first-child {
+    width: 30%;
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+#tabela-calendario.visualizacao-diaria th:nth-child(2),
+#tabela-calendario.visualizacao-diaria td:nth-child(2) {
+    width: 70%;
+}
+
+/* === PROPORÇÕES PARA VISUALIZAÇÃO SEMANAL === */
+#tabela-calendario.visualizacao-semanal th:first-child,
+#tabela-calendario.visualizacao-semanal td:first-child {
+    width: auto;
+    min-width: 80px;
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+/* === CÉLULAS DE HORÁRIOS === */
 .horario-celula {
     cursor: pointer;
     transition: background-color 0.2s;
@@ -140,11 +143,43 @@
 }
 
 .horario-celula:hover {
-    background-color: #ffe8cc;
+    background-color: #f5ffde;
 }
 
+/* === HORÁRIOS PASSADOS === */
+.horario-celula.passado {
+    background-color: #f6f6f6;
+    cursor: not-allowed;
+    opacity: 0.6;
+    position: relative;
+    overflow: visible;
+}
+
+.horario-celula.passado:hover {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+
+.horario-celula.passado .evento {
+    cursor: pointer;
+    position: relative;
+    z-index: 10;
+    pointer-events: auto;
+    background-color: #198754;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.horario-celula.passado .evento:hover {
+    opacity: 1;
+    transform: scale(1.05);
+    transition: all 0.2s;
+    z-index: 11;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* === EVENTOS === */
 .evento {
-    background-color: #28a745;
+    background-color: #198754;
     color: white;
     border-radius: 3px;
     padding: 5px;
@@ -158,32 +193,29 @@
     justify-content: center;
     box-sizing: border-box;
     margin-bottom: 5px;
-    position: static;
+    position: relative;
+    z-index: 1;
     width: 100%;
     min-height: 20px;
     cursor: pointer;
 }
 
-
+/* === MODAL === */
 .modalescala {
     display: none;
-    /* Escondido por padrão */
     position: fixed;
     z-index: 100;
-    /* Fica acima de tudo */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.4);
-    /* Fundo escuro transparente */
 }
 
 .modalescala-conteudo {
     background-color: #fff;
     margin: 10% auto;
-    /* 10% do topo e centralizado */
     padding: 25px;
     border: 1px solid #888;
     width: 80%;
@@ -207,7 +239,7 @@
     text-decoration: none;
 }
 
-/* Estilos do Formulário */
+/* === FORMULÁRIO DE AGENDAMENTO === */
 #form-agendamento label {
     display: block;
     margin-top: 15px;
@@ -225,12 +257,22 @@
     box-sizing: border-box;
 }
 
+#form-agendamento select:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+#form-agendamento select:disabled option {
+    color: #6c757d;
+}
+
+/* === BOTÕES DO MODAL === */
 .btn-salvar {
     width: 100%;
     padding: 12px;
-    background-color: #ffc107;
-    /* Amarelo/Laranja, Cor de destaque */
-    color: #333;
+    background-color: #9db668;
+    color: white;
     border: none;
     border-radius: 5px;
     margin-top: 20px;
@@ -240,31 +282,13 @@
 }
 
 .btn-salvar:hover {
-    background-color: #e0a800;
+    background-color: #9db668;
 }
 
-#btn-hoje {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    background-color: #ffc107;
-    /* Amarelo/Laranja, Cor de destaque */
-    color: #333;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    font-weight: bold;
-}
-
-#btn-hoje:hover {
-    background-color: #e0a800;
-}
-
-/* style.css (Adicione no final) */
 .btn-excluir {
     width: 100%;
     padding: 12px;
     background-color: #dc3545;
-    /* Vermelho para exclusão */
     color: white;
     border: none;
     border-radius: 5px;
@@ -276,4 +300,14 @@
 
 .btn-excluir:hover {
     background-color: #c82333;
+}
+
+/* === ALERTA DE AGENDAMENTO PASSADO === */
+.modal-body .alert-info {
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+    color: #0c5460;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
 }

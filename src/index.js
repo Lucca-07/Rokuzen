@@ -7,10 +7,13 @@ import path from "path";
 import { fileURLToPath } from "node:url";
 import connectDB from "./modules/connect.js";
 connectDB();
+
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
+import equipamentoRoutes from "./api/routes/equipamento.routes.js";
+import colaboradoresRoutes from "./api/routes/colaboradores.routes.js";
 import recuperarSenha from "./modules/recuperarSenha.js";
 import Clientes from "./models/Clientes.js";
 import Colaboradores from "./models/Colaboradores.js";
@@ -26,9 +29,13 @@ const port = 8080;
 
 // Middleware para o express entender JSON
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Servir os arquivos estáticos do projeto (CSS, IMG ...)
 app.use("/frontend", express.static(path.join(dirname, "frontend")));
+
+app.use("/api/equipamentos", equipamentoRoutes); // ✅ Esta linha precisa estar aqui
+app.use("/api/colaboradores", colaboradoresRoutes);
 
 // GETS
 // Rota da Página de Login
@@ -76,23 +83,19 @@ app.get("/sessao/:id", async (req, res) => {
     res.sendFile(path.join(dirname, "frontend", "sessao.html"));
 });
 
-app.get("/listarterapeutas", async (req, res) => {
-    res.sendFile(
-        path.join(dirname, "src", "frontend", "listarTerapeutas.html")
-    );
+app.get("/listarterapeutas/:id", async (req, res) => {
+    const id = req.params.id;
+    if (!id) return res.redirect("/");
+    res.sendFile(path.join(dirname, "frontend", "listarTerapeutas.html"));
 });
 
 //Rota da api de listar Terapeutas
 app.get("/api/listarterapeutas", async (req, res) => {
     try {
-        console.log("Recebida requisição para listar terapeutas");
-        console.log("Hora atual:", new Date().toLocaleString());
-
         // Busca os terapeutas
         const terapeutas = await Colaboradores.find({
             perfis_usuario: "Terapeuta",
         });
-        console.log("Terapeutas encontrados:", terapeutas.length);
 
         const result = [];
         // Ajusta a data atual para UTC
@@ -100,14 +103,7 @@ app.get("/api/listarterapeutas", async (req, res) => {
         const agoraUTC = new Date(
             agora.getTime() - agora.getTimezoneOffset() * 60000
         );
-        console.log("Hora atual (local):", agora.toLocaleString());
-        console.log("Hora atual (UTC):", agoraUTC.toISOString());
-
         for (const terapeuta of terapeutas) {
-            console.log(
-                `\nVerificando atendimentos para ${terapeuta.nome_colaborador}`
-            );
-
             // Busca atendimento atual (entre início e fim programados)
             const atendimentoAtual = await Atendimentos.findOne({
                 colaborador_id: terapeuta._id,
@@ -130,16 +126,7 @@ app.get("/api/listarterapeutas", async (req, res) => {
                 encerrado: false,
             }).sort({ inicio_atendimento: 1 });
 
-            console.log("ID do terapeuta:", terapeuta._id.toString());
-            console.log("Atendimento atual encontrado:", atendimentoAtual);
-            console.log("Atendimento em andamento:", atendimentoEmAndamento);
-            console.log("Próximo atendimento:", proximoAtendimento);
-
-            console.log("Atual:", atendimentoAtual);
-            console.log("Em andamento:", atendimentoEmAndamento);
-            console.log("Próximo:", proximoAtendimento);
-
-            // Prepara os dados do terapeuta
+            // Prepara os dados do terapeuta - INCLUINDO unidades_trabalha
             const terapeutaInfo = {
                 colaborador_id: terapeuta._id,
                 nome: terapeuta.nome_colaborador,
@@ -148,6 +135,7 @@ app.get("/api/listarterapeutas", async (req, res) => {
                 inicio_atendimento: null,
                 fim_atendimento: null,
                 em_andamento: false,
+                unidades_trabalha: terapeuta.unidades_trabalha || [], // ADICIONA AS UNIDADES
             };
 
             // Determina o status e horários
@@ -181,7 +169,6 @@ app.get("/api/listarterapeutas", async (req, res) => {
         }
 
         // Retorna o resultado
-        console.log("Enviando resultado:", result);
         res.json({ terapeutas: result });
     } catch (error) {
         console.error("Erro:", error);
@@ -190,12 +177,37 @@ app.get("/api/listarterapeutas", async (req, res) => {
         });
     }
 });
+// Atualiza um timer (tempo restante / estado)
+app.put("/api/atendimentos/:id/timer", async (req, res) => {
+    try {
+        const atendimentoId = req.params.id;
+        const update = {
+            tempoRestante: req.body.tempoRestante,
+            em_andamento: req.body.em_andamento,
+        };
 
+        const atendimento = await Atendimentos.findByIdAndUpdate(
+            atendimentoId,
+            update,
+            { new: true }
+        );
+
+        if (!atendimento) {
+            return res
+                .status(404)
+                .json({ error: "Atendimento não encontrado" });
+        }
+
+        res.json(atendimento);
+    } catch (err) {
+        console.error("Erro ao atualizar atendimento:", err);
+        res.status(500).json({ error: "Erro interno" });
+    }
+});
 // Rota de API
 app.get("/api/colaboradores/:id", checkToken, async (req, res) => {
     const id = req.params.id;
     try {
-        // Opcional: garantir que o id do token bate com o id pedido (ou tratar roles/admin)
         if (req.userId !== id) {
             return res.status(403).json({ msg: "Acesso proibido." });
         }
@@ -212,36 +224,117 @@ app.get("/api/colaboradores/:id", checkToken, async (req, res) => {
 });
 
 app.get("/api/postos", async (req, res) => {
-  // Agora também podemos receber 'incluir_posto_id'
-  const { unidade_id, status, incluir_posto_id } = req.query;
+    // Agora também podemos receber 'incluir_posto_id' e 'dataHora'
+    const { unidade_id, incluir_posto_id, dataHora } = req.query;
+    let { status } = req.query;
 
-  if (!unidade_id) {
-    return res.status(400).json({ mensagem: "O ID da unidade é obrigatório." });
-  }
-
-  try {
-    const filtro = { unidade_id: unidade_id };
-
-    // Lógica para incluir o posto atual E os disponíveis
-    if (status === "Disponivel" && incluir_posto_id) {
-      filtro["$or"] = [{ status: "Disponivel" }, { _id: incluir_posto_id }];
-    } else if (status) {
-      filtro.status = status;
+    if (!unidade_id) {
+        return res
+            .status(400)
+            .json({ mensagem: "O ID da unidade é obrigatório." });
     }
 
-    const postos = await PostosAtendimento.find(filtro);
-    res.json(postos);
-  } catch (error) {
-    console.error("Erro ao buscar postos de atendimento:", error);
-    res.status(500).json({ mensagem: "Erro no servidor." });
-  }
+    // Validar se o unidade_id é um ObjectId válido
+    if (!mongoose.Types.ObjectId.isValid(unidade_id)) {
+        return res.status(400).json({
+            mensagem: "O ID da unidade fornecido é inválido.",
+            erro: "ID deve ser um ObjectId válido do MongoDB",
+        });
+    }
+
+    try {
+        const filtro = { unidade_id: new mongoose.Types.ObjectId(unidade_id) };
+
+        // Lógica para incluir o posto atual E os disponíveis
+        if (status === "Disponivel") status = "Disponível";
+
+        // 3. Criamos as condições para o $or
+        const condicoesOu = [];
+        // Condição 1: Postos com o status desejado (ex: "Disponível")
+        if (status) {
+            condicoesOu.push({ status: status });
+        }
+
+        // Condição 2: O posto específico que está a ser editado
+        if (
+            incluir_posto_id &&
+            mongoose.Types.ObjectId.isValid(incluir_posto_id)
+        ) {
+            condicoesOu.push({
+                _id: new mongoose.Types.ObjectId(incluir_posto_id),
+            });
+        }
+
+        // 4. Se tivermos condições, aplicamos o $or ao filtro principal
+        if (condicoesOu.length > 0) {
+            filtro.$or = condicoesOu;
+        }
+
+        const postos = await PostosAtendimento.find(filtro);
+
+        // Se um horário foi fornecido, filtrar postos que já têm agendamento nesse horário
+        if (dataHora) {
+            try {
+                const dataHoraObj = new Date(dataHora + "Z");
+                const fimAtendimento = new Date(dataHoraObj);
+                fimAtendimento.setMinutes(fimAtendimento.getMinutes() + 60);
+
+                // Buscar atendimentos que conflitam com o horário
+                const atendimentosConflitantes = await Atendimentos.find({
+                    inicio_atendimento: { $lt: fimAtendimento },
+                    fim_atendimento: { $gt: dataHoraObj },
+                    posto_id: { $exists: true, $ne: null },
+                }).select("posto_id");
+
+                // Extrair IDs dos postos ocupados
+                const postosOcupadosIds = atendimentosConflitantes
+                    .map((at) => at.posto_id?.toString())
+                    .filter((id) => id);
+
+                // Se estamos editando um agendamento, excluir o próprio agendamento do conflito
+                // (isso será tratado no frontend passando o id do atendimento em edição)
+
+                // Filtrar postos que não estão ocupados no horário
+                const postosDisponiveis = postos.filter((posto) => {
+                    const postoIdStr = posto._id.toString();
+                    // Se o posto está na lista de ocupados, só incluir se for o posto que estamos editando
+                    if (postosOcupadosIds.includes(postoIdStr)) {
+                        // Se é o posto que estamos editando (incluir_posto_id), incluir mesmo ocupado
+                        if (
+                            incluir_posto_id &&
+                            postoIdStr === incluir_posto_id.toString()
+                        ) {
+                            return true;
+                        }
+                        return false;
+                    }
+                    return true;
+                });
+
+                return res.json(postosDisponiveis);
+            } catch (error) {
+                console.error("Erro ao verificar conflitos de horário:", error);
+                // Em caso de erro, retornar todos os postos (comportamento antigo)
+            }
+        }
+
+        res.json(postos);
+    } catch (error) {
+        console.error("❌ Erro ao buscar postos de atendimento:", error);
+        res.status(500).json({
+            mensagem: "Erro no servidor.",
+            erro: error.message,
+            stack: error.stack,
+        });
+    }
 });
 // ROTA PARA BUSCAR TODOS OS SERVIÇOS
 app.get("/api/colaboradores", async (req, res) => {
     try {
-        const servicos = await Colaboradores.find({ ativo: true }).select(
-            "nome_colaborador"
-        );
+        const servicos = await Colaboradores.find({
+            ativo: true,
+            perfis_usuario: "Terapeuta",
+        }).select("nome_colaborador");
         res.json(servicos);
     } catch (error) {
         console.error("Erro ao buscar colaboradores:", error);
@@ -249,11 +342,23 @@ app.get("/api/colaboradores", async (req, res) => {
     }
 });
 // ROTA PARA BUSCAR TODOS OS SERVIÇOS
-app.get("/api/servicos", async (req, res) => {
+app.post("/api/servicos", async (req, res) => {
+    const { unidade } = req.body;
     try {
-        const servicos = await Servicos.find({ ativo: true }).select(
-            "nome_servico"
-        );
+        const unidadeEncontrada = await Unidades.findOne({
+            nome_unidade: unidade,
+        });
+        if (!unidadeEncontrada) {
+            return res
+                .status(404)
+                .json({ mensagem: "Unidade não encontrada." });
+        }
+
+        const servicos = await Servicos.find({
+            unidade_id: unidadeEncontrada._id,
+            ativo: true,
+        }).select("nome_servico");
+
         res.json(servicos);
     } catch (error) {
         console.error("Erro ao buscar serviços:", error);
@@ -325,25 +430,50 @@ app.get("/api/atendimentos", async (req, res) => {
 
 app.put("/api/atendimentos/:id", async (req, res) => {
     const { id } = req.params;
-    const { colaborador_id, servico_id, unidade_id } = req.body;
+    const { colaborador_id, servico_id, unidade_id, posto_id } = req.body;
 
     try {
+        // 1. Buscar o agendamento ANTES de atualizar para pegar o posto_id antigo
+        const atendimentoAntigo = await Atendimentos.findById(id);
+
+        if (!atendimentoAntigo) {
+            return res
+                .status(404)
+                .json({ mensagem: "Agendamento não encontrado." });
+        }
+
+        const postoIdAntigo = atendimentoAntigo.posto_id?.toString();
+        const postoIdNovo = posto_id?.toString();
+
+        // 2. Atualizar o agendamento
         const atendimentoAtualizado = await Atendimentos.findByIdAndUpdate(
             id,
             {
                 colaborador_id,
                 servico_id,
                 unidade_id,
+                posto_id,
             },
             { new: true }
         )
             .populate("colaborador_id", "nome_colaborador")
             .populate("servico_id", "nome_servico");
 
-        if (!atendimentoAtualizado) {
-            return res
-                .status(404)
-                .json({ mensagem: "Agendamento não encontrado." });
+        // 3. Gerenciar os status dos postos
+        // Se o posto mudou ou foi removido
+        if (postoIdAntigo && postoIdAntigo !== postoIdNovo) {
+            // Liberar o posto antigo
+            await PostosAtendimento.findByIdAndUpdate(postoIdAntigo, {
+                status: "Disponível",
+            });
+        }
+
+        // Se um novo posto foi atribuído (diferente do antigo)
+        if (postoIdNovo && postoIdNovo !== postoIdAntigo) {
+            // Reservar o novo posto
+            await PostosAtendimento.findByIdAndUpdate(postoIdNovo, {
+                status: "Ocupado",
+            });
         }
 
         res.json({
@@ -418,7 +548,7 @@ app.post("/escala/atendimento", async (req, res) => {
             em_andamento: false,
             inicio_real: null,
             fim_real: null,
-            tempoRestante: 120,
+            tempoRestante: 3600,
             encerrado: false,
         });
 
@@ -507,8 +637,25 @@ app.get("/api/terapeutas", async (req, res) => {
 // Todos os timers
 app.get("/api/atendimentos", async (req, res) => {
     try {
-        const atendimentos = await Atendimentos.find();
-        res.json(atendimentos);
+        const atendimentos = await Atendimentos.find()
+            .populate("colaborador_id", "nome_colaborador _id")
+            .populate("servico_id", "nome_servico _id");
+
+        // Transforma o resultado para manter colaborador_id como ID
+        const atendimentosFormatados = atendimentos.map((att) => {
+            const obj = att.toObject();
+            // Se colaborador_id foi populado, extrai o _id
+            if (
+                obj.colaborador_id &&
+                typeof obj.colaborador_id === "object" &&
+                obj.colaborador_id._id
+            ) {
+                obj.colaborador_id = obj.colaborador_id._id;
+            }
+            return obj;
+        });
+
+        res.json(atendimentosFormatados);
     } catch (err) {
         console.error("Erro ao buscar atendimentos:", err);
         res.status(500).json({ error: "Erro ao buscar atendimentos" });
@@ -544,7 +691,7 @@ app.post("/api/atendimentos", async (req, res) => {
             tempoRestante:
                 typeof data.tempoRestante === "number"
                     ? data.tempoRestante
-                    : 600,
+                    : 3600,
             em_andamento: !!data.em_andamento,
             inicio_real: data.inicio_real || null,
             fim_real: data.fim_real || null,
@@ -612,7 +759,7 @@ app.get("/api/agendamentos", async (req, res) => {
         amanha.setDate(hoje.getDate() + 1);
 
         // Pegando dados simulados do localStorage (no front você envia via headers ou query)
-        const idUser = req.query.idUser; // ou via header
+        const idUser = req.query.idUser || req.query.userId;
         const perfisUsuario = req.query.perfis_usuario?.split(",") || [];
 
         let filtro = {
@@ -621,12 +768,14 @@ app.get("/api/agendamentos", async (req, res) => {
 
         // Se NÃO tiver perfil Master/Gerente/Recepcionista, só vê os próprios
         const temAcessoTotal = perfisUsuario.some((p) =>
-            ["Master", "Gerente", "Recepcionista"].includes(p)
+            ["Master", "Gerente", "Recepcao", "Recepção", "recepcao"].includes(
+                p
+            )
         );
-        if (!temAcessoTotal) {
-            filtro.colaborador_id = idUser;
-        }
 
+        if (!temAcessoTotal) {
+            filtro.colaborador_id = new mongoose.Types.ObjectId(idUser);
+        }
         const agendamentos = await Atendimentos.find(filtro)
             .populate("colaborador_id", "nome_colaborador")
             .sort({ inicio_atendimento: 1 })
@@ -723,7 +872,7 @@ app.get("/api/colaboradores/:id/imagem", async (req, res) => {
 
         if (!colab || !colab.imagem) {
             return res.sendFile("account-outline.svg", {
-                root: path.join(frontendDir, "img"),
+                root: path.join(dirname, "frontend", "img"),
             });
         }
 
@@ -806,38 +955,41 @@ app.post("/postoatendimento", async (req, res) => {
                 msg: "Postos não encontrados",
             });
         }
-        let quick = [];
-        let poltrona = [];
-        let maca = [];
-        postos.forEach((posto) => {
-            switch (posto.nome_posto) {
-                case "Cadeira Quick":
-                    quick.push(posto);
-                    break;
-                case "Poltrona de Reflexologia":
-                    poltrona.push(posto);
-                    break;
-                case "Sala de Maca":
-                    maca.push(posto);
-                    break;
-                default:
-                    console.log("Erro");
+
+        // Usar reduce para categorizar os postos de forma mais eficiente
+        const categorias = postos.reduce(
+            (acc, posto) => {
+                const nome = posto.nome_posto;
+
+                if (nome.startsWith("Cadeira Quick")) {
+                    acc.quick.push(posto);
+                } else if (nome.startsWith("Poltrona de Reflexologia")) {
+                    acc.poltrona.push(posto);
+                } else if (nome.startsWith("Sala de Maca")) {
+                    acc.maca.push(posto);
+                } else {
+                    console.warn(`Tipo de posto não reconhecido: ${nome}`);
+                }
+
+                return acc;
+            },
+            {
+                quick: [],
+                poltrona: [],
+                maca: [],
             }
-        });
-        console.log(quick, poltrona, maca);
-        res.status(200).json({
-            quick: quick,
-            poltrona: poltrona,
-            maca: maca,
-        });
-    } catch (error) {}
+        );
+
+        res.status(200).json(categorias);
+    } catch (error) {
+        console.error("Erro ao buscar postos:", error);
+        res.status(500).json({ msg: "Erro no servidor" });
+    }
 });
 
 // Atualiza o status de um posto (cadeira, maca, poltrona) pelo ID
 app.post("/atualizarStatus", async (req, res) => {
     const { id, status } = req.body;
-
-    console.log("📩 Dados recebidos para atualizar:", { id, status });
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({ msg: "ID inválido" });
@@ -848,8 +1000,6 @@ app.post("/atualizarStatus", async (req, res) => {
             { _id: id },
             { $set: { status: status } }
         );
-
-        console.log("🧾 Resultado do update:", resultado);
 
         if (resultado.matchedCount === 0) {
             return res.status(404).json({ msg: "Posto não encontrado" });
@@ -1051,7 +1201,6 @@ app.post("/auth/client/register", async (req, res) => {
 app.post("/auth/login", async (req, res) => {
     const { email, pass } = req.body;
     if (!email) {
-        console.log(email);
         return res.status(422).json({ msg: "O email é obrigatório" });
     }
     if (!pass) {
@@ -1071,12 +1220,7 @@ app.post("/auth/login", async (req, res) => {
     try {
         const secret = process.env.SECRET;
 
-        const token = jwt.sign(
-            {
-                id: user._id,
-            },
-            secret
-        );
+        const token = jwt.sign({ id: user._id }, secret, { expiresIn: "8h" });
 
         res.status(200).json({
             msg: "Autenticação realizada com sucesso",
@@ -1085,6 +1229,8 @@ app.post("/auth/login", async (req, res) => {
             redirect: `/inicio/${user._id}`,
             id: user._id,
             unidades: user.unidades_trabalha,
+            tipoUser: user.tipo_colaborador,
+            perfis_usuario: user.perfis_usuario,
         });
     } catch (error) {
         console.log(error);
@@ -1100,7 +1246,6 @@ app.post("/recuperar", async (req, res) => {
         });
         // console.log(emailRecuperacao);
         if (emailUsuario) {
-            console.log(emailRecuperacao);
             recuperarSenha(emailRecuperacao);
             res.json({ msg: "Email enviado" });
         } else {
@@ -1137,7 +1282,7 @@ app.post("/atualizarSenha", async (req, res) => {
         if (emailUsuario) {
             res.json({ msg: "Senha atualizada com sucesso!" });
         } else {
-            res.status(404).json({ msg: "Usuário não encontrado." });
+            res.status(404).json({ msg: "Email não encontrado." });
         }
     } catch (error) {
         console.error("Erro ao atualizar senha:", error);

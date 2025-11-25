@@ -4,209 +4,232 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Gerenciar Sessão</title>
-
-	<!-- Link do MATERIAL DESIGN ICONS  -->
+	<title>Gerenciar Sessão | Rokuzen</title>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
-
-	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
 		integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
-
-	<!-- CSS -->
+	<link rel="stylesheet" href="/frontend/css/global.css">
 	<link rel="stylesheet" href="/frontend/css/sessao.css">
+	<link rel="stylesheet" href="/frontend/css/dropdown-navbar.css">
+	<link rel="shortcut icon" href="/frontend/img/logoFavicon.png" sizes="32x32" type="image/png"
+		alt="Ícone da Logo Rokuzen" aria-hidden="true">
 </head>
 
 <body class="bg-light roboto">
 
-	<!-- NAVBAR -->
-	<div>
-		<nav class=" navbar container-fluid roboto" style="background: #FFF;">
-			<div class="row m-0 w-100 justify-content-center justify-content-lg-start">
-				<div class="logo col-sm-12 col-lg-3 mb-1 mb-lg-0 text-center align-self-center"> <!-- ! LOGO-->
-					<a href="#inicio"><img
-							src="https://rokuzen.com.br/wp-content/uploads/2021/09/cropped-logomarca_pequena2.png"
-							alt="" height="80px"></a>
-				</div>
-				<div class="menu col-sm-12 col-lg-9 text-center d-flex align-items-center"> <!-- ! MENU DA NAVBAR-->
-					<ul
-						class="list-unstyled d-none d-lg-flex w-100 m-0 justify-content-around align-items-center flex-wrap">
-						<li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5"
-								href="#escala">Visualizar escala</a>
-						</li>
-						<li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="#postos">Postos
-								de
-								atendimento</a></li>
-						<li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5"
-								href="#sessao">Gerenciar sessão</a>
-						</li>
-						<li><button id="sairbutton" class="sair px-4 fs my-2 align-self-center">Sair</button></li>
-					</ul>
-				</div>
-				<div id="menubtn" role="button" class="sidebar col-1 d-lg-none text-center">
-					<!-- ! BOTAO PARA ABRIR MENU EM TELAS PEQUENAS-->
-					<i onclick="abrirMenu()" class="mdi mdi-menu fs-1"></i>
-				</div>
-			</div>
-		</nav>
-		<div id="dropcnt" class="dropcnt container-fluid p-0 d-none w-100 d-lg-none">
-			<!-- ! CONTEÚDO DO BOTAO DE ABRIR MENU-->
-			<div class="dropopt container-fluid d-flex align-items-center justify-content-center">
-				<a class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
-					href="" style="height: 100%;">Visualizar escala</a>
-			</div>
-			<div class="dropopt container-fluid d-flex align-items-center justify-content-center">
-				<a class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
-					href="" style="height: 100%;">Postos de atendimento</a>
-			</div>
-			<div class="dropopt container-fluid d-flex align-items-center justify-content-center">
-				<a class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
-					href="" style="height: 100%;">Gerenciar sessão</a>
+	<nav class="navbar navbar-expand-lg bg-white roboto border-bottom" style="height: auto; min-height: 100px;"
+		role="navigation" aria-label="Menu principal de navegação do sistema">
+		<div class="container-fluid h-100 position-relative">
+			<a class="navbar-brand mx-auto mx-lg-0 me-lg-0 ms-lg-5" href="/inicio/:id" aria-current="page">
+				<img src="https://rokuzen.com.br/wp-content/uploads/2021/09/cropped-logomarca_pequena2.png"
+					alt="Logo Rokuzen. Clique para ir à página inicial." height="80" loading="lazy" />
+			</a>
+
+			<button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+				aria-controls="navbarNav" aria-expanded="false" aria-label="Abrir e fechar menu de navegação">
+				<i class="mdi mdi-menu fs-1 text-secondary" aria-hidden="true"></i>
+			</button>
+
+			<div class="collapse navbar-collapse" id="navbarNav">
+				<ul class="navbar-nav w-100 justify-content-evenly ms-auto" role="list">
+					<!-- Dropdown Atendimento -->
+					<li class="nav-item dropdown" role="listitem">
+						<a class="nav-link text-secondary dropdown-toggle" href="#" id="atendimentoDropdown"
+							role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							Atendimento
+						</a>
+						<ul class="dropdown-menu dropdown-content" aria-labelledby="atendimentoDropdown">
+							<li><a class="dropdown-item nav-link text-secondary" href="/escala/:id"><i
+										class="fas fa-angle-right me-2"></i>Visualizar Escala</a></li>
+							<li><a class="dropdown-item nav-link text-secondary" href="/sessao/:id"><i
+										class="fas fa-angle-right me-2"></i>Gerenciar Sessão</a></li>
+							<li><a class="dropdown-item nav-link text-secondary" href="/listarterapeutas/:id"><i
+										class="fas fa-angle-right me-2"></i>Listar Terapeutas</a></li>
+						</ul>
+					</li>
+
+					<!-- Links normais -->
+					<li class="nav-item" role="listitem">
+						<a class="nav-link text-secondary" href="/postosatendimento/:id" aria-current="false">Postos de
+							Trabalho</a>
+					</li>
+
+					<li class="nav-item" id="link-cadastro" role="listitem">
+						<a class="nav-link text-secondary" href="/cadastrar/:id" aria-current="false">Cadastro</a>
+					</li>
+
+					<li class="nav-item" id="link-usuarios" role="listitem">
+						<a class="nav-link text-secondary" href="/user/listar/:id" aria-current="false">Usuários</a>
+					</li>
+
+					<!-- Botão Sair -->
+					<li class="nav-item" role="listitem">
+						<button id="sairbutton" class="btn btn-outline-secondary px-4" role="button"
+							aria-label="Botão para Sair do Sistema">
+							Sair
+						</button>
+					</li>
+				</ul>
 			</div>
 		</div>
-	</div>
+	</nav>
 
-	<!-- Conteudo da pagina divido em 2 partes -->
-	<div class="container my-4">
+	<main class="container my-4" role="main" aria-label="Painel de controle da sessão e agendamentos">
 		<div class="row gy-4">
 
-			<!-- LADO ESQUERDO: Terapeuta e Timer -->
 			<div
 				class="col-12 col-lg-6 d-flex flex-column align-items-center align-items-lg-start text-center text-lg-start px-3">
 
-
-				<!-- Botão Selecionar Terapeuta -->
 				<button id="btnAbrirModal"
-					class="btn btn-light border rounded-3 px-4 py-3 fs-5 mb-4 w-100 w-md-auto d-none"
-					style="background-color: #F6F6F6;" data-bs-toggle="modal" data-bs-target="#popupTerapeuta">
-					Selecionar Terapeuta
+					class="btn btn-light border rounded-3 px-4 py-3 fs-5 mb-4 w-auto w-md-auto d-none m-auto"
+					style="background-color: #F6F6F6;" data-bs-toggle="modal" data-bs-target="#popupTerapeuta"
+					aria-haspopup="dialog" aria-expanded="false" aria-controls="popupTerapeuta"
+					aria-label="Visualizar Horário e Selecionar Sessões">
+					Visualizar timers
+					<i class="mdi mdi-arrow-down-drop-circle-outline"></i>
 				</button>
 
-				</button>
+				<div class="d-flex flex-column justify-content-center align-items-center w-100" role="region"
+					aria-labelledby="timer">
 
-				<!-- Retangulo com timer -->
-				<div class="d-flex flex-column justify-content-center align-items-center w-100">
-
-					<!-- Retangulo -->
 					<div
 						class="timer-circle d-flex flex-column justify-content-center align-items-center text-center mb-4">
-						<h2 id="timer" class="timer-title display-1 fw-bold">10:00</h2>
+						<h2 id="timer" class="timer-title display-1 fw-bold" role="timer" aria-live="polite"
+							aria-atomic="true">10:00</h2>
 
-						<!-- Botões de adicionar tempo -->
 						<div class="d-flex flex-wrap justify-content-center w-75 mt-3">
-							<div class="d-flex gap-2 justify-content-center w-100">
-								<button id="Adicionar1min"
-									class="btn btn-outline-success rounded-pill px-3 fw-bold">+1:00</button>
-								<button id="Adicionar5min"
-									class="btn btn-outline-success rounded-pill px-3 fw-bold">+5:00</button>
+							<div class="d-flex gap-2 justify-content-center w-100 ">
+								<button id="Adicionar1min" class="btn btn-outline-success rounded-pill px-3"
+									style="font-size: 1rem;" aria-label="Adicionar 1 minuto ao timer">+1:00</button>
+								<button id="Adicionar5min" class="btn btn-outline-success rounded-pill px-3"
+									style="font-size: 1rem;" aria-label="Adicionar 5 minutos ao timer">+5:00</button>
 							</div>
 							<div class="d-flex justify-content-center w-100 mt-2">
-								<button id="Adicionar10min"
-									class="btn btn-outline-success rounded-pill px-3 fw-bold">+10:00</button>
+								<button id="Adicionar10min" class="btn btn-outline-success rounded-pill px-3"
+									style="font-size: 1rem;" aria-label="Adicionar 10 minutos ao timer">+10:00</button>
 							</div>
 						</div>
 					</div>
 
-					<!-- Botões de controle -->
 					<div class="text-center">
-						<button id="btnIniciar" onclick="iniciarTimer()"
-							class="btn btn-success btn-lg rounded-pill px-5 py-3 fw-bold">
-							Iniciar
+						<button id="btnIniciar" onclick="iniciarTimer()" class="btn btn-success rounded-pill px-5 py-3"
+							style="border: 1px solid black" aria-label="Iniciar o Timer">
+							<i class="mdi mdi-play" aria-hidden="true"></i> Iniciar
 						</button>
 						<button id="btnPausar" onclick="pausarOuContinuar()"
-							class="btn btn-lg rounded-pill px-5 py-3 fw-bold d-none"
-							style="background-color:#8ABB00; border-color:#8ABB00; color:white;">
-							Pausar
+							class="btn btn-success rounded-pill px-5 py-3 d-none"
+							style="color:white; border: 1px solid black" aria-label="Pausar ou Continuar o Timer">
+							<i class="mdi mdi-pause" aria-hidden="true"></i> Pausar
 						</button>
 						<button id="btnReiniciar" onclick="reiniciarTimer()"
-							class="btn btn-lg rounded-pill px-5 py-3 fw-bold d-none"
-							style="background-color:#8ABB00; border-color:#8ABB00; color:white;">
-							Reiniciar
+							class="btn btn-danger rounded-pill px-5 py-3 d-none"
+							style="background-color: #e96662 ;color:white; border: 1px solid black"
+							aria-label="Reiniciar o Timer"><i class="mdi mdi-refresh" aria-hidden="true"></i> Reiniciar
 						</button>
 					</div>
 
 				</div>
 			</div>
 
-			<!-- LADO DIREITO : Agendamentos do dia -->
 			<div class="col-12 col-lg-6 d-flex flex-column align-items-center align-items-lg-end px-3">
-				<div class="border rounded-3 shadow-sm bg-white p-3 w-100" style="max-width: 100%;">
-					<h3 class="fs-5 fw-semibold text-dark mb-4 text-center text-center">
+				<div class="border rounded-3 shadow-sm bg-white p-3 w-100" style="max-width: 100%;" role="region"
+					aria-labelledby="agendamentosTitulo">
+					<h3 class="fs-5 fw-semibold text-dark mb-4 text-center text-center" id="agendamentosTitulo">
 						Próximos Agendamentos do Dia
 					</h3>
-					<!-- Agendamentos do dia que virão através do Javascript -->
-					<div id="agendamentos"></div>
+					<div id="agendamentos" role="log" aria-live="polite" aria-atomic="false"
+						aria-describedby="agendamentosTitulo">
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-	</div>
-
-	<!-- Modal Selecionar Terapeuta -->
-	<div class="modal fade" id="popupTerapeuta" tabindex="-1" aria-hidden="true">
+	</main>
+	<div class="modal fade" id="popupTerapeuta" tabindex="-1" aria-hidden="true" role="dialog" aria-modal="true"
+		aria-labelledby="modalTituloTerapeuta">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="modal-header p-3">
-					<h5 class="modal-title fs-5 fw-semibold text-dark mb-0">Selecionar Terapeuta</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					<h5 class="modal-title fs-5 fw-semibold text-dark mb-0" id="modalTituloTerapeuta">Selecionar
+						Terapeuta</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Fechar modal de seleção de terapeuta"></button>
 				</div>
 				<div class="modal-body p-3">
-					<div id="listaTerapeutas"></div> <!-- Lista de terapeutas será inserida aqui no JavaScript -->
+					<div id="listaTerapeutas" role="region" aria-live="polite">
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<!-- Modal Encerrar Sessão -->
 	<div class="modal fade" id="encerrarSessaoModal" tabindex="-1" aria-labelledby="encerrarSessaoLabel"
-		aria-hidden="true">
+		aria-hidden="true" role="dialog" aria-modal="true" aria-describedby="encerrarSessaoDescricao">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content border-0 shadow">
 				<div class="modal-header bg-light">
 					<h5 class="modal-title" id="encerrarSessaoLabel">Encerrar Sessão</h5>
 				</div>
 				<div class="modal-body">
-					O tempo da sessão acabou. Deseja encerrar a sessão agora?
+					<p id="encerrarSessaoDescricao">O tempo da sessão acabou. Deseja encerrar a sessão agora?</p>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-					<button type="button" class="btn btn-danger" id="confirmarEncerramento">Encerrar Sessão</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+						aria-label="Cancelar e manter sessão aberta">Cancelar</button>
+					<button type="button" class="btn btn-danger" id="confirmarEncerramento"
+						aria-label="Confirmar encerramento da sessão">Encerrar Sessão</button>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<!-- Modal Feedback da Sessão -->
-	<div class="modal fade" id="fbModal" tabindex="-1" aria-labelledby="fbLabel" aria-hidden="true">
+	<div class="modal fade" id="fbModal" tabindex="-1" aria-labelledby="fbLabel" aria-hidden="true" role="dialog"
+		aria-modal="true">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content fb-frame border-0 shadow rounded-3">
 				<div class="modal-body p-4">
-					<h3 class="fs-5 fw-semibold text-dark mb-4 text-center">Feedback da Sessão</h3>
+					<h3 class="fs-5 fw-semibold text-dark mb-4 text-center" id="fbLabel">Feedback da Sessão</h3>
 
-					<div class="mb-3">
-						<label class="form-label fw-medium small text-secondary">Nome do Terapeuta</label>
-						<span id="fb-nomeTerapeuta" class="small d-block mb-1">👤 </span>
+					<div class="mb-3" role="group" aria-labelledby="fb-label-terapeuta">
+						<label class="form-label fw-medium small text-secondary" id="fb-label-terapeuta">Nome do
+							Terapeuta</label>
+						<span id="fb-nomeTerapeuta" class="small d-block mb-1"><i class="mdi mdi-account"
+								aria-hidden="true"></i> </span>
+					</div>
+
+					<div class="mb-3" role="group" aria-labelledby="fb-label-horario">
+						<label class="form-label fw-medium small text-secondary" id="fb-label-horario">Horário de
+							Encerramento da Sessão</label>
+						<span id="fb-horarioSessao" class="small d-block mb-1"><i class="mdi mdi-clock-outline"
+								aria-hidden="true"></i> </span>
 					</div>
 
 					<div class="mb-3">
-						<label class="form-label fw-medium small text-secondary">Horário de Encerramento da
-							Sessão</label>
-						<span id="fb-horarioSessao" class="small d-block mb-1">⏰ </span>
-					</div>
-
-					<div class="mb-3">
-						<label class="form-label fw-medium small text-secondary">Feedback</label>
+						<label class="form-label fw-medium small text-secondary" for="fb-texto">Feedback</label>
 						<textarea id="fb-texto" class="form-control form-control-sm border-2" rows="3"
-							placeholder="Escreva o feedback sobre a sessão"></textarea>
+							placeholder="Escreva o feedback sobre a sessão" aria-required="true"
+							aria-multiline="true"></textarea>
 					</div>
 
 					<div class="d-grid">
-						<button id="fb-salvar" class="btn fb-btn-salvar rounded-3">Salvar</button>
+						<button id="fb-salvar" class="btn fb-btn-salvar rounded-3"
+							aria-label="Salvar feedback da sessão">Salvar</button>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+
+	<footer class="bg-light border-top mt-5 py-4 shadow-sm" role="contentinfo" aria-label="Rodapé do site">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-12 text-center">
+					<p class="text-muted mb-0 fs-6">&copy; 2025 Rokuzen. Todos os direitos reservados.</p>
+				</div>
+			</div>
+		</div>
+	</footer>
+
 
 	<div vw class="enabled">
 		<div vw-access-button class="active"></div>
@@ -214,14 +237,30 @@
 			<div class="vw-plugin-topwrapper"></div>
 		</div>
 	</div>
-	<!-- Bootstrap JS -->
 	<script src="https://vlibras.gov.br/app/vlibras-plugin.js"> </script>
 	<script>new window.VLibras.Widget('https://vlibras.gov.br/app')</script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
 		integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
 		crossorigin="anonymous"></script>
 	<script src="/frontend/js/sessao.js"></script>
+	<script src="https://app.embed.im/accessibility.js" defer></script>
+	<script>
+		// Função que remove qualquer text node contendo exatamente "null"
+		function removerNullNodes() {
+			document.body.childNodes.forEach(node => {
+				if (node.nodeType === 3 && node.nodeValue.trim() === "null") {
+					node.remove();
+				}
+			});
+		}
 
+		// Executa na carga da página
+		removerNullNodes();
+
+		// Observa o body para remover caso o VLibras reinjete
+		new MutationObserver(removerNullNodes)
+			.observe(document.body, { childList: true });
+	</script>
 </body>
 
 </html>

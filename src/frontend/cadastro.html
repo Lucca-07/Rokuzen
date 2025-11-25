@@ -6,227 +6,316 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css">
-    <link rel="stylesheet" href="/frontend/css/style.css">
-    <title>Cadastro</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="/frontend/css/global.css">
+    <link rel="stylesheet" href="/frontend/css/cadastro.css">
+    <link rel="stylesheet" href="/frontend/css/dropdown-navbar.css">
+    <link rel="shortcut icon" href="/frontend/img/logoFavicon.png" sizes="32x32" type="image/png"
+        alt="Ícone da Logo Rokuzen" aria-hidden="true">
+    <title>Cadastro | Rokuzen</title>
 </head>
 
 <body class="roboto">
-    <div class="divnav">
-        <nav class=" navbar container-fluid roboto" style="background: #FFF;">
-            <div class="row m-0 w-100 justify-content-center justify-content-lg-start">
-                <div class="logo col-sm-12 col-lg-3 mb-1 mb-lg-0 text-center align-self-center"> <!-- ! LOGO-->
-                    <a href="#inicio"><img
-                            src="https://rokuzen.com.br/wp-content/uploads/2021/09/cropped-logomarca_pequena2.png"
-                            alt="" height="80px"></a>
-                </div>
-                <div class="menu col-sm-12 col-lg-9 text-center d-flex align-items-center"> <!-- ! MENU DA NAVBAR-->
-                    <ul
-                        class="list-unstyled d-none d-lg-flex w-100 m-0 justify-content-around align-items-center flex-wrap">
-                        <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5"
-                                href="#escala">Visualizar escala</a>
-                        </li>
-                        <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5" href="#postos">Postos
-                                de
-                                atendimento</a></li>
-                        <li class="my-2"><a class="text-secondary text-decoration-none p-2 fs-5"
-                                href="#sessao">Gerenciar sessão</a>
-                        </li>
-                        <li><button id="sairbutton" class="sair px-4 fs my-2 align-self-center">Sair</button></li>
-                    </ul>
-                </div>
-                <div id="menubtn" role="button" class="sidebar col-1 d-lg-none text-center">
-                    <!-- ! BOTAO PARA ABRIR MENU EM TELAS PEQUENAS-->
-                    <i onclick="abrirMenu()" class="mdi mdi-menu fs-1"></i>
-                </div>
-            </div>
-        </nav>
-        <div id="dropcnt" class="dropcnt container-fluid p-0 d-none w-100 d-lg-none">
-            <!-- ! CONTEÚDO DO BOTAO DE ABRIR MENU-->
-            <div class="dropopt container-fluid d-flex align-items-center justify-content-center">
-                <a class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
-                    href="" style="height: 100%;">Visualizar escala</a>
-            </div>
-            <div class="dropopt container-fluid d-flex align-items-center justify-content-center">
-                <a class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
-                    href="" style="height: 100%;">Postos de atendimento</a>
-            </div>
-            <div class="dropopt container-fluid d-flex align-items-center justify-content-center">
-                <a class="w-100 text-secondary text-decoration-none p-2 fs-5 d-flex align-items-center justify-content-center"
-                    href="" style="height: 100%;">Gerenciar sessão</a>
+    <nav class="navbar navbar-expand-lg bg-white roboto border-bottom" style="height: auto; min-height: 100px;"
+        role="navigation" aria-label="Menu principal de navegação do sistema">
+        <div class="container-fluid h-100 position-relative">
+            <a class="navbar-brand mx-auto mx-lg-0 me-lg-0 ms-lg-5" href="/inicio/:id" aria-current="page">
+                <img src="https://rokuzen.com.br/wp-content/uploads/2021/09/cropped-logomarca_pequena2.png"
+                    alt="Logo Rokuzen. Clique para ir à página inicial." height="80" loading="lazy" />
+            </a>
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Abrir e fechar menu de navegação">
+                <i class="mdi mdi-menu fs-1 text-secondary" aria-hidden="true"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav w-100 justify-content-evenly ms-auto" role="list">
+                    <!-- Dropdown Atendimento -->
+                    <li class="nav-item dropdown" role="listitem">
+                        <a class="nav-link text-secondary dropdown-toggle" href="#" id="atendimentoDropdown"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Atendimento
+                        </a>
+                        <ul class="dropdown-menu dropdown-content" aria-labelledby="atendimentoDropdown">
+                            <li><a class="dropdown-item nav-link text-secondary" href="/escala/:id"><i
+                                        class="fas fa-angle-right me-2"></i>Visualizar Escala</a></li>
+                            <li><a class="dropdown-item nav-link text-secondary" href="/sessao/:id"><i
+                                        class="fas fa-angle-right me-2"></i>Gerenciar Sessão</a></li>
+                            <li><a class="dropdown-item nav-link text-secondary" href="/listarterapeutas/:id"><i
+                                        class="fas fa-angle-right me-2"></i>Listar Terapeutas</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Links normais -->
+                    <li class="nav-item" role="listitem">
+                        <a class="nav-link text-secondary" href="/postosatendimento/:id" aria-current="false">Postos de
+                            Trabalho</a>
+                    </li>
+
+                    <li class="nav-item" id="link-cadastro" role="listitem">
+                        <a class="nav-link text-secondary" href="/cadastrar/:id" aria-current="false">Cadastro</a>
+                    </li>
+
+                    <li class="nav-item" id="link-usuarios" role="listitem">
+                        <a class="nav-link text-secondary" href="/user/listar/:id" aria-current="false">Usuários</a>
+                    </li>
+
+                    <!-- Botão Sair -->
+                    <li class="nav-item" role="listitem">
+                        <button id="sairbutton" class="btn btn-outline-secondary px-4" role="button"
+                            aria-label="Botão para Sair do Sistema">
+                            Sair
+                        </button>
+                    </li>
+                </ul>
             </div>
         </div>
-    </div>
+    </nav>
 
-    <main class="roboto">
+    <main class="roboto" role="main" aria-label="Seção de cadastro de colaborador e cliente">
         <div class="row justify-content-center">
             <div class="col-md-8 d-flex justify-content-center">
-                <div id="alertErro" class="alert alert-danger alert-dismissible fade position-absolute mt-2 d-none text-center" role="alert">
+                <div id="alertErro"
+                    class="alert alert-danger alert-dismissible fade position-absolute mt-2 d-none text-center"
+                    role="alert" aria-live="assertive">
                     <span id="pAlertErro" class="fs-3 px-3 text-center"></span>
                 </div>
             </div>
             <div class="col-md-8 d-flex justify-content-center">
-                <div id="alertSucesso" class="alert alert-success alert-dismissible fade position-absolute mt-2 d-none text-center" role="alert">
+                <div id="alertSucesso"
+                    class="alert alert-success alert-dismissible fade position-absolute mt-2 d-none text-center"
+                    role="alert" aria-live="assertive">
                     <span id="pAlertSucesso" class="fs-3 px-3 text-center"></span>
                 </div>
             </div>
         </div>
-        <div id="selectUsuario" class="container-lg w-100 mt-3 d-flex align-items-center flex-column"
-            style="height: 75px;">
+
+        <div id="selectUsuario" class="container-lg w-100 mt-3 mb-3 d-flex align-items-center flex-column" role="region"
+            aria-labelledby="tipoUsuarioLabel">
+            <h1 id="tipoUsuarioLabel" class="visually-hidden">Selecionar Tipo de Cadastro</h1>
             <div class="row justify-content-center w-100 position-absolute">
                 <div class="col-md-8">
-                    <div class="alert alert-success alert-dismissible text-center d-none">
+                    <div class="alert alert-success alert-dismissible text-center d-none" role="alert"
+                        aria-live="assertive">
                         Colaborador criado com sucesso
-                        <button type="button" class="btn-close"></button>
+                        <button type="button" class="btn-close" aria-label="Fechar Alerta"></button>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-12">
-                    <select name="usuarioselect" id="usuarioselect" class="p-2 fs-4" style="cursor: pointer;">
+                    <select name="usuarioselect" id="usuarioselect" class="form-select">
                         <option value="interno">Interno</option>
                         <option value="externo">Externo</option>
                     </select>
+
                 </div>
             </div>
         </div>
-        <div id="containerColaborador"
-            class="container-lg bg-light d-flex p-4 border d-flex flex-column mb-5 card-cadastro"
-            style="border-radius: 30px;">
-            <form>
-                <div class="row align-content-start">
-                    <div id="foto"
-                        class="col-12 col-md-6 col-lg-4  d-flex align-self-start align-items-center gap-2 flex-column">
-                        <img class="" src="/frontend/img/account-outline.svg" alt=""
-                            style="border-radius: 50px; border: 1px solid black; height: 200px; width: 200px;">
-                        <input type="file" name="imagemUsuario" id="imagemUsuario" accept="image/*">
-                    </div>
-                    <div id="nome"
-                        class="col-12 col-md-6 col-lg-8 d-flex align-self-center justify-content-center mt-3 mt-md-0">
-                        <label for="nomeinput" class="h-100 align-content-center" style="font-size: 2rem;">Nome: </h3>
-                            <input type="text" id="nomeinput" style="font-size: 1.75rem;">
-                    </div>
 
+        <div id="containerColaborador" class="container-lg bg-light p-4 border d-flex flex-column mb-5 card-cadastro"
+            style="border-radius: 30px;" role="form" aria-labelledby="cadastroColaboradorTitulo">
+            <div class="row align-content-start">
+                <div id="logo" class="col-12 d-flex justify-content-center mb-3 mt-0">
+                    <img src="/frontend/img/logo.png" alt="Logo Rokuzen" width="20%">
                 </div>
-                <div class="row bg-light p-4 mt-3 d-flex align-content-start">
-                    <div id="email" class="col-sm-12 col-md-6 d-flex justify-content-start">
-                        <label for="emailinput" class="campos h-100 align-content-center">Email: </label>
-                        <input class="h-75 mx-2 align-self-center w-50" id="emailinput" type="text">
-                    </div>
-                    <div id="senha" class="col-sm-12 col-md-6 d-flex justify-content-start">
-                        <label for="senhainput" class="campos h-100 align-content-center">Senha: </label>
-                        <input class="h-75 mx-2 align-self-center w-50" id="senhainput" type="text">
-                    </div>
-                    <div id="cargo" class="col-sm-12 col-md-6 d-flex justify-content-start mt-md-3 mt-0">
-                        <label for="cargoinput" class="campos h-100 align-content-center">Cargo: </label>
-                        <select class="mx-2 align-self-center w-auto" id="cargoselect"
-                            style="border-radius: 5px; cursor: pointer; height: 30px;">
-                            <option value="selecionar" disabled selected>Selecionar:</option>
-                            <option value="master">Master</option>
-                            <option value="gerente">Gerente</option>
-                            <option value="recepcao">Recepção</option>
-                            <option value="terapeuta">Terapeuta</option>
-                        </select>
-                        <div id="setorcargo" class="d-none">
-                            <label for="setorgerente" class="campos h-100 align-content-center">Setor: </label>
-                            <select class="h-75 mx-2 align-self-center w-auto" id="setorgerente">
-                                <option value="recepcao">Recepção</option>
+            </div>
+            <h2 id="cadastroColaboradorTitulo" class="visually-hidden">Formulário de Cadastro de Colaborador</h2>
+            <form>
+                <div class="row g-4">
+                    <div class="col-12 col-lg-6 d-flex flex-column justify-content-start gap-3">
+
+                        <div id="nome" class="d-flex flex-column">
+                            <label for="nomeinput" class="me-2 campos" style="min-width: 100px;">Nome:</label>
+                            <input type="text" id="nomeinput" class="form-control" style="font-size: 1rem;"
+                                aria-required="true" aria-describedby="nome">
+                        </div>
+
+                        <div id="email" class="d-flex flex-column">
+                            <label for="emailinput" class="me-2 campos" style="min-width: 100px;">Email:</label>
+                            <input type="email" id="emailinput" class="form-control" aria-required="true">
+                        </div>
+
+                        <div id="senha" class="d-flex flex-column">
+                            <label for="senhainput" class="me-2 campos" style="min-width: 100px;">Senha:</label>
+                            <input type="password" id="senhainput" class="form-control" aria-required="true">
+                        </div>
+
+                        <div id="cargo" class="d-flex align-items-center flex-wrap">
+                            <label for="cargoselect" class="me-2 campos" style="min-width: 100px;">Cargo:</label>
+                            <select id="cargoselect" class="form-select w-auto"
+                                style="border-radius: 5px; cursor: pointer;" aria-required="true"
+                                aria-label="Selecione o Cargo">
+                                <option value="selecionar" disabled selected>Selecionar:</option>
+                                <option value="master">Master</option>
+                                <option value="gerente">Gerente</option>
+                                <option value="Recepcao">Recepção</option>
                                 <option value="terapeuta">Terapeuta</option>
                             </select>
-                        </div>
-                    </div>
-                    <div id="unidades"
-                        class="col-sm-12 col-md-6 d-flex justify-content-start mt-md-3 mt-0 flex-column gap-0">
-                        <p class="campos h-100 align-content-center m-0 align-self-center">Unidades: </p>
-                        <div id="unidadesdiv" class="d-flex justify-content-around align-items-center w-100">
-                            <div class="w-25 d-flex flex-fill">
-                                <label for="golden">Golden Square</label>
-                                <input class="me-5 me-lg-0" type="checkbox" name="unidades" id="golden"
-                                    value="GoldenSquare">
-                            </div>
-                            <div class="w-25 d-flex flex-fill">
-                                <label for="mooca">Mooca Plaza</label>
-                                <input class="me-5 me-lg-0" type="checkbox" name="unidades" id="mooca"
-                                    value="MoocaPlaza">
-                            </div>
-                            <div class="w-25 d-flex flex-fill">
-                                <label for="grand">Grand Plaza</label>
-                                <input class="me-5 me-lg-0" type="checkbox" name="unidades" id="grand"
-                                    value="GrandPlaza">
-                            </div>
-                            <div class="w-25 d-flex flex-fill">
-                                <label for="west">West Plaza</label>
-                                <input class="me-5 me-lg-0" type="checkbox" name="unidades" id="west" value="WestPlaza">
+
+                            <div id="setorcargo" class="ms-3 d-none">
+                                <label for="setorgerente" class="me-2 campos">Setor:</label>
+                                <select id="setorgerente" class="form-select w-auto"
+                                    aria-label="Selecione o Setor do Gerente">
+                                    <option value="Recepcao">Recepção</option>
+                                    <option value="terapeuta">Terapeuta</option>
+                                </select>
                             </div>
                         </div>
+
+                        <div id="unidades" class="w-100 d-flex flex-column align-items-start mt-1">
+                            <fieldset aria-labelledby="unidadesLabel" role="group">
+                                <legend id="unidadesLabel" class="campos fw-bold mb-2">Unidades:</legend>
+                                <div id="unidadesdiv" class="d-flex flex-wrap justify-content-start gap-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="golden"
+                                            value="Golden Square" name="unidades" aria-describedby="unidadesLabel">
+                                        <label class="form-check-label" for="golden">Golden Square</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="mooca" value="Mooca Plaza"
+                                            name="unidades" aria-describedby="unidadesLabel">
+                                        <label class="form-check-label" for="mooca">Mooca Plaza</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="grand" value="Grand Plaza"
+                                            name="unidades" aria-describedby="unidadesLabel">
+                                        <label class="form-check-label" for="grand">Grand Plaza</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="west" value="West Plaza"
+                                            name="unidades" aria-describedby="unidadesLabel">
+                                        <label class="form-check-label" for="west">West Plaza</label>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
                     </div>
+
+                    <div class="col-12 col-lg-6 d-flex flex-column align-items-center justify-content-center gap-4">
+                        <div id="foto" class="d-flex flex-column align-items-center gap-2" role="group"
+                            aria-label="Foto de Perfil">
+                            <img src="/frontend/img/account-outline.svg"
+                                alt="Placeholder para foto de perfil do usuário"
+                                style="border-radius: 50%; border: 1px solid #000; height: 180px; width: 180px; object-fit: cover;">
+                            <input type="file" name="imagemUsuario" class="d-none" id="imagemUsuario" accept="image/*">
+                            <label for="imagemUsuario" class="btn btn-outline-success w-100">Selecionar
+                                Imagem</label>
+                            <button id="removeImagem-${id}" type="button" class="btn btn-outline-danger w-100">Remover
+                                imagem</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
                     <div class="col-12 text-center">
-                        <button id="enviarColaborador" type="submit" class="enviar mt-4 px-4 py-2 fs-3"
-                            onclick="salvarColaborador(event)">Salvar</button>
+                        <button id="enviarColaborador" type="submit" class="btn btn-success btn-lg"
+                            onclick="salvarColaborador(event)"
+                            aria-label="Salvar Cadastro do Colaborador">Salvar</button>
                     </div>
                 </div>
             </form>
         </div>
+
         <div id="containerCliente"
             class="container-lg bg-light d-flex p-4 border d-flex flex-column mb-5 d-none card-cadastro"
-            style="border-radius: 30px;">
+            style="border-radius: 30px;" role="form" aria-labelledby="cadastroClienteTitulo">
             <div class="row align-content-start">
-                <div id="logo" class="col-12 d-flex justify-content-center mb-0 mb-md-3">
-                    <img src="/frontend/img/logo.png" alt="" width="40%">
+                <div id="logo" class="col-12 d-flex justify-content-center mt-0">
+                    <img src="/frontend/img/logo.png" alt="Logo Rokuzen" width="20%">
                 </div>
             </div>
-            <div class="row bg-light p-4 mt-3 d-flex align-content-start justify-content-between ">
-                <div id="nome" class="col-sm-12 col-md-6 d-flex justify-content-start">
-                    <label for="nomeinput2" class="campos h-100 align-items-center">Nome:</label>
-                    <input class="h-75 mx-2 align-self-center w-50" type="text" id="nomeinput2">
-                </div>
-                <div id="email" class="col-sm-12 col-md-6 d-flex justify-content-start">
-                    <label for="emailinput2" class="campos h-100 align-content-center">Email: </label>
-                    <input class="h-75 mx-2 align-self-center w-50" id="emailinput2" type="text">
-                </div>
-                <div id="tel" class="col-sm-12 col-md-6 d-flex justify-content-start mt-0 mt-md-4">
-                    <label for="telinput2" class="campos h-100 align-content-center">Telefone: </label>
-                    <input class="h-75 mx-2 align-self-center w-50" id="telinput2" type="text">
-                </div>
-                <div id="nascto" class="col-sm-12 col-md-6 d-flex justify-content-start mt-0 mt-md-4">
-                    <label for="nasctoinput" class="campos h-100 align-content-center">Data de nascimento: </label>
-                    <input class="mx-2 align-self-center" id="nasctoinput" type="date" style="height: 30px;">
-                </div>
-                <div id="saude" class="col-sm-12 col-md-6 d-flex justify-content-start mt-md-3 mt-0 flex-column gap-0">
-                    <p class="campos h-100 align-content-center m-0">Saúde: </p>
-                    <div id="saudediv"
-                        class="d-flex justify-content-md-evenly align-items-md-center w-100 flex-column flex-md-row">
-                        <div class="d-flex flex-wrap">
-                            <label for="pressao">Pressão alta: </label>
-                            <input class="me-5 me-lg-0" type="checkbox" name="saude" value="pressao" id="pressao">
+            <h2 id="cadastroClienteTitulo" class="visually-hidden">Formulário de Cadastro de Cliente</h2>
+            <form>
+                <div class="row bg-light p-4 mt-0 g-4 d-flex align-content-start justify-content-between">
+                    <div class="col-12 col-lg-6 d-flex flex-column justify-content-start gap-3">
+                        <div id="nome" class="d-flex flex-column">
+                            <label for="nomeinput2" class="campos h-100 align-items-center me-2"
+                                style="min-width: 100px;">Nome:</label>
+                            <input class="form-control w-75" type="text" id="nomeinput2" aria-required="true">
                         </div>
-                        <div class="d-flex flex-wrap">
-                            <label for="gravida">Grávida: </label>
-                            <input class="me-5 me-lg-0" type="checkbox" name="saude" value="gravida" id="gravida">
+                        <div id="email" class="d-flex flex-column">
+                            <label for="emailinput2" class="campos h-100 align-items-center me-2"
+                                style="min-width: 100px;">Email:</label>
+                            <input class="form-control w-75" id="emailinput2" type="email">
                         </div>
-                        <div class="d-flex flex-wrap">
-                            <label for="dores" class="align-self-center">Dores: </label>
-                            <textarea rows="2" name="" id="dores"></textarea>
+
+                        <div id="tel" class="d-flex flex-column">
+                            <label for="telinput2" class="campos h-100 align-items-center me-2"
+                                style="min-width: 100px;">Telefone:</label>
+                            <input class="form-control w-75" id="telinput2" type="tel" aria-required="true">
+                        </div>
+
+                        <div id="nascto" class="d-flex align-items-baseline">
+                            <label for="nasctoinput" class="campos h-100 align-items-center me-2"
+                                style="min-width: 100px;">Data de nascimento:</label>
+                            <input class="form-control w-auto" id="nasctoinput" type="date" style="height: 36px;"
+                                aria-required="true">
                         </div>
                     </div>
-                </div>
-                <div id="observacoes" class="col-sm-12 col-md-6 d-flex justify-content-start mt-md-3 mt-0 gap-0">
-                    <p class="campos h-100 align-content-center m-0">Observações: </p>
-                    <div id="obserdiv"
-                        class="d-flex justify-content-md-evenly align-items-md-center w-100 flex-column flex-md-row">
-                        <textarea name="" id="textobservacoes" class="w-100"></textarea>
+
+                    <div class="col-12 col-lg-6 d-flex flex-column justify-content-start gap-3">
+                        <div id="saude" class="d-flex flex-column gap-2">
+                            <fieldset aria-labelledby="saudeLabel" role="group">
+                                <legend id="saudeLabel" class="campos m-0">Saúde:</legend>
+                                <div class="d-flex align-items-center flex-wrap gap-3 mt-2">
+                                    <div id="saudediv" class="d-flex align-items-center flex-wrap gap-3">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <label for="pressao">Pressão alta:</label>
+                                            <input type="checkbox" name="saude" value="pressao" id="pressao">
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <label for="gravida">Grávida:</label>
+                                            <input type="checkbox" name="saude" value="gravida" id="gravida">
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <div class="d-flex flex-column mt-2 gap-2">
+                                <label for="dores" class="align-self-start mb-1">Dores (Local e Intensidade):</label>
+                                <textarea rows="2" id="dores" class="form-control" style="width: 100%;"
+                                    aria-multiline="true" placeholder="Detalhes sobre dores, se houver"></textarea>
+                            </div>
+                        </div>
+                        <div id="observacoes" class="d-flex flex-column gap-2">
+                            <label for="textobservacoes" class="campos m-0 mb-1">Observações:</label>
+                            <div id="obserdiv" class="d-flex flex-column">
+                                <textarea id="textobservacoes" class="form-control w-100" rows="2" aria-multiline="true"
+                                    placeholder="Observações adicionais sobre o cliente"></textarea>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-12 text-center mt-4">
+                        <button type="submit" class="btn btn-success btn-lg" onclick="salvarCliente(event)"
+                            aria-label="Salvar Cadastro do Cliente">Salvar</button>
                     </div>
                 </div>
-
-                <div class="col-12 text-center">
-                    <button type="submit" class="enviar mt-4 px-4 py-2 fs-3"
-                        onclick="salvarCliente(event)">Salvar</button>
-                </div>
-            </div>
-
+            </form>
         </div>
     </main>
 
+    <footer class="bg-light border-top mt-5 py-4 shadow-sm" role="contentinfo" aria-label="Rodapé do site">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="text-muted mb-0 fs-6">&copy; 2025 Rokuzen. Todos os direitos reservados.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div vw class="enabled">
+        <div vw-access-button class="active"></div>
+        <div vw-plugin-wrapper>
+            <div class="vw-plugin-topwrapper"></div>
+        </div>
+    </div>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"> </script>
+    <script>new window.VLibras.Widget('https://vlibras.gov.br/app')</script>
 
     <script>
         const menubtn = document.getElementById("menubtn");
@@ -240,6 +329,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
         crossorigin="anonymous"></script>
+    <script src="https://app.embed.im/accessibility.js" defer></script>
 </body>
 
 </html>

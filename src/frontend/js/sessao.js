@@ -7,20 +7,23 @@ function abrirMenu() {
 
 // formata segundos em horas, minutos e segundos
 function formataSegundos(sec) {
-    if (typeof sec !== 'number' || isNaN(sec)) return '00:00';
+    if (typeof sec !== "number" || isNaN(sec)) return "00:00";
     const horas = Math.floor(sec / 3600);
     const minutos = Math.floor((sec % 3600) / 60);
     const segundos = sec % 60;
 
     if (horas > 0) {
         // Formato H:MM:SS
-        return `${horas}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+        return `${horas}:${minutos.toString().padStart(2, "0")}:${segundos
+            .toString()
+            .padStart(2, "0")}`;
     } else {
         // Formato MM:SS
-        return `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+        return `${minutos.toString().padStart(2, "0")}:${segundos
+            .toString()
+            .padStart(2, "0")}`;
     }
 }
-
 
 // --- Sincroniza o timer com o servidor ---
 async function syncTimerToServer(tid) {
@@ -28,13 +31,13 @@ async function syncTimerToServer(tid) {
     if (!state || !state.serverId) return;
 
     try {
-        await fetch(`/api/atendimentos/${state.serverId}`, {
+        await fetch(`/api/atendimentos/${state.serverId}/timer`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 tempoRestante: state.tempo,
-                em_andamento: !state.pausado
-            })
+                em_andamento: !state.pausado,
+            }),
         });
     } catch (err) {
         console.warn("Erro ao sincronizar timer:", err);
@@ -46,6 +49,26 @@ async function syncTimerToServer(tid) {
 let selectedTid = null; // id ou nome do terapeuta selecionado para controlar pelo timer central
 if (!window.__timers__) window.__timers__ = {};
 
+(function limpaModals() {
+    const popupModalEl = document.getElementById("popupTerapeuta");
+    if (!popupModalEl) return;
+    try {
+        // oculta e remove instâncias/handlers do bootstrap
+        const inst =
+            window.bootstrap && bootstrap.Modal.getInstance(popupModalEl);
+        if (inst) {
+            inst.hide();
+            inst.dispose();
+        }
+    } catch (e) {
+        // ignore
+    }
+    // força remover classes/estilos/backdrops que possam ter sobrado
+    popupModalEl.classList.remove("show");
+    popupModalEl.style.display = "none";
+    document.querySelectorAll(".modal-backdrop").forEach((el) => el.remove());
+    document.body.classList.remove("modal-open");
+})();
 
 const timerDisplay = document.getElementById("timer");
 const btnIniciar = document.getElementById("btnIniciar");
@@ -55,160 +78,404 @@ const btnReiniciar = document.getElementById("btnReiniciar");
 // Carrega timers do banco
 async function loadTimersFromDB() {
     try {
-        const res = await fetch("/api/atendimentos/hoje")
-        if (!res.ok) throw new Error("Erro ao carregar timers do banco");
+        // busca todos os atendimentos do dia (API espera inicio e fim)
+        const hoje = new Date();
+        const inicio = new Date(hoje);
+        inicio.setHours(0, 0, 0, 0);
+        const fim = new Date(inicio);
+        fim.setDate(inicio.getDate() + 1);
+
+        const API_URL =
+            window.location.origin +
+            `/api/atendimentos?inicio=${encodeURIComponent(
+                inicio.toISOString()
+            )}&fim=${encodeURIComponent(fim.toISOString())}`;
+
+        const token = localStorage.getItem("token");
+        const headers = { "Content-Type": "application/json" };
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+
+        const res = await fetch(API_URL, { headers });
+
+        if (!res.ok) {
+            const text = await res.text().catch(() => "");
+            console.warn(`loadTimersFromDB: status=${res.status} body=${text}`);
+            window.__timers__ = window.__timers__ || {};
+            return [];
+        }
 
         const atendimentos = await res.json();
-        console.log("Timers sincronizados com o banco:", atendimentos);
 
         if (!window.__timers__) window.__timers__ = {};
 
-        atendimentos.forEach(a => {
-            if (!a.colaborador_id) return;
+        atendimentos.forEach((a) => {
+            if (!a.colaborador_id) {
+                console.warn("tendimento sem colaborador_id:", a);
+                return;
+            }
 
-            // IGNORA atendimentos já encerrados
-            if (a.tempoRestante <= 0 || a.encerrado || a.em_andamento === false) return;
+            // Ignora APENAS atendimentos já encerrados
+            if (a.encerrado) return;
 
-            const tid = String(a.colaborador_id);
+            // IMPORTANTE: usar serverId (ID do atendimento) como chave, não colaborador_id
+            // Isto permite múltiplos agendamentos para a mesma pessoa
+            const tid = String(a._id).trim();
 
-            // Se já existe no cliente, atualiza apenas o essencial
             if (window.__timers__[tid]) {
                 const state = window.__timers__[tid];
                 state.serverId = a._id;
-                state.nome_colaborador = a.nome_colaborador || state.nome_colaborador || "Desconhecido";
-
-                // Atualiza o tempo do servidor SOMENTE se o timer estiver pausado
-                if (state.pausado) {
-                    state.tempo = a.tempoRestante ?? state.tempo ?? 600;
+                state.nome_colaborador =
+                    a.nome_colaborador ||
+                    state.nome_colaborador ||
+                    "Desconhecido";
+                // IMPORTANTE: NÃO sobrescreve state.tempo se já está rodando em memória
+                // Apenas usa tempoRestante se o tempo em memória está em um estado inválido (0, null, undefined)
+                if (!state.tempo || state.tempo <= 0) {
+                    state.tempo = a.tempoRestante ?? 3600;
                 }
-
-                // Se o servidor indica que está em andamento, retoma o timer local
-                if (a.em_andamento && state.pausado) {
-                    console.log(`⏱ Retomando timer do colaborador ${state.nome_colaborador}`);
-                    state.pausado = false;
-                    iniciarContagem(tid);
+                state.pausado = !a.em_andamento;
+                // se estiver em andamento e não estiver com interval, inicia
+                if (
+                    a.em_andamento &&
+                    state.pausado === false &&
+                    !state.interval
+                ) {
+                    iniciarTimer(tid);
                 }
-
             } else {
-                // Cria um novo estado local para esse colaborador
+                // Extrai colaborador_id corretamente
+                let colaboradorId = a.colaborador_id;
+                if (typeof colaboradorId === "object" && colaboradorId._id) {
+                    colaboradorId = colaboradorId._id;
+                }
                 window.__timers__[tid] = {
-                    tempo: a.tempoRestante ?? 600,
+                    tempo: a.tempoRestante ?? 3600,
                     pausado: !a.em_andamento,
                     interval: null,
                     serverId: a._id,
                     nome_colaborador: a.nome_colaborador || "Desconhecido",
-                    colaborador_id: a.colaborador_id,
-                    encerrado: false
+                    colaborador_id: String(colaboradorId),
+                    encerrado: !!a.encerrado,
+                    inicio_atendimento: a.inicio_atendimento,
+                    fim_atendimento: a.fim_atendimento,
                 };
-
-                // Se o atendimento estava em andamento, inicia o cronômetro localmente
-                if (a.em_andamento) {
-                    console.log(`⏱ Iniciando timer do colaborador ${a.nome_colaborador || "Desconhecido"}`);
-                    iniciarContagem(tid);
-                }
+                if (a.em_andamento) iniciarTimer(tid);
             }
         });
 
+        return atendimentos;
     } catch (err) {
-        console.error("Erro ao carregar timers do DB:", err);
+        console.error(" Erro ao carregar timers do DB:", err);
+        window.__timers__ = window.__timers__ || {};
+        return [];
     }
 }
 
 // carrega timers do DB ao inicializar a página e só então inicializa o display
-loadTimersFromDB().then(() => {
-    if (selectedTid && window.__timers__[selectedTid]) {
-        atualizarDisplays(selectedTid);
-    }
-});
+// Removido daqui - agora é chamado dentro de DOMContentLoaded para garantir ordem correta
 
 // iniciar
-async function iniciarTimer() {
-    if (!selectedTid) return alert("Selecione primeiro um agendamento");
-    const state = window.__timers__[selectedTid];
-    if (!state) return alert("Terapeuta não tem atendimento ativo");
+async function iniciarTimer(tidParam) {
+    // se foi chamado programaticamente com tidParam, usa ele; senão usa selectedTid (ação do usuário)
+    const predefinido = !!tidParam;
+    const tid = String(tidParam ?? selectedTid);
+
+    if (!tid) {
+        if (!predefinido) return alert("Selecione primeiro um agendamento");
+        return; // chamado por sync, nada a fazer
+    }
+
+    const state = window.__timers__?.[tid];
+    if (!state) {
+        if (!predefinido) return alert("Terapeuta não tem atendimento ativo");
+        return;
+    }
+
+    // se já está rodando, nada a fazer
     if (!state.pausado) return;
 
-    // Marca como ativo
+    // Marca como ativo localmente
     state.pausado = false;
 
-    // Atualiza botões na UI
-    btnIniciar.classList.add("d-none");
-    btnPausar.classList.remove("d-none");
-    btnReiniciar.classList.remove("d-none");
-    btnPausar.textContent = "Pausar";
-    btnPausar.classList.replace("btn-primary", "btn-warning");
+    // se chamado pelo usuário, atualiza selectedTid
+    if (!predefinido) selectedTid = tid;
 
-    // Cria o atendimento no servidor, se ainda não existir
-    if (!state.serverId) {
-        try {
-            const res = await fetch("/api/atendimentos", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    colaborador_id: state.colaborador_id,
-                    nome_colaborador: state.nome_colaborador,
-                    tempoRestante: state.tempo,
-                    em_andamento: true
-                })
-            });
-            const novo = await res.json();
-            state.serverId = novo._id;
-        } catch (err) {
-            console.error("Erro ao criar atendimento no servidor:", err);
+    // Atualiza botões na UI apenas se o usuário é quem iniciou (evita alertas/errôneos durante sync)
+    if (!predefinido) {
+        btnIniciar?.classList.add("d-none");
+        btnPausar?.classList.remove("d-none");
+        btnReiniciar?.classList.remove("d-none");
+        if (btnPausar) {
+            btnPausar.innerHTML = '<i class="mdi mdi-pause"></i> Pausar';
+            btnPausar.classList.replace("btn-primary", "btn-warning");
         }
     }
 
-    // Inicia o cronômetro localmente sem recarregar tudo
-    iniciarContagem(selectedTid);
+    // Cria/Atualiza o atendimento no servidor
+    try {
+        if (!state.serverId) {
+            const payload = {
+                colaborador_id: state.colaborador_id || null,
+                nome_colaborador: state.nome_colaborador,
+                tempoRestante: state.tempo,
+                em_andamento: true,
+                inicio_atendimento: new Date().toISOString(),
+            };
+            const res = await fetch("/api/atendimentos", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+            if (res.ok) {
+                const novo = await res.json();
+                if (novo && novo._id) state.serverId = novo._id;
+            } else {
+                console.warn(
+                    "Falha ao criar atendimento:",
+                    await res.text().catch(() => "")
+                );
+            }
+        } else {
+            // marca em andamento no servidor
+            await fetch(`/api/atendimentos/${state.serverId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    tempoRestante: state.tempo,
+                    em_andamento: true,
+                }),
+            }).catch((e) => console.warn("PUT /api/atendimentos falhou", e));
+        }
 
-    // Sincroniza em segundo plano, sem interromper a execução
-    syncTimerToServer(selectedTid);
-    carregarTerapeutas();
-    atualizarTimersModal();
+        // sempre re-sync local com servidor para garantir consistência do modal/UI
+
+        await loadTimersFromDB();
+
+        // IMPORTANTE: garante que permaneça como não-pausado após loadTimersFromDB
+        // (pois loadTimersFromDB pode ter resincronizado o estado)
+        const estadoAposSync = window.__timers__[tid];
+        if (estadoAposSync) {
+            estadoAposSync.pausado = false;
+        }
+    } catch (err) {
+        console.error("Erro ao criar/atualizar atendimento no servidor:", err);
+    }
+
+    // inicia contagem local (usa tid)
+    if (typeof iniciarContagem === "function") iniciarContagem(tid);
+
+    // Sincroniza em segundo plano
+    await syncTimerToServer(tid);
+
+    // atualiza UI/modal
+    if (!predefinido) {
+        carregarTerapeutas();
+        atualizarTimersModal();
+    } else {
+        // para chamadas programáticas somente atualiza modal/displays (não forçar alerts)
+        atualizarDisplays(tid);
+        atualizarTimersModal();
+    }
 }
 
 // Função Pausar/Continuar
 async function pausarOuContinuar() {
-    if (!selectedTid) return alert('Selecione um terapeuta');
+    if (!selectedTid) return alert("Selecione um terapeuta");
     const state = window.__timers__[selectedTid];
     if (!state) return alert("Terapeuta não tem atendimento ativo");
 
     state.pausado = !state.pausado;
 
     if (state.pausado) {
-        btnPausar.textContent = 'Continuar';
-        btnPausar.classList.replace('btn-warning', 'btn-primary');
+        btnPausar.innerHTML = '<i class="mdi mdi-play"></i> Continuar';
+        btnPausar.classList.replace("btn-warning", "btn-primary");
     } else {
-        btnPausar.textContent = 'Pausar';
-        btnPausar.classList.replace('btn-primary', 'btn-warning');
+        btnPausar.innerHTML = '<i class="mdi mdi-pause"></i> Pausar';
+        btnPausar.classList.replace("btn-primary", "btn-warning");
     }
 
     await syncTimerToServer(selectedTid);
     atualizarTimersModal();
 }
 
-// Função REINICIAR 
+// Função REINICIAR
 async function reiniciarTimer() {
-    if (!selectedTid) return alert('Selecione um terapeuta');
+    if (!selectedTid) return alert("Selecione um terapeuta");
     const state = window.__timers__[selectedTid];
     if (!state) return alert("Terapeuta não tem atendimento ativo");
 
-    state.tempo = 10 * 60;
+    // Calcula o tempo total baseado em inicio_atendimento e fim_atendimento
+    let tempoTotal = 10 * 60; // caso nao consiga calcular fica 10 minutos
+
+    if (state.inicio_atendimento && state.fim_atendimento) {
+        try {
+            const inicio = new Date(state.inicio_atendimento);
+            const fim = new Date(state.fim_atendimento);
+            const diferencaMs = fim - inicio;
+            tempoTotal = Math.max(0, Math.round(diferencaMs / 1000)); // Converte para segundos
+        } catch (err) {
+            console.warn("Erro ao calcular tempo total:", err);
+        }
+    } else {
+        console.warn(
+            "Estado não possui inicio_atendimento ou fim_atendimento, usando fallback de 10 minutos"
+        );
+    }
+
+    state.tempo = tempoTotal;
     state.pausado = true;
 
     atualizarDisplays(selectedTid);
     atualizarTimersModal();
 
-    btnIniciar.classList.remove('d-none');
-    btnPausar.classList.add('d-none');
-    btnReiniciar.classList.add('d-none');
+    btnIniciar.classList.remove("d-none");
+    btnPausar.classList.add("d-none");
+    btnReiniciar.classList.add("d-none");
 
     await syncTimerToServer(selectedTid);
+}
+// Função para restaurar timers quando a página é recarregada
+function restaurarTimers() {
+    if (!window.__timers__) return;
+
+    // Tenta restaurar o selectedTid que foi salvo antes do reload
+    const savedTid = localStorage.getItem("selectedTid");
+
+    if (savedTid && window.__timers__[savedTid]) {
+        selectedTid = savedTid;
+    } else {
+        // Fallback para a lógica anterior se não tiver savedTid
+        const userId = localStorage.getItem("userId");
+        if (userId && window.__timers__[String(userId)]) {
+            selectedTid = String(userId);
+        } else {
+            const tids = Object.keys(window.__timers__);
+            const running = tids.find(
+                (tid) =>
+                    window.__timers__[tid] &&
+                    !window.__timers__[tid].pausado &&
+                    !window.__timers__[tid].encerrado
+            );
+            const anyNotClosed = tids.find(
+                (tid) =>
+                    window.__timers__[tid] && !window.__timers__[tid].encerrado
+            );
+            selectedTid = running || anyNotClosed || null;
+
+            if (!selectedTid && tids.length > 0) {
+                selectedTid = tids[0];
+            }
+        }
+    }
+
+    if (selectedTid && window.__timers__[selectedTid]) {
+        const state = window.__timers__[selectedTid];
+        atualizarDisplays(selectedTid);
+        atualizarTimersModal();
+
+        if (state.pausado) {
+            btnIniciar?.classList.remove("d-none");
+            btnPausar?.classList.add("d-none");
+            btnReiniciar?.classList.add("d-none");
+        } else {
+            btnIniciar?.classList.add("d-none");
+            btnPausar?.classList.remove("d-none");
+            btnReiniciar?.classList.remove("d-none");
+        }
+    } else {
+        const timerDisplay = document.getElementById("timer");
+        if (timerDisplay) timerDisplay.textContent = "00:00";
+    }
+}
+
+// Função para garantir que oa seleçao do terapeuta esteja fechada
+function PopUpTerapeutafechado() {
+    const popupModalEl = document.getElementById("popupTerapeuta");
+    if (!popupModalEl) return;
+
+    try {
+        // Esconde e descarta qualquer instância do bootstrap Modal associada
+        const inst = bootstrap.Modal.getInstance(popupModalEl);
+        if (inst) {
+            inst.hide();
+            inst.dispose();
+        } else {
+            // Se não havia instância, cria, esconde e descarta
+            const tmp = new bootstrap.Modal(popupModalEl);
+            tmp.hide();
+            tmp.dispose();
+        }
+    } catch (e) {
+        // ignore
+    }
+
+    // remove classes e backdrops que possam ter sobrado e força style
+    popupModalEl.classList.remove("show");
+    popupModalEl.style.display = "none";
+    document.querySelectorAll(".modal-backdrop").forEach((el) => el.remove());
+    document.body.classList.remove("modal-open");
+}
+
+// garante não duplicar o listener (evita múltiplas execuções)
+let popupTerapeutaListenerAttached = false;
+const popupEl = document.getElementById("popupTerapeuta");
+if (popupEl && !popupTerapeutaListenerAttached) {
+    popupTerapeutaListenerAttached = true;
+    popupEl.addEventListener("show.bs.modal", () => {
+        // FORÇA sincronização com o banco antes de carregar
+        setTimeout(() => {
+            loadTimersFromDB().then(() => {
+                carregarTerapeutas();
+            });
+        }, 100);
+    });
 }
 
 // Botões de adicionar tempo
 // Seleciona os botões
 document.addEventListener("DOMContentLoaded", () => {
+    const tipoUser = localStorage.getItem("tipoUser");
+
+    if (tipoUser !== "admin") {
+        // Oculta links de Cadastro e Usuários no menu
+        const linkCadastro = document.querySelector('a[href*="/cadastrar"]');
+        const linkUsuarios = document.querySelector('a[href*="/user/listar"]');
+        const dropdownAtendimento =
+            document.querySelector(".nav-item.dropdown");
+
+        if (linkCadastro) linkCadastro.parentElement.style.display = "none";
+        if (linkUsuarios) linkUsuarios.parentElement.style.display = "none";
+
+        // Remove o dropdown e adiciona os links individuais
+        if (dropdownAtendimento) {
+            const navbar = dropdownAtendimento.parentElement; // ul.navbar-nav
+
+            // Cria links individuais
+            const escalaLi = document.createElement("li");
+            escalaLi.className = "nav-item";
+            escalaLi.innerHTML =
+                '<a class="nav-link text-secondary fs-6" href="/escala/:id">Visualizar Escala</a>';
+
+            const sessaoLi = document.createElement("li");
+            sessaoLi.className = "nav-item";
+            sessaoLi.innerHTML =
+                '<a class="nav-link text-secondary fs-6" href="/sessao/:id">Gerenciar Sessão</a>';
+
+            const terapeutasLi = document.createElement("li");
+            terapeutasLi.className = "nav-item";
+            terapeutasLi.innerHTML =
+                '<a class="nav-link text-secondary fs-6" href="/listarterapeutas/:id">Listar Terapeutas</a>';
+
+            // Insere os novos links antes do dropdown
+            navbar.insertBefore(terapeutasLi, dropdownAtendimento);
+            navbar.insertBefore(sessaoLi, dropdownAtendimento);
+            navbar.insertBefore(escalaLi, dropdownAtendimento);
+
+            // Remove o dropdown
+            dropdownAtendimento.remove();
+        }
+    }
+
     const btnAdicionar1 = document.getElementById("Adicionar1min");
     const btnAdicionar5 = document.getElementById("Adicionar5min");
     const btnAdicionar10 = document.getElementById("Adicionar10min");
@@ -216,12 +483,39 @@ document.addEventListener("DOMContentLoaded", () => {
     btnAdicionar1?.addEventListener("click", () => adicionarTempo(60));
     btnAdicionar5?.addEventListener("click", () => adicionarTempo(5 * 60));
     btnAdicionar10?.addEventListener("click", () => adicionarTempo(10 * 60));
+
+    const id = localStorage.getItem("userId");
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+        // sem token: volta pra login
+        window.location.href = "/";
+        return;
+    }
+
+    const links = {
+        escala: document.querySelector('a[href^="/escala"]'),
+        postos: document.querySelector('a[href^="/postosatendimento"]'),
+        sessao: document.querySelector('a[href^="/sessao"]'),
+        terapeutas: document.querySelector('a[href^="/listarterapeutas"]'),
+        cadastro: document.querySelector('a[href^="/cadastrar"]'),
+        listar: document.querySelector('a[href^="/user/listar"]'),
+        inicio: document.querySelector('a[href^="/inicio"]'),
+    };
+
+    if (links.escala) links.escala.href = `/escala/${id}`;
+    if (links.postos) links.postos.href = `/postosatendimento/${id}`;
+    if (links.sessao) links.sessao.href = `/sessao/${id}`;
+    if (links.terapeutas) links.terapeutas.href = `/listarterapeutas/${id}`;
+    if (links.inicio) links.inicio.href = `/inicio/${id}`;
+    if (links.cadastro) links.cadastro.href = `/cadastrar/${id}`;
+    if (links.listar) links.listar.href = `/user/listar/${id}`;
 });
 
 // Funções para adicionar tempo
 async function adicionarTempo(segundos) {
     if (!selectedTid) {
-        alert('Selecione um terapeuta primeiro');
+        alert("Selecione um terapeuta primeiro");
         return;
     }
 
@@ -243,58 +537,46 @@ function popterapeuta() {
 // função para buscar e renderizar no modal os timers ativos
 async function carregarTerapeutas() {
     const container = document.getElementById("listaTerapeutas");
+    if (!container) return;
     container.innerHTML = "Carregando...";
 
-    //  sincronização com o servidor antes de carregar
-    await loadTimersFromDB();
-
+    // NÃO chama loadTimersFromDB() aqui - já temos os dados em window.__timers__
+    // Apenas busca a lista de terapeutas para renderizar
     try {
         const res = await fetch("/api/terapeutas");
         if (!res.ok) throw new Error("Falha ao carregar terapeutas");
         const terapeutas = await res.json();
 
-        // Buscar atendimentos ativos para verificar quais terapeutas têm sessões
-        const resAtendimentos = await fetch("/api/atendimentos/ativos");
-        const atendimentosAtivos = resAtendimentos.ok ? await resAtendimentos.json() : [];
-
         container.innerHTML = "";
 
-        terapeutas.forEach(t => {
-            const tid = String(t._id);
+        terapeutas.forEach((t) => {
+            const terapeuta_id = String(t._id);
 
-            // Verificar se este terapeuta tem atendimento ativo
-            const atendimentoAtivo = atendimentosAtivos.find(a => String(a.colaborador_id) === tid);
+            // Encontra TODOS os agendamentos ativos para este terapeuta
+            // (window.__timers__ agora tem chaves de agendamento, não de terapeuta)
+            const estadosTerapeutaAtivos = Object.entries(
+                window.__timers__ || {}
+            )
+                .filter(([tid, state]) => {
+                    return (
+                        state &&
+                        String(state.colaborador_id).trim() ===
+                            terapeuta_id.trim() &&
+                        !state.encerrado
+                    );
+                })
+                .map(([tid, state]) => ({ tid, state }));
 
-            let state = window.__timers__[tid];
-
-            // ATUALIZAÇÃO CRÍTICA: Se existe atendimento ativo, SEMPRE sincroniza o tempo
-            if (atendimentoAtivo) {
-                if (!state) {
-                    state = {
-                        tempo: atendimentoAtivo.tempoRestante ?? 600,
-                        pausado: !atendimentoAtivo.em_andamento,
-                        interval: null,
-                        serverId: atendimentoAtivo._id,
-                        nome_colaborador: t.nome_colaborador,
-                        colaborador_id: t._id
-                    };
-                    window.__timers__[tid] = state;
-                } else {
-                    // GARANTE que o tempo está sincronizado com o servidor
-                    state.tempo = atendimentoAtivo.tempoRestante ?? state.tempo;
-                    state.pausado = !atendimentoAtivo.em_andamento;
-                    state.serverId = atendimentoAtivo._id;
-                }
-            }
-
-            // Se não tem state (nem atendimento ativo), mostrar como sem atendimento
-            if (!state || !atendimentoAtivo) {
+            // Se não tem timer rodando, mostra "Sem atendimento"
+            if (estadosTerapeutaAtivos.length === 0) {
                 const card = document.createElement("div");
-                card.className = "card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2 mb-3";
+                card.className =
+                    "card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2 mb-3";
 
-                const unidades = t.unidades_trabalha && t.unidades_trabalha.length > 0
-                    ? t.unidades_trabalha.join(', ') + '.'
-                    : 'Não informada.';
+                const unidades =
+                    t.unidades_trabalha && t.unidades_trabalha.length > 0
+                        ? t.unidades_trabalha.join(", ") + "."
+                        : "Não informada.";
 
                 card.innerHTML = `
                     <div class="d-flex align-items-center flex-grow-1 gap-2">
@@ -316,60 +598,85 @@ async function carregarTerapeutas() {
                 return;
             }
 
-            // Terapeuta COM atendimento ativo - USA O TEMPO SINCORNIZADO DO SERVIDOR
-            const card = document.createElement("div");
-            card.className = "card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2 mb-3";
+            // Terapeuta COM atendimento(s) - mostra cada agendamento ativo
+            estadosTerapeutaAtivos.forEach(({ tid, state }, index) => {
+                const card = document.createElement("div");
+                card.className =
+                    "card-terapeuta d-flex align-items-center gap-2 border border-2 rounded-3 bg-light-subtle p-2 mb-3";
 
-            const unidades = t.unidades_trabalha && t.unidades_trabalha.length > 0
-                ? t.unidades_trabalha.join(', ') + '.'
-                : 'Não informada.';
+                const unidades =
+                    t.unidades_trabalha && t.unidades_trabalha.length > 0
+                        ? t.unidades_trabalha.join(", ") + "."
+                        : "Não informada.";
 
-            card.innerHTML = `
+                // Se há múltiplos agendamentos, mostra indicador
+                const multipleLabel =
+                    estadosTerapeutaAtivos.length > 1
+                        ? ` (${index + 1}/${estadosTerapeutaAtivos.length})`
+                        : "";
+
+                card.innerHTML = `
     <div class="d-flex align-items-center flex-grow-1 gap-2">
         <img src="/api/colaboradores/${t._id}/imagem" class="avatar border">
         <div class="d-flex flex-column">
-            <span class="fw-semibold text-dark">${t.nome_colaborador}</span>
+            <span class="fw-semibold text-dark">${
+                t.nome_colaborador
+            }${multipleLabel}</span>
             <small class="text-muted mb-0">Unidade: ${unidades}</small>
             <small class="text-muted">Tipo: ${t.tipo_colaborador}</small>
         </div>
     </div>
     <div class="text-end flex-shrink-0">
         <div class="fw-semibold text-secondary small">Timer:</div>
-        <div class="fw-bold fs-5 ${state.pausado ? 'text-secondary' : 'text-success'}" id="timer-display-${tid}">
+        <div class="fw-bold fs-5 ${
+            state.pausado ? "text-secondary" : "text-success"
+        }" id="timer-display-${tid}">
             ${formataSegundos(state.tempo)}
+        </div>
+        <div class="small ${state.pausado ? "text-warning" : "text-success"}">
+            ${state.pausado ? "Pausado" : "Em andamento"}
         </div>
         <button class="btn btn-success btn-sm mt-2 px-3" id="select-${tid}">Selecionar</button>
     </div>
 `;
 
-            container.appendChild(card);
+                container.appendChild(card);
 
-            document.getElementById(`select-${tid}`).addEventListener("click", () => {
-                selectedTid = tid;
+                document
+                    .getElementById(`select-${tid}`)
+                    .addEventListener("click", () => {
+                        selectedTid = tid;
+                        localStorage.setItem("selectedTid", tid);
 
-                // GARANTE que usa o tempo sincronizado mais recente
-                const state = window.__timers__[tid];
+                        const state = window.__timers__[tid];
 
-                atualizarDisplays(tid);
-                atualizarTimersModal();
+                        atualizarDisplays(tid);
+                        atualizarTimersModal();
 
-                if (state.pausado) {
-                    btnIniciar.classList.remove("d-none");
-                    btnPausar.classList.add("d-none");
-                    btnPausar.textContent = 'Pausar';
-                    btnPausar.classList.replace('btn-warning', 'btn-primary');
-                } else {
-                    btnIniciar.classList.add("d-none");
-                    btnPausar.classList.remove("d-none");
-                    btnPausar.textContent = 'Pausar';
-                    btnPausar.classList.replace('btn-primary', 'btn-warning');
-                }
-                btnReiniciar.classList.remove("d-none");
+                        if (state.pausado) {
+                            btnIniciar.classList.remove("d-none");
+                            btnPausar.classList.add("d-none");
+                            btnPausar.textContent = "Pausar";
+                            btnPausar.classList.replace(
+                                "btn-warning",
+                                "btn-primary"
+                            );
+                        } else {
+                            btnIniciar.classList.add("d-none");
+                            btnPausar.classList.remove("d-none");
+                            btnPausar.textContent = "Pausar";
+                            btnPausar.classList.replace(
+                                "btn-primary",
+                                "btn-warning"
+                            );
+                        }
+                        btnReiniciar.classList.remove("d-none");
 
-                const modalEl = document.getElementById("popupTerapeuta");
-                bootstrap.Modal.getInstance(modalEl)?.hide();
+                        const modalEl =
+                            document.getElementById("popupTerapeuta");
+                        bootstrap.Modal.getInstance(modalEl)?.hide();
+                    });
             });
-
         });
 
         atualizarTimersModal();
@@ -379,7 +686,7 @@ async function carregarTerapeutas() {
     }
 }
 
-// ATUALIZAR DISPLAYS 
+// ATUALIZAR DISPLAYS
 function atualizarDisplays(tid) {
     const state = window.__timers__[tid];
     if (!state) return;
@@ -396,7 +703,9 @@ function atualizarDisplays(tid) {
     const displayModal = document.getElementById(`timer-display-${tid}`);
     if (displayModal) {
         displayModal.textContent = formataSegundos(state.tempo);
-        displayModal.className = `fw-bold fs-5 ${state.pausado ? 'text-secondary' : 'text-success'}`;
+        displayModal.className = `fw-bold fs-5 ${
+            state.pausado ? "text-secondary" : "text-success"
+        }`;
     }
 }
 
@@ -404,61 +713,72 @@ function atualizarDisplays(tid) {
 function atualizarTimersModal() {
     if (!window.__timers__) return;
 
-    Object.keys(window.__timers__).forEach(tid => {
+    Object.keys(window.__timers__).forEach((tid) => {
         const state = window.__timers__[tid];
         if (!state) return;
 
-        // Atualiza o display de cada terapeuta no modal
+        // Seleciona o display do modal
         const display = document.getElementById(`timer-display-${tid}`);
-        if (display) {
-            display.textContent = formataSegundos(state.tempo);
-            display.className = `fw-bold fs-5 ${state.pausado ? 'text-secondary' : 'text-success'}`;
-        }
+        if (!display) return; // elemento ainda não existe, ignora
+
+        // Atualiza o tempo formatado
+        display.textContent = formataSegundos(state.tempo);
+
+        // Remove classes antigas de cor
+        display.classList.remove("text-secondary", "text-success");
+
+        // Adiciona a classe correta
+        display.classList.add(
+            state.pausado ? "text-secondary" : "text-success"
+        );
+
+        // Garante que as classes essenciais de estilo não sejam removidas
+        if (!display.classList.contains("fw-bold"))
+            display.classList.add("fw-bold");
+        if (!display.classList.contains("fs-5")) display.classList.add("fs-5");
     });
 }
 
 // Atualização automática global + sincronização periódica
 let lastSync = Date.now();
-setInterval(() => {
+setInterval(async () => {
     if (!window.__timers__) return;
 
-    const modalAbertoTerapeuta = document.getElementById("popupTerapeuta")?.classList.contains("show");
+    const modalAbertoTerapeuta = document
+        .getElementById("popupTerapeuta")
+        ?.classList.contains("show");
     const agora = Date.now();
 
-    Object.keys(window.__timers__).forEach(tid => {
+    Object.keys(window.__timers__).forEach((tid) => {
         const state = window.__timers__[tid];
         if (!state) return;
 
         // Decrementa tempo se não estiver pausado
         if (!state.pausado) {
+            const prev = state.tempo;
             state.tempo = Math.max(0, state.tempo - 1);
             atualizarDisplays(tid);
 
-            if (
-                state.tempo === 0 &&
-                !state.encerrado &&
-                !state.pausado &&
-                state.serverId &&
-                state.tempoAnterior > 0 // garante que ele estava rodando, não recém-carregado
-            ) {
+            // Quando atingir 0, abrir modal de encerramento (comportamento original)
+            if (state.tempo === 0 && !state.encerrado && state.serverId) {
                 state.encerrado = true;
                 window.sessaoEncerrarId = state.serverId;
 
-                const encerrarModalEl = document.getElementById("encerrarSessaoModal");
+                const encerrarModalEl = document.getElementById(
+                    "encerrarSessaoModal"
+                );
                 if (encerrarModalEl) {
-                    const encerrarModal = new bootstrap.Modal(encerrarModalEl);
+                    const encerrarModal =
+                        bootstrap.Modal.getOrCreateInstance(encerrarModalEl);
                     encerrarModal.show();
                 }
 
                 if (selectedTid === tid) {
-                    btnIniciar.classList.remove('d-none');
-                    btnPausar.classList.add('d-none');
-                    btnReiniciar.classList.add('d-none');
+                    btnIniciar?.classList.remove("d-none");
+                    btnPausar?.classList.add("d-none");
+                    btnReiniciar?.classList.add("d-none");
                 }
             }
-
-            // guarda o valor anterior para próxima iteração
-            state.tempoAnterior = state.tempo;
         }
 
         // Sincroniza com servidor a cada segundo
@@ -469,57 +789,114 @@ setInterval(() => {
 
     // Atualiza modal de terapeutas se aberto
     if (modalAbertoTerapeuta) {
+        await loadTimersFromDB();
         atualizarTimersModal();
     }
 }, 1000);
 
-// chama quando abrir o modal - AGORA FORÇA sincronização com o servidor
-document.getElementById("popupTerapeuta")?.addEventListener("show.bs.modal", () => {
-    // FORÇA sincronização com o banco antes de carregar
-    setTimeout(() => {
-        loadTimersFromDB().then(() => {
-            carregarTerapeutas();
+// --- DETECTA QUANDO A ABA VOLTA AO FOCO E SINCRONIZA COM O SERVIDOR ---
+let lastFocusTime = Date.now();
+window.addEventListener("focus", async () => {
+    const agora = Date.now();
+    const tempoDecorrido = Math.floor((agora - lastFocusTime) / 1000); // em segundos
+
+    // Atualiza cada timer ativo com o tempo que passou enquanto estava oculto
+    if (window.__timers__) {
+        Object.keys(window.__timers__).forEach((tid) => {
+            const state = window.__timers__[tid];
+            if (!state || state.pausado || state.encerrado) return; // Só atualiza se estiver rodando
+
+            // Diminui o tempo pelo que passou
+            state.tempo = Math.max(0, state.tempo - tempoDecorrido);
+
+            // Sincroniza com servidor
+            syncTimerToServer(tid);
         });
-    }, 100);
+
+        // Atualiza displays
+        atualizarDisplays(selectedTid);
+        atualizarTimersModal();
+    }
+
+    // Recarrega dados do banco para garantir consistência
+    await loadTimersFromDB();
+    atualizarTimersModal();
 });
 
-// se o evento do Bootstrap não funcionar, chama ao clicar no botão que abre o modal
-const btnAbrirTerapeuta = document.querySelector('[data-bs-target="#popupTerapeuta"]');
-if (btnAbrirTerapeuta) {
-    btnAbrirTerapeuta.addEventListener('click', () => {
+window.addEventListener("blur", () => {
+    lastFocusTime = Date.now();
+});
+
+// chama quando abrir o modal - AGORA FORÇA sincronização com o servidor
+document
+    .getElementById("popupTerapeuta")
+    ?.addEventListener("show.bs.modal", () => {
+        // FORÇA sincronização com o banco antes de carregar
         setTimeout(() => {
             loadTimersFromDB().then(() => {
                 carregarTerapeutas();
             });
         }, 100);
     });
+
+// se o evento do Bootstrap não funcionar, chama ao clicar no botão que abre o modal
+const btnAbrirTerapeuta = document.querySelector(
+    '[data-bs-target="#popupTerapeuta"]'
+);
+if (btnAbrirTerapeuta) {
+    btnAbrirTerapeuta.addEventListener("click", () => {
+        PopUpTerapeutafechado();
+
+        setTimeout(() => {
+            loadTimersFromDB().then(() => {
+                carregarTerapeutas();
+                // abre o modal via API do Bootstrap (evita comportamento duplicado por data-* atributos)
+                const modalEl = document.getElementById("popupTerapeuta");
+                if (modalEl) {
+                    try {
+                        const modal = new bootstrap.Modal(modalEl);
+                        modal.show();
+                    } catch (e) {
+                        modalEl.classList.add("show");
+                        modalEl.style.display = "block";
+                        document.body.classList.add("modal-open");
+                    }
+                }
+            });
+        }, 120);
+    });
 }
 
-// id 
-const id = localStorage.getItem("idUser");
+// id
 const perfis = localStorage.getItem("perfis_usuario"); // ex: "Master" ou "Terapeuta"
 const tipoUser = localStorage.getItem("tipoUser"); // ex: "admin"
 
 // Mostra botão de abrir modal SelecionarTerapeuta só se for admin
 document.addEventListener("DOMContentLoaded", () => {
+    PopUpTerapeutafechado();
     const btnAbrirModal = document.getElementById("btnAbrirModal");
     if (tipoUser === "admin" && btnAbrirModal) {
         btnAbrirModal.classList.remove("d-none");
     }
 
     // carrega timers do banco uma vez na inicialização
-    loadTimersFromDB().then(() => {
-        carregarAgendamentos();
-        carregarTerapeutas();
+    // aguarda loadTimersFromDB terminar ANTES de restaurar o timer
+    loadTimersFromDB().then(async () => {
+        await carregarAgendamentos();
+        await carregarTerapeutas();
+        restaurarTimers(); // restaura DEPOIS que loadTimersFromDB populou window.__timers__
     });
 });
 
 // Função para carregar agendamentos do dia
 async function carregarAgendamentos() {
+    const id = localStorage.getItem("userId");
     if (!id) return alert("ID do usuário não encontrado!");
 
     try {
-        const query = `idUser=${id}&perfis_usuario=${encodeURIComponent(perfis)}`;
+        const query = `userId=${id}&perfis_usuario=${encodeURIComponent(
+            perfis
+        )}`;
         const resposta = await fetch(`/api/agendamentos?${query}`);
         const agendamentos = await resposta.json();
 
@@ -532,43 +909,60 @@ async function carregarAgendamentos() {
         }
 
         // Ordena do mais cedo para o mais tarde
-        agendamentos.sort((a, b) => new Date(a.inicio_atendimento) - new Date(b.inicio_atendimento));
+        agendamentos.sort(
+            (a, b) =>
+                new Date(a.inicio_atendimento) - new Date(b.inicio_atendimento)
+        );
         agendamentos.sort((a, b) => {
             if (a.encerrado !== b.encerrado) {
                 return a.encerrado ? 1 : -1;
             }
-            return new Date(a.inicio_atendimento) - new Date(b.inicio_atendimento);
+            return (
+                new Date(a.inicio_atendimento) - new Date(b.inicio_atendimento)
+            );
         });
 
-        agendamentos.forEach(a => {
+        agendamentos.forEach((a) => {
             const inicioISO = a.inicio_atendimento;
             const fimISO = a.fim_atendimento;
             const horaFormatada = inicioISO.slice(11, 16);
-            const tempoSegundos = Math.round((new Date(fimISO) - new Date(inicioISO)) / 1000);
+            const tempoSegundos = Math.round(
+                (new Date(fimISO) - new Date(inicioISO)) / 1000
+            );
 
             const bloco = document.createElement("div");
-            bloco.classList.add("card", "card-agendamento", "p-3", "mb-2", "shadow-sm");
+            bloco.classList.add(
+                "card",
+                "card-agendamento",
+                "p-3",
+                "mb-2",
+                "shadow-sm"
+            );
             bloco.dataset.serverId = a._id;
             bloco.style.backgroundColor = a.encerrado ? "#d4edda" : "#ffffff";
 
             // Botão Selecionar só aparece se a sessão NÃO estiver encerrada
-            const btnSelecionarHTML = (!a.encerrado) ? `
+            const btnSelecionarHTML = !a.encerrado
+                ? `
                 <button class="btn btn-success btn-sm" 
                     onclick="selecionarAgendamento(
                         '${a._id}', 
                         ${tempoSegundos}, 
                         '${a.colaborador}', 
-                        '${a.colaborador_id || ''}'
+                        '${a.colaborador_id || ""}'
                     )">
                     Selecionar
-                </button>` : "";
+                </button>`
+                : "";
 
             bloco.innerHTML = `
 <div class="d-flex justify-content-between align-items-start">
     <div class="text-start">
         <span class="fw-semibold d-block">👤${a.colaborador}</span>
         <small class="text-muted d-block">⏰Início: ${horaFormatada}</small>
-        <small class="text-muted d-block">Duração: ${Math.round(tempoSegundos / 60)} min</small>
+        <small class="text-muted d-block">Duração: ${Math.round(
+            tempoSegundos / 60
+        )} min</small>
     </div>
     <div class="ms-3">
         ${btnSelecionarHTML}
@@ -587,32 +981,40 @@ async function carregarAgendamentos() {
 
             container.appendChild(bloco);
         });
-
     } catch (err) {
         console.error("Erro ao carregar agendamentos:", err);
         const container = document.getElementById("agendamentos");
-        if (container) container.innerHTML = `<p class="text-center text-danger small">Erro ao carregar agendamentos do dia.</p>`;
+        if (container)
+            container.innerHTML = `<p class="text-center text-danger small">Erro ao carregar agendamentos do dia.</p>`;
     }
 }
 
 // Função chamada ao clicar em "Selecionar"
-function selecionarAgendamento(id, tempoSegundos, colaboradorNome = null, colaboradorId = null) {
-    let tid = colaboradorId ? String(colaboradorId) : `temp-${Date.now()}`;
+function selecionarAgendamento(
+    id,
+    tempoSegundos,
+    colaboradorNome = null,
+    colaboradorId = null
+) {
+    // IMPORTANTE: usar id do agendamento como tid, não colaborador_id
+    // Isto permite múltiplos agendamentos para a mesma pessoa
+    const tid = String(id).trim();
+
     if (!window.__timers__) window.__timers__ = {};
 
-    // Se timer já existe, atualiza apenas o tempo e serverId
+    // Se timer já existe, APENAS alterna a seleção (NÃO muda o tempo)
     if (window.__timers__[tid]) {
         const state = window.__timers__[tid];
-        state.tempo = tempoSegundos;
-        state.pausado = true; // iniciar pausado
-        state.serverId = id;
-        state.nome_colaborador = colaboradorNome || state.nome_colaborador || "Desconhecido";
-
-        //  reset de flag de encerramento
-        state.encerrado = false;
-        state.em_andamento = true;
+        // NÃO altera o tempo - ele mantém o que está rodando
+        // Apenas atualiza campos que podem ter mudado
+        if (!state.serverId || state.serverId !== id) {
+            state.serverId = id;
+        }
+        state.nome_colaborador =
+            colaboradorNome || state.nome_colaborador || "Desconhecido";
+        state.colaborador_id = colaboradorId || state.colaborador_id;
     } else {
-        // Cria novo timer
+        // Cria novo timer - PRIMEIRA VEZ que este agendamento é selecionado
         window.__timers__[tid] = {
             tempo: tempoSegundos,
             pausado: true,
@@ -621,12 +1023,14 @@ function selecionarAgendamento(id, tempoSegundos, colaboradorNome = null, colabo
             nome_colaborador: colaboradorNome || "Desconhecido",
             colaborador_id: colaboradorId || null,
             encerrado: false,
-            em_andamento: true
+            em_andamento: true,
         };
     }
 
     // Define o selecionado
     selectedTid = tid;
+    // Salva o selectedTid no localStorage para restaurar após reload
+    localStorage.setItem("selectedTid", tid);
 
     // Atualiza displays
     atualizarDisplays(selectedTid);
@@ -636,13 +1040,13 @@ function selecionarAgendamento(id, tempoSegundos, colaboradorNome = null, colabo
 
     // Botões centrais
     if (state.pausado) {
-        btnIniciar.classList.remove('d-none');
-        btnPausar.classList.add('d-none');
-        btnReiniciar.classList.add('d-none');
+        btnIniciar.classList.remove("d-none");
+        btnPausar.classList.add("d-none");
+        btnReiniciar.classList.add("d-none");
     } else {
-        btnIniciar.classList.add('d-none');
-        btnPausar.classList.remove('d-none');
-        btnReiniciar.classList.remove('d-none');
+        btnIniciar.classList.add("d-none");
+        btnPausar.classList.remove("d-none");
+        btnReiniciar.classList.remove("d-none");
     }
 
     // Atualiza display central
@@ -655,53 +1059,64 @@ function selecionarAgendamento(id, tempoSegundos, colaboradorNome = null, colabo
 
 document.addEventListener("DOMContentLoaded", carregarAgendamentos);
 
-
 // Final de sessão abre modal de encerramento
-document.getElementById("confirmarEncerramento").addEventListener("click", async () => {
-    const encerrarModalEl = document.getElementById("encerrarSessaoModal");
-    const encerrarModal = bootstrap.Modal.getInstance(encerrarModalEl);
-    encerrarModal.hide();
+document
+    .getElementById("confirmarEncerramento")
+    .addEventListener("click", async () => {
+        const encerrarModalEl = document.getElementById("encerrarSessaoModal");
+        const encerrarModal = bootstrap.Modal.getInstance(encerrarModalEl);
+        encerrarModal.hide();
 
-    const atendimentoEl = document.querySelector(`[data-server-id="${window.sessaoEncerrarId}"]`);
-    if (atendimentoEl) {
-        atendimentoEl.style.backgroundColor = "#d4edda";
-        const btnSelecionar = atendimentoEl.querySelector("button");
-        if (btnSelecionar) btnSelecionar.style.display = "none";
-    }
-
-    const fbModalEl = document.getElementById("fbModal");
-    const fbModal = new bootstrap.Modal(fbModalEl);
-    fbModal.show();
-
-    const fbNomeEl = document.getElementById("fb-nomeTerapeuta");
-    const fbHorarioEl = document.getElementById("fb-horarioSessao");
-
-    const state = Object.values(window.__timers__ || {}).find(
-        t => t.serverId === window.sessaoEncerrarId
-    );
-
-    if (state && state.nome_colaborador) {
-        fbNomeEl.textContent = `👤 ${state.nome_colaborador}`;
-    } else {
-        fbNomeEl.textContent = '👤 Carregando...';
-        try {
-            const resCol = await fetch(`/api/colaboradores/${state.colaborador_id}`);
-            const colaborador = await resCol.json();
-            fbNomeEl.textContent = `👤 ${colaborador.nome_colaborador || 'Desconhecido'}`;
-        } catch {
-            fbNomeEl.textContent = '👤 Desconhecido';
+        const atendimentoEl = document.querySelector(
+            `[data-server-id="${window.sessaoEncerrarId}"]`
+        );
+        if (atendimentoEl) {
+            atendimentoEl.style.backgroundColor = "#d4edda";
+            const btnSelecionar = atendimentoEl.querySelector("button");
+            if (btnSelecionar) btnSelecionar.style.display = "none";
         }
-    }
 
-    // Horário real do encerramento
-    const agora = new Date();
-    const horas = String(agora.getHours()).padStart(2, '0');
-    const minutos = String(agora.getMinutes()).padStart(2, '0');
-    const segundos = String(agora.getSeconds()).padStart(2, '0');
+        const fbModalEl = document.getElementById("fbModal");
+        const fbModal = new bootstrap.Modal(fbModalEl);
+        fbModal.show();
 
-    fbHorarioEl.textContent = `⏰ ${horas}:${minutos}:${segundos}`;
-});
+        const fbNomeEl = document.getElementById("fb-nomeTerapeuta");
+        const fbHorarioEl = document.getElementById("fb-horarioSessao");
 
+        // Encontra o state pelo serverId
+        const state = Object.values(window.__timers__ || {}).find(
+            (t) => t.serverId === window.sessaoEncerrarId
+        );
+
+        // Tenta usar nome do state primeiro
+        let nomeColaborador = state?.nome_colaborador || null;
+
+        // Se não tiver nome, busca usando colaborador_id
+        if (!nomeColaborador && state?.colaborador_id) {
+            fbNomeEl.textContent = "👤 Carregando...";
+            try {
+                const resCol = await fetch(
+                    `/api/colaboradores/${state.colaborador_id}`
+                );
+                if (resCol.ok) {
+                    const colaborador = await resCol.json();
+                    nomeColaborador = colaborador.nome_colaborador || null;
+                }
+            } catch (err) {
+                console.warn("Erro ao buscar colaborador:", err);
+            }
+        }
+
+        fbNomeEl.textContent = `👤 ${nomeColaborador || "Desconhecido"}`;
+
+        // Horário real do encerramento
+        const agora = new Date();
+        const horas = String(agora.getHours()).padStart(2, "0");
+        const minutos = String(agora.getMinutes()).padStart(2, "0");
+        const segundos = String(agora.getSeconds()).padStart(2, "0");
+
+        fbHorarioEl.textContent = `⏰ ${horas}:${minutos}:${segundos}`;
+    });
 
 // Salvar feedback e encerrar sessão
 document.getElementById("fb-salvar").addEventListener("click", async () => {
@@ -720,14 +1135,16 @@ document.getElementById("fb-salvar").addEventListener("click", async () => {
     try {
         // Salva o feedback
         const res = await fetch(`/api/atendimentos/${sessaoId}/feedback`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ observacao_cliente: texto })
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ observacao_cliente: texto }),
         });
 
         if (!res.ok) {
             const err = await res.json();
-            alert("Erro ao salvar feedback: " + (err.message || res.statusText));
+            alert(
+                "Erro ao salvar feedback: " + (err.message || res.statusText)
+            );
             return;
         }
 
@@ -746,27 +1163,42 @@ document.getElementById("fb-salvar").addEventListener("click", async () => {
             // Atualiza no servidor: marca como encerrado
             if (state.serverId) {
                 try {
-                    await fetch(`/api/atendimentos/${state.serverId}/encerrar`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            em_andamento: false,
-                            tempoRestante: 0,
-                            encerrado: true,
-                            fim_real: new Date()
-                        })
-                    });
+                    await fetch(
+                        `/api/atendimentos/${state.serverId}/encerrar`,
+                        {
+                            method: "PUT",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                em_andamento: false,
+                                tempoRestante: 0,
+                                encerrado: true,
+                                fim_real: new Date(),
+                            }),
+                        }
+                    );
                 } catch (err) {
-                    console.error("Erro ao marcar atendimento como encerrado no servidor:", err);
+                    console.error(
+                        "Erro ao marcar atendimento como encerrado no servidor:",
+                        err
+                    );
                 }
             }
 
             await syncTimerToServer(tid);
             atualizarDisplays(tid);
             atualizarTimersModal();
-
+            // Garantir que o timer fique pausado e em 10:00 após tudo ser atualizado
+            if (state) {
+                state.pausado = true;
+                state.em_andamento = false;
+                state.tempo = 10 * 60; // reforça o reset
+                // Atualiza o display final já com ele pausado
+                atualizarDisplays(tid);
+            }
             // Atualiza o card visual da sessão iniciada
-            const bloco = document.querySelector(`[data-server-id="${state.serverId}"]`);
+            const bloco = document.querySelector(
+                `[data-server-id="${state.serverId}"]`
+            );
             if (bloco) {
                 // Remove badge antiga, se existir
                 const badgeExistente = bloco.querySelector(".badge");
@@ -781,6 +1213,10 @@ document.getElementById("fb-salvar").addEventListener("click", async () => {
                 // Esconde botão Selecionar
                 const btnSelecionar = bloco.querySelector("button");
                 if (btnSelecionar) btnSelecionar.style.display = "none";
+
+                // Mover pra parte de baixo da lista
+                const lista = bloco.parentElement;
+                lista.appendChild(bloco);
             }
         }
 
@@ -791,9 +1227,13 @@ document.getElementById("fb-salvar").addEventListener("click", async () => {
 
         // Limpa textarea
         document.getElementById("fb-texto").value = "";
-
     } catch (e) {
         console.error("Erro ao salvar feedback:", e);
         alert("Ocorreu um erro ao salvar o feedback.");
     }
+});
+
+document.getElementById("sairbutton").addEventListener("click", () => {
+    localStorage.removeItem("token");
+    window.location.href = "/";
 });

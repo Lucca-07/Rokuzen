@@ -1,0 +1,214 @@
+/* ============================================
+   LISTARCADASTROS.CSS - Página de Listagem de Cadastros
+   ============================================ */
+
+/* Estilos específicos para a página de listagem de cadastros */
+/* Os estilos globais são importados via global.css */
+
+.preview-container {
+    width: 100%;
+    max-width: 220px;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* Garante que nada vaze */
+    border: 2px solid #93a46b;
+    border-radius: 0.25rem;
+    background-color: #f8f9fa;
+    position: relative;
+}
+
+.preview-img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important; /* Cobre todo o espaço mantendo proporção */
+    object-position: center !important;
+    display: block !important;
+}
+
+/* === CARDS DE LISTAGEM === */
+.card-editar {
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.356);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-editar:hover {
+    transform: translateY(-2px);
+    box-shadow: 5px 7px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* === BOTÕES DE AÇÃO (EDITAR/DELETAR) === */
+.card-editar .mdi-pencil {
+    transition: all 0.2s ease;
+}
+
+.card-editar .mdi-pencil:hover {
+    background-color: #d1e7dd !important;
+    transform: scale(1.1);
+}
+
+.card-editar .mdi-delete {
+    transition: all 0.2s ease;
+}
+
+.card-editar .mdi-delete:hover {
+    background-color: #f8d7da !important;
+    transform: scale(1.1);
+}
+
+/* === IMAGENS DE PERFIL NOS CARDS === */
+.card-editar img {
+    transition: transform 0.2s ease;
+}
+
+.card-editar img:hover {
+    transform: scale(1.05);
+}
+
+/* === RESPONSIVIDADE === */
+@media (max-width: 768px) {
+    .preview-container {
+        max-width: 150px;
+        height: 150px;
+    }
+
+    .card-editar {
+        margin-top: 1rem !important;
+    }
+}
+
+.user-card {
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #dee2e6;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 60%, #eef1f4 100%);
+}
+.user-card:hover {
+    box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.08);
+    transform: translateY(-4px);
+    border-color: #cdd3d8;
+}
+.user-card__actions i {
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+.user-card__actions i:hover {
+    transform: scale(1.07);
+}
+.avatar-wrapper {
+    position: relative;
+    width: 110px;
+    height: 110px;
+}
+.avatar-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    background: #fafafa;
+}
+.avatar-badge {
+    position: absolute;
+    right: -4px;
+    bottom: -4px;
+    background: #198754;
+    color: #fff;
+    font-size: 0.65rem;
+    padding: 0.35rem 0.5rem;
+    border-radius: 30px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+.perfil-chip {
+    display: inline-block;
+    background: #0d6efd10;
+    color: #0d6efd;
+    border: 1px solid #0d6efd30;
+    padding: 0.25rem 0.6rem;
+    margin: 0.15rem;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+.edit-modal-header {
+    background: linear-gradient(135deg, #198754, #157347);
+    color: #fff;
+}
+.preview-container {
+    width: 160px;
+    height: 160px;
+    border-radius: 20px;
+    background: #f1f3f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 1px #e3e7ea;
+}
+.preview-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+.change-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: opacity 0.25s ease;
+    letter-spacing: 0.5px;
+}
+.preview-container:hover .change-image-overlay {
+    opacity: 1;
+}
+.floating-group label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #495057;
+    margin-bottom: 0.35rem;
+}
+.form-section {
+    padding: 1rem 1.15rem;
+    border: 1px solid #e3e7ea;
+    border-radius: 12px;
+    background: #ffffff;
+    margin-bottom: 0.85rem;
+}
+.form-section h6 {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+.unidades-grid label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    color: #495057;
+}
+.unidades-grid input[type="checkbox"] {
+    transform: scale(1.2);
+    cursor: pointer;
+}
+.modal-footer .btn-success {
+    box-shadow: 0 4px 10px rgba(25, 135, 84, 0.35);
+}
+.modal-footer .btn-success:hover {
+    box-shadow: 0 4px 14px rgba(25, 135, 84, 0.55);
+}

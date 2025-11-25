@@ -34,15 +34,18 @@ function compressImage(file, maxSize = 800, quality = 0.7) {
     });
 }
 
+// LISTAGEM
 async function listarColaboradores() {
     const main = document.getElementById("main");
     main.innerHTML = "";
+    const row = document.createElement("div");
+    row.className = "row g-3";
+    main.appendChild(row);
+
     try {
         const response = await fetch("/api/user/listar", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
         });
         const { users } = await response.json();
 
@@ -50,358 +53,422 @@ async function listarColaboradores() {
         users.forEach((user) => {
             const nome = user.nome_colaborador;
             let perfis = user.perfis_usuario;
-            console.log("Perfis antes:", perfis);
-            
-            // Garante que perfis é um array e remove valores vazios/null/undefined
-            perfis = Array.isArray(perfis) ? perfis.filter(p => p && p.trim()) : [];
-            
-            // Se não houver perfis válidos, mostra mensagem padrão
-            if (perfis.length === 0) {
-                perfis = "Sem perfil";
-            } 
-            // Se houver apenas um perfil, usa ele
-            else if (perfis.length === 1) {
-                perfis = perfis[0];
-            } 
-            // Se houver mais de um perfil, junta com vírgula
-            else {
-                perfis = perfis.join(", ");
-            }
-            console.log("Perfis depois:", perfis);
-            // console.log(perfisOrganizados)
+            perfis = Array.isArray(perfis)
+                ? perfis.filter((p) => p && p.trim())
+                : [];
 
-            const card = `
-                <div id="card-${contador}" class="row container-lg bg-light d-flex p-4 border mt-4 card-editar h-25 "
-                    style="border-radius: 30px; animation: aparecer 0.3s ease-in forwards;">
-                    <div class="col-12 col-md-6 col-lg-3 d-flex align-self-center align-items-center justify-content-center h-50">
-                        <img src="${
-                            user.imagem || "/frontend/img/account-outline.svg"
-                        }" alt=""
-                            style="border-radius: 25px; border: 1px solid black; height: 100px; width: 100px; object-fit: cover;">
-                    </div>
-                    <div class="col-12 col-md-6 col-lg-9 d-flex">
-                        <div class="nome d-flex align-self-center align-items-center justify-content-center h-100" style="flex:40%">
-                            <p class="fs-4 text-center">${nome}</p>
-                        </div>
-                        <div class="perfil d-flex align-self-center align-items-center justify-content-center h-100" style="flex:40%">
-                            <p class="fs-4 text-center">${perfis}</p>
-                        </div>
-                        <div class="perfil d-flex align-items-start justify-content-end h-100 gap-2" style="flex:20%">
-                            <i class="mdi mdi-pencil px-2 py-1 fs-5 bg-success-subtle" style="cursor:pointer; border-radius: 10px;" onclick="popupEdit('${
-                                user._id
-                            }')"></i>
-                            <i class="mdi mdi-delete px-2 py-1 fs-5 bg-danger-subtle" style="cursor:pointer; border-radius: 10px;" onclick="popupDelete('${
-                                user._id
-                            }')"></i>
-                        </div>
+            const perfisRender = perfis.length
+                ? perfis
+                      .map(
+                          (p) =>
+                              `<span class="badge fw-medium rounded-pill bg-body-tertiary text-success border border-success-subtle me-1 mb-1">${p}</span>`
+                      )
+                      .join("")
+                : `<span class="badge rounded-pill bg-secondary text-white mb-1">Sem perfil</span>`;
 
+            const col = document.createElement("div");
+            col.className = "col-12 col-sm-6 col-lg-4 col-xl-3 d-flex";
+            col.innerHTML = `
+                <div class="card w-100 shadow-sm border-0 h-100">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex flex-column align-items-center mb-3">
+                            <div class="rounded-circle border shadow-sm overflow-hidden mb-2" style="width:100px;height:100px;">
+                                <img src="${
+                                    user.imagem ||
+                                    "/frontend/img/account-outline.svg"
+                                }" alt="Avatar" class="w-100 h-100 object-fit-cover">
+                            </div>
+                            <span class="badge bg-success-subtle text-black fw-normal">${contador}</span>
+                        </div>
+                        <h6 class="fw-semibold text-truncate text-center" title="${nome}">${nome}</h6>
+                        <div class="d-flex flex-wrap mb-3 justify-content-center">
+                            ${perfisRender}
+                        </div>
+                        <div class="mt-auto d-flex flex-wrap gap-2 justify-content-center">
+                        <button type="button"
+                            class="btn btn-sm btn-danger d-flex align-items-center gap-1"
+                            onclick="popupDelete('${user._id}')">
+                            <i class="mdi mdi-delete"></i> Excluir
+                        </button>
+                            <button type="button"
+                                class="btn btn-sm btn-success d-flex align-items-center gap-1"
+                                onclick="popupEdit('${user._id}')">
+                                <i class="mdi mdi-pencil"></i> Editar
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
-
-            main.insertAdjacentHTML("beforeend", card);
+            row.appendChild(col);
             contador++;
         });
-    } catch (error) {
-        console.error("Erro: " + error);
+    } catch (err) {
+        console.error("Erro:", err);
     }
 }
 
+// DELETE
 function popupDelete(id) {
     const main = document.getElementById("main");
-    const deletepopup = `<div id="popupdelete"
-        class="position-fixed top-50 start-50 translate-middle bg-light border border-2 border-black p-4 z-3" style="border-radius: 20px;">
-        <p class="fs-4">Tem certeza que deseja excluir este usuário?</p>
-        <div class="d-flex justify-content-center align-content-center gap-2">
-            <button id="confirmbtn" class="w-25 bg-success-subtle" style="border-radius: 10px;" onclick="deleteColaborador('${id}')">Sim</button>
-            <button id="cancelbtn" class="w-25 bg-danger-subtle" style="border-radius: 10px;"
-        onclick="document.getElementById('popupdelete').remove(), document.getElementById('overlay').remove()">Não</button>
-        </div>
-    </div>`;
-    const overylay = `<div id="overlay" class="overlay position-fixed top-0 start-0 z-2" style="background: rgba(0,0,0,0.3); width: 100vw; height: 100vh;">
+    const modalId = `deleteModal-${id}`;
+    document.getElementById(modalId)?.remove();
 
+    const modal = `
+    <div class="modal fade" id="${modalId}" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-3">
+          <div class="modal-header">
+            <h5 class="modal-title">Confirmar exclusão</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+          </div>
+          <div class="modal-body">
+            <p>Tem certeza que deseja excluir este usuário?</p>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button id="${modalId}-confirm" class="btn btn-danger">Excluir</button>
+          </div>
+        </div>
+      </div>
     </div>`;
-    main.insertAdjacentHTML("beforeend", overylay);
-    main.insertAdjacentHTML("beforeend", deletepopup);
+    main.insertAdjacentHTML("beforeend", modal);
+    const el = document.getElementById(modalId);
+    const bs = new bootstrap.Modal(el);
+    el.addEventListener("hidden.bs.modal", () => el.remove());
+    document
+        .getElementById(`${modalId}-confirm`)
+        .addEventListener("click", async () => {
+            await deleteColaborador(id);
+            bs.hide();
+        });
+    bs.show();
 }
 
+// EDIT
 async function popupEdit(id) {
     const main = document.getElementById("main");
     try {
-        const response = await fetch("/api/user/edit", {
+        const resp = await fetch("/api/user/edit", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                id: id,
-            }),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id }),
         });
-        const data = await response.json();
+        const data = await resp.json();
+        if (!data) return;
+
         let { nome, email, perfis, unidades, imagem } = data;
+        perfis = Array.isArray(perfis) ? perfis : [];
+        const showSetor = ["Gerente"].includes(perfis[0]);
 
-        if (!data) {
-            console.log("Erro ao enviar o usuário ao front");
-        }
+        const modalId = `editModal-${id}`;
+        document.getElementById(modalId)?.remove();
 
-        const editpopup = `<div id="editar"
-        class="editarcard container-md position-fixed top-50 start-50 d-flex  translate-middle bg-light border border-2 border-black z-3 w-100 "
-        style="border-radius: 20px;">
-        <div class="cardtera row w-100 p-3 h-100 d-flex justify-content-center align-items-center"
-            style="border-radius: 30px;">
-            <div>
-                    <button type="button" class="btn-close" aria-label="close" data-bs-dismiss="button" onclick="document.getElementById('editar').remove(); document.getElementById('overlay').remove();"></button>
-                </div>
-            <div class="col-12 col-lg-3 d-flex align-self-center align-items-center justify-content-center h-50 flex-column">
-                <img id="previewImagem" src="${
-                    imagem || "/frontend/img/account-outline.svg"
-                }" alt=""
-                    style="border-radius: 25px; border: 1px solid black; height: 100px; width: 100px; object-fit: cover;">
-                    <input type="file" name="imagemUsuario" class="d-none" id="imagemUsuarioEdit" accept="image/*">
-                    <label for="imagemUsuarioEdit" class="btn btn-outline-success mt-2">Selecionar Imagem</label>
-            </div>
-            <div class="col-12 col-lg-9 d-flex align-items-center justify-content-center h-50 text-center gap-4">
-                <div class="w-50 d-flex flex-column align-items-center justify-content-center mb-3 mb-md-0 text-center">
-                    <label for="nome" class="fs-4">Nome:</label>
-                    <input id="nome" type="text" class="fs-5 w-75 mb-2" value="${nome}">
-                </div>
-                <div class="w-50 d-flex flex-column align-items-center justify-content-center mb-3 mb-md-0 text-center">
-                    <label for="email" class="fs-4">Email:</label>
-                    <input id="email" type="text" class="fs-5 w-75 mb-2" value="${email}">
-                    <div>
-                        <label for="cargos" class="fs-4">Cargos:</label>
-                        <select class="mx-2 align-self-center w-auto" id="cargos"
-                            style="border-radius: 5px; cursor: pointer; height: 30px;">
-                            <option value="selecionar" disabled selected>Selecionar:</option>
-                            <option value="Master">Master</option>
-                            <option value="Gerente">Gerente</option>
-                            <option value="Recepção">Recepção</option>
-                            <option value="Terapeuta">Terapeuta</option>
+        const modal = `
+        <div class="modal fade" id="${modalId}" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow rounded-4">
+              <div class="modal-header text-truncate">
+                <h5 class="modal-title">Editar colaborador</h5>
+                <button type="button" class="btn-close " data-bs-dismiss="modal" aria-label="Fechar"></button>
+              </div>
+              <div class="modal-body">
+                <div class="row g-4">
+                  <div class="col-12 col-lg-4">
+                    <div class="d-flex flex-column align-items-center justify-content-center h-100">
+                      <div class="rounded-4 bg-light border shadow-sm mb-3 d-flex align-items-center justify-content-center overflow-hidden" style="width:160px;height:160px;">
+                        <img id="previewImagem-${id}" src="${
+            imagem || "/frontend/img/account-outline.svg"
+        }" class="img-fluid h-100 w-100 object-fit-cover" alt="Imagem">
+                      </div>
+                      <input type="file" class="d-none" id="imagemUsuarioEdit-${id}" accept="image/*">
+                      <label for="imagemUsuarioEdit-${id}" class="btn btn-outline-success btn-sm mb-2 w-75">Selecionar imagem</label>
+                      <button id="removeImagem-${id}" type="button" class="btn btn-outline-danger btn-sm w-75">Remover imagem</button>
+                    </div>
+                  </div>
+                  <div class="col-12 col-lg-8">
+                    <div class="row g-3 justify-content-center">
+                      <div class="col-12 col-md-6">
+                        <label class="form-label" for="nome-${id}">Nome</label>
+                        <input id="nome-${id}" type="text" class="form-control" value="${nome}">
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <label class="form-label" for="email-${id}">Email</label>
+                        <input id="email-${id}" type="email" class="form-control" value="${email}">
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <label class="form-label" for="cargos-${id}">Cargo</label>
+                        <select id="cargos-${id}" class="form-select">
+                          <option disabled>Selecionar:</option>
+                          <option value="Master">Master</option>
+                          <option value="Gerente">Gerente</option>
+                          <option value="Recepcao">Recepção</option>
+                          <option value="Terapeuta">Terapeuta</option>
                         </select>
-                        <div id="setorcargo" class="d-none">
-                                <label for="setorgerente" class="campos h-100 align-content-center">Setor: </label>
-                                <select class="mx-2 align-self-center w-auto" id="setorgerente" style="border-radius: 5px; cursor: pointer; height: 30px;">
-                                    <option value="Recepção" selected>Recepção</option>
-                                    <option value="Terapeuta">Terapeuta</option>
-                                </select>
-                            </div>
+                      </div>
+                      <div class="col-12 col-md-6 ${
+                          showSetor ? "" : "d-none"
+                      }" id="setorcargo-${id}">
+                        <label class="form-label" for="setorgerente-${id}">Setor</label>
+                        <select id="setorgerente-${id}" class="form-select">
+                          <option value="Recepcao">Recepção</option>
+                          <option value="Terapeuta">Terapeuta</option>
+                        </select>
+                      </div>
+                      <div class="col-12">
+                        <label class="form-label">Unidades</label>
+                        <div id="unidadesdiv-${id}" class="list-group">
+                          ${[
+                              "Golden Square",
+                              "Mooca Plaza",
+                              "Grand Plaza",
+                              "West Plaza",
+                          ]
+                              .map(
+                                  (u) => `
+                            <label class="list-group-item d-flex align-items-center gap-2">
+                              <input class="form-check-input m-0" type="checkbox"
+                                     id="${u.replace(
+                                         / /g,
+                                         ""
+                                     )}-${id}" value="${u}" name="unidades">
+                              <span class="flex-grow-1">${u}</span>
+                            </label>
+                          `
+                              )
+                              .join("")}
+                        </div>
+                      </div>
                     </div>
+                  </div>
                 </div>
+              </div>
+              <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button id="salvarEdicaoColaborador-${id}" type="button" class="btn btn-success">Salvar</button>
+              </div>
             </div>
-            <div id="unidades"
-                class="col-sm-12 col-md-6 d-flex justify-content-center mt-md-3 mt-0 flex-column gap-2 w-75">
+          </div>
+        </div>`;
+        main.insertAdjacentHTML("beforeend", modal);
 
-                <p class="campos h-100 align-content-center m-0 align-self-center mt-md-3 justify-content-center fs-2">
-                    Unidades: </p>
-                <div id="unidadesdiv" class="row d-flex justify-content-center align-items-center w-100 ">
-                    <div class="col-sm-12 col-md-3 d-flex flex-fill justify-content-center text-center">
-                        <label for="golden" class="fs-6">Golden Square</label>
-                        <input class="me-5 me-lg-0" type="checkbox" name="unidades" id="GoldenSquare" value="GoldenSquare">
-                    </div>
-                    <div class="col-sm-12 col-md-3 d-flex flex-fill justify-content-center text-center">
-                        <label for="mooca" class="fs-56">Mooca Plaza</label>
-                        <input class="me-5 me-lg-0" type="checkbox" name="unidades" id="MoocaPlaza" value="MoocaPlaza">
-                    </div>
-                    <div class="col-sm-12 col-md-3 d-flex flex-fill justify-content-center text-center">
-                        <label for="grand" class="fs-6">Grand Plaza</label>
-                        <input class="me-5 me-lg-0" type="checkbox" name="unidades" id="GrandPlaza" value="GrandPlaza">
-                    </div>
-                    <div class="col-sm-12 col-md-3 d-flex flex-fill justify-content-center text-center">
-                        <label for="west" class="fs-6">West Plaza</label>
-                        <input class="me-5 me-lg-0" type="checkbox" name="unidades" id="WestPlaza" value="WestPlaza">
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 text-center">
-                <button id="salvarEdicaoColaborador" type="submit" class="enviar mt-4 px-3 py-1 fs-4">Salvar</button>
-            </div>
+        const el = document.getElementById(modalId);
+        const bs = new bootstrap.Modal(el);
+        el.addEventListener("hidden.bs.modal", () => el.remove());
 
-        </div>
-    </div>`;
-        const overylay = `<div id="overlay" class="overlay position-fixed top-0 start-0 z-2" style="background: rgba(0,0,0,0.3); width: 100vw; height: 100vh;">
+        const cargoSelect = document.getElementById(`cargos-${id}`);
+        const setorDiv = document.getElementById(`setorcargo-${id}`);
+        const setorSelect = document.getElementById(`setorgerente-${id}`);
 
-    </div>`;
+        // set cargo inicial
+        for (let i = 0; i < cargoSelect.options.length; i++) {
+            if (cargoSelect.options[i].value === perfis[0]) {
+                cargoSelect.selectedIndex = i;
+            }
+        }
+        if (["Gerente"].includes(perfis[0])) {
+            setorSelect.value = perfis[1] || "";
+            setorDiv.classList.remove("d-none");
+        }
 
-        main.insertAdjacentHTML("beforeend", editpopup);
-        main.insertAdjacentHTML("beforeend", overylay);
-
-        // Adiciona o event listener depois que os elementos existem no DOM
-        let setorcargo = document.getElementById("setorcargo");
-        let cargoselect = document.getElementById("cargos");
-        cargoselect.addEventListener("change", () => {
-            if (
-                cargoselect.options[cargoselect.selectedIndex].text ===
-                    "Gerente" ||
-                cargoselect.options[cargoselect.selectedIndex].text === "Master"
-            ) {
-                setorcargo.classList.remove("d-none"); // Mostra o setor
+        cargoSelect.addEventListener("change", () => {
+            const val = cargoSelect.value;
+            if (["Gerente"].includes(val)) {
+                setorDiv.classList.remove("d-none");
             } else {
-                setorcargo.classList.add("d-none"); // Esconde o setor
-                setorgerente.value = null;
-                perfis[1] = null;
+                setorDiv.classList.add("d-none");
+                setorSelect.value = "";
             }
         });
 
-        console.log(perfis);
-        for (let i = 0; i < cargoselect.options.length; i++) {
-            console.log(cargoselect.options.length);
-            console.log(cargoselect.options[i].text);
-            if (cargoselect.options[i].text == perfis[0]) {
-                cargoselect.selectedIndex = i;
-                if (
-                    cargoselect.options[i].text == "Gerente" ||
-                    cargoselect.options[i].text == "Master"
-                ) {
-                    const setorgerente =
-                        document.getElementById("setorgerente");
-                    setorgerente.value = perfis[1];
-                    setorcargo.classList.remove("d-none");
-                }
-            }
-        }
-
-        const unidadesdiv = document.querySelector(`#unidadesdiv`);
-        unidades.forEach((unidade) => {
-            const checkbox = unidadesdiv.querySelector(`#${unidade}`);
-            checkbox.checked = true;
+        // unidades
+        const unidadesdiv = document.getElementById(`unidadesdiv-${id}`);
+        (unidades || []).forEach((u) => {
+            const cb = unidadesdiv.querySelector(
+                `#${u.replace(/ /g, "")}-${id}`
+            );
+            if (cb) cb.checked = true;
         });
 
-        // Configurar preview de imagem
-        const imagemInput = document.getElementById("imagemUsuarioEdit");
-        const previewImg = document.getElementById("previewImagem");
+        // imagem
+        const imagemInput = document.getElementById(`imagemUsuarioEdit-${id}`);
+        const previewImg = document.getElementById(`previewImagem-${id}`);
+        const removeImgBtn = document.getElementById(`removeImagem-${id}`);
+        if (imagemInput && imagem) imagemInput.dataset.preview = imagem;
 
-        // Inicializar o dataset com a imagem existente se houver
-        if (imagem) {
-            imagemInput.dataset.preview = imagem;
-        }
+        removeImgBtn?.addEventListener("click", () => {
+            const padrao = "/frontend/img/account-outline.svg";
+            previewImg.src = padrao;
+            if (imagemInput) {
+                imagemInput.dataset.preview = padrao;
+                imagemInput.value = "";
+            }
+        });
 
-        imagemInput.addEventListener("change", async (e) => {
-            const file = e.target.files && e.target.files[0];
+        imagemInput?.addEventListener("change", async (e) => {
+            const file = e.target.files?.[0];
             if (!file) return;
             try {
                 const compressed = await compressImage(file, 800, 0.7);
                 previewImg.src = compressed;
                 imagemInput.dataset.preview = compressed;
             } catch (err) {
-                console.error("Erro ao processar imagem:", err);
+                console.error("Erro imagem:", err);
             }
         });
 
         document
-            .getElementById("salvarEdicaoColaborador")
+            .getElementById(`salvarEdicaoColaborador-${id}`)
             .addEventListener("click", async () => {
                 try {
-                    const nomeinput = document.getElementById("nome").value;
-                    const emailinput = document.getElementById("email").value;
-                    const cargoinput = document.getElementById("cargos").value;
-                    const setorinput =
-                        document.getElementById("setorgerente").value;
-                    const novosPerfis = Array(cargoinput, setorinput);
-                    const novasUnidades = Array.from(
-                        document.querySelectorAll(
-                            "input[name='unidades']:checked"
-                        )
-                    ).map((input) => input.value);
-                    // Pega a imagem comprimida do dataset se existir
-                    const imagemInput =
-                        document.getElementById("imagemUsuarioEdit");
-                    const imagemBase64 =
-                        imagemInput && imagemInput.dataset.preview
-                            ? imagemInput.dataset.preview
-                            : null;
-
                     const body = {
-                        id: id,
-                        nome: nomeinput,
-                        email: emailinput,
-                        perfis: novosPerfis,
-                        unidades: novasUnidades,
-                        imagem: imagemBase64,
+                        id,
+                        nome: document.getElementById(`nome-${id}`).value,
+                        email: document.getElementById(`email-${id}`).value,
+                        perfis: [cargoSelect.value, setorSelect.value],
+                        unidades: Array.from(
+                            el.querySelectorAll(
+                                "input[name='unidades']:checked"
+                            )
+                        ).map((i) => i.value),
+                        imagem: imagemInput?.dataset.preview || null,
                     };
-
-                    const response = await fetch("/api/user/update", {
+                    const r = await fetch("/api/user/update", {
                         method: "PUT",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(body),
                     });
-
-                    const result = await response.json();
-                    if (!response.ok) {
-                        throw new Error(
-                            result.msg || "Erro ao atualizar usuário"
-                        );
-                    }
-                    document.getElementById("editar").remove(); // fecha popup
-                    listarColaboradores(); // atualizar lista
+                    const j = await r.json();
+                    if (!r.ok) throw new Error(j.msg || "Erro");
+                    bs.hide();
+                    listarColaboradores();
                     setTimeout(() => {
-                        document
-                            .getElementById("alertEdit")
-                            .classList.add("show");
-                        document
-                            .getElementById("alertEdit")
-                            .classList.remove("d-none");
-                        setTimeout(() => {
-                            document
-                                .getElementById("alertEdit")
-                                .classList.remove("show");
-                            document
-                                .getElementById("alertEdit")
-                                .classList.add("d-none");
-                        }, 2500);
-                    }, 500);
+                        const alert = document.getElementById("alertEdit");
+                        if (alert) {
+                            alert.classList.add("show");
+                            alert.classList.remove("d-none");
+                            setTimeout(() => {
+                                alert.classList.remove("show");
+                                alert.classList.add("d-none");
+                            }, 2500);
+                        }
+                    }, 400);
                 } catch (err) {
-                    console.error("Erro ao salvar alterações:", err);
+                    console.error("Erro salvar:", err);
                 }
             });
-    } catch (error) {
-        console.error("Erro: " + error);
-    }
-}
 
-async function salvarEdicao(novosDados) {
-    try {
-        const response = await fetch("/api/user/confirmedit", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                data: novosDados,
-            }),
-        });
-    } catch (error) {
-        console.error("Erro: " + error);
+        bs.show();
+    } catch (err) {
+        console.error("Erro:", err);
     }
 }
 
 async function deleteColaborador(id) {
-    const main = document.getElementById("main");
     try {
-        const response = await fetch("/api/user/deletar", {
+        const r = await fetch("/api/user/deletar", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id }),
         });
-
-        const result = await response.json();
-
-        if (response.ok) {
-            listarColaboradores(); // atualiza a lista na tela
-            setTimeout(() => {
-                document.getElementById("alertDel").classList.add("show");
-                document.getElementById("alertDel").classList.remove("d-none");
-                setTimeout(() => {
-                    document
-                        .getElementById("alertDel")
-                        .classList.remove("show");
-                    document.getElementById("alertDel").classList.add("d-none");
-                }, 2500);
-            }, 500);
-        } else {
-            alert(result.msg || "Erro ao deletar usuário");
+        const j = await r.json();
+        if (!r.ok) {
+            alert(j.msg || "Erro ao deletar");
+            return;
         }
-    } catch (error) {
-        console.error("Erro:", error);
+        listarColaboradores();
+        setTimeout(() => {
+            const alert = document.getElementById("alertDel");
+            if (alert) {
+                alert.classList.add("show");
+                alert.classList.remove("d-none");
+                setTimeout(() => {
+                    alert.classList.remove("show");
+                    alert.classList.add("d-none");
+                }, 2500);
+            }
+        }, 400);
+    } catch (err) {
+        console.error("Erro:", err);
         alert("Erro no servidor");
     }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    const id = localStorage.getItem("userId");
+    const token = localStorage.getItem("token");
+    const tipoUser = localStorage.getItem("tipoUser");
+
+    if (!token) {
+        window.location.href = "/";
+        return;
+    }
+
+    if (tipoUser !== "admin") {
+        const linkCadastro = document.querySelector('a[href*="/cadastrar"]');
+        const linkUsuarios = document.querySelector('a[href*="/user/listar"]');
+        const dropdownAtendimento =
+            document.querySelector(".nav-item.dropdown");
+
+        if (linkCadastro) linkCadastro.parentElement.style.display = "none";
+        if (linkUsuarios) linkUsuarios.parentElement.style.display = "none";
+
+        if (dropdownAtendimento) {
+            const navbar = dropdownAtendimento.parentElement;
+
+            const escalaLi = document.createElement("li");
+            escalaLi.className = "nav-item";
+            escalaLi.setAttribute("role", "listitem");
+            escalaLi.innerHTML =
+                '<a class="nav-link text-secondary fs-6" href="/escala/:id" aria-current="false">Visualizar Escala</a>';
+
+            const sessaoLi = document.createElement("li");
+            sessaoLi.className = "nav-item";
+            sessaoLi.setAttribute("role", "listitem");
+            sessaoLi.innerHTML =
+                '<a class="nav-link text-secondary fs-6" href="/sessao/:id" aria-current="false">Gerenciar Sessão</a>';
+
+            const terapeutasLi = document.createElement("li");
+            terapeutasLi.className = "nav-item";
+            terapeutasLi.setAttribute("role", "listitem");
+            terapeutasLi.innerHTML =
+                '<a class="nav-link text-secondary fs-6" href="/listarterapeutas/:id" aria-current="false">Listar Terapeutas</a>';
+
+            navbar.insertBefore(terapeutasLi, dropdownAtendimento);
+            navbar.insertBefore(sessaoLi, dropdownAtendimento);
+            navbar.insertBefore(escalaLi, dropdownAtendimento);
+
+            dropdownAtendimento.remove();
+        }
+
+        alert(
+            "Acesso negado. Apenas administradores podem acessar esta página."
+        );
+        window.location.href = `/inicio/${id}`;
+        return;
+    }
+
+    const links = {
+        escala: document.querySelector('a[href^="/escala"]'),
+        postos: document.querySelector('a[href^="/postosatendimento"]'),
+        sessao: document.querySelector('a[href^="/sessao"]'),
+        terapeutas: document.querySelector('a[href^="/listarterapeutas"]'),
+        cadastro: document.querySelector('a[href^="/cadastrar"]'),
+        listar: document.querySelector('a[href^="/user/listar"]'),
+        inicio: document.querySelector('a[href^="/inicio"]'),
+    };
+
+    if (links.escala) links.escala.href = `/escala/${id}`;
+    if (links.postos) links.postos.href = `/postosatendimento/${id}`;
+    if (links.sessao) links.sessao.href = `/sessao/${id}`;
+    if (links.terapeutas) links.terapeutas.href = `/listarterapeutas/${id}`;
+    if (links.inicio) links.inicio.href = `/inicio/${id}`;
+    if (links.cadastro) links.cadastro.href = `/cadastrar/${id}`;
+    if (links.listar) links.listar.href = `/user/listar/${id}`;
+
+    listarColaboradores();
+});
+
+document.getElementById("sairbutton").addEventListener("click", () => {
+    localStorage.removeItem("token");
+    window.location.href = "/";
+});

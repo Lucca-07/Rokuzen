@@ -2,35 +2,85 @@
 <html lang="pt-br">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
-    <link rel="stylesheet" type="text/css" href="/frontend/css/style.css">
-    <title>Recuperação de Senha</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recuperação de Senha | Rokuzen</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Material Design Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css" rel="stylesheet" />
+  <!-- Fonte -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;600&display=swap" rel="stylesheet" />
+  <!-- CSS custom -->
+  <link rel="stylesheet" href="/frontend/css/global.css">
+  <link rel="stylesheet" href="/frontend/css/recuperarSenha.css">
+  <link rel="shortcut icon" href="/frontend/img/logoFavicon.png" sizes="32x32" type="image/png">
 </head>
 
-<body class="roboto">
-    <div class="back container-fluid">
-        <img class="imglogo mb-3" src="/frontend/img/logo.png" alt="">
-        <div class="row d-flex align-items-center justify-content-center">
-            <div id="cardLogin" class="card d-flex justify-content-center gap-3 h-100 p-">
-                <input id="email" class="p-2 px-3 mt-3" type="text" placeholder="Email">
-                <input id="novasenha1" class="p-2 px-3" type="text" placeholder="Nova Senha">
-                <input id="novasenha2" class="p-2 px-3" type="text" placeholder="Nova Senha">
-                <p id="pSenha" class="mb-0 text-center d-none"></p>
-                <button id="confirmar" class="acessar align-self-center p-2 px-3 border-1 mb-3">Confirmar</button>
-            </div>
+<body>
+  <main class="container d-flex justify-content-center align-items-center min-vh-100" role="main"
+    aria-label="Área principal de recuperação de senha">
+
+    <div id="cardRecuperar" class="card-custom text-center p-4">
+      <img src="/frontend/img/logo.png" class="imglogo mb-3" alt="Logo Rokuzen" />
+
+      <h5 class="mb-3">Recuperar senha</h5>
+
+      <!-- Divs de alerta para mensagens -->
+      <div id="alertaSenhaErro"></div>
+      <div id="alertaSenhaSucesso"></div>
+
+      <div class="mb-3 text-start">
+        <input type="email" id="emailRecuperacao" class="form-control" placeholder="Digite seu email" required />
+      </div>
+
+      <div class="mb-3 text-start">
+        <div class="input-group">
+          <input type="password" id="novasenha1" class="form-control" placeholder="Nova senha" required />
+          <button class="btn btn-outline-secondary border border-end" type="button"
+            onclick="togglePassword('novasenha1','toggle-novasenha1-icon')">
+            <i class="mdi mdi-eye-off" id="toggle-novasenha1-icon"></i>
+          </button>
         </div>
+      </div>
+
+      <div class="mb-3 text-start">
+        <div class="input-group">
+          <input type="password" id="novasenha2" class="form-control" placeholder="Confirmar nova senha" required />
+          <button class="btn btn-outline-secondary border border-end" type="button"
+            onclick="togglePassword('novasenha2','toggle-novasenha2-icon')">
+            <i class="mdi mdi-eye-off" id="toggle-novasenha2-icon"></i>
+          </button>
+        </div>
+      </div>
+
+      <button id="confirmar" class="btn btn-success w-100 mb-2">
+        Confirmar <i class="mdi mdi-arrow-right ms-2"></i>
+      </button>
+
+      <a href="/" id="voltarLogin" class="link-secondary small">Voltar ao login</a>
     </div>
 
+  </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
-        crossorigin="anonymous"></script>
+  <!-- VRLIBRAS -->
+  <div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+      <div class="vw-plugin-topwrapper"></div>
+    </div>
+  </div>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"> </script>
+  <script>new window.VLibras.Widget('https://vlibras.gov.br/app')</script>
 
-    <script src="/frontend/js/recuperarSenha.js"></script>
+  <!-- Bootstrap -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
+
+  <script src="/frontend/js/recuperarSenha.js"></script>
+
+  <script src="https://app.embed.im/accessibility.js" defer></script>
 </body>
 
 </html>
