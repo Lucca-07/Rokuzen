@@ -10,7 +10,6 @@ const INTERVALO_MINUTOS = 60;
 
 const tabelaCalendario = document.getElementById("tabela-calendario");
 const modal = document.getElementById("modal-agendamento");
-const fecharBtn = document.querySelector(".fechar-btn");
 const formAgendamento = document.getElementById("form-agendamento");
 const horarioSelecionadoDisplay = document.getElementById(
     "horario-selecionado"
@@ -371,16 +370,15 @@ async function carregarOpcoesDoFormulario(unidadePredefinida = null) {
     try {
         const unidade = localStorage.getItem("unidade");
         // busca em paralelo
-        const [resColaboradores, resServicos] = await Promise.all([
-            fetch(`/api/colaboradores/`),
-            fetch("/api/servicos", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    unidade: localStorage.getItem("unidade"),
-                }),
+
+        const resColaboradores = await fetch("/api/colaboradores");
+        const resServicos = await fetch("/api/servicos", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                unidade: localStorage.getItem("unidade"),
             }),
-        ]);
+        });
 
         const colaboradores = await resColaboradores.json();
         colaboradores.forEach((colab) => {
@@ -982,8 +980,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (links.cadastro) links.cadastro.href = `/cadastrar/${id}`;
     if (links.listar) links.listar.href = `/user/listar/${id}`;
 });
-
-fecharBtn.onclick = fecharModalLimparFormulario;
 
 async function teste() {
     try {
