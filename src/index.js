@@ -331,9 +331,10 @@ app.get("/api/postos", async (req, res) => {
 // ROTA PARA BUSCAR TODOS OS SERVIÇOS
 app.get("/api/colaboradores", async (req, res) => {
     try {
-        const servicos = await Colaboradores.find({ ativo: true }).select(
-            "nome_colaborador"
-        );
+        const servicos = await Colaboradores.find({
+            ativo: true,
+            perfis_usuario: "Terapeuta",
+        }).select("nome_colaborador");
         res.json(servicos);
     } catch (error) {
         console.error("Erro ao buscar colaboradores:", error);
@@ -767,7 +768,9 @@ app.get("/api/agendamentos", async (req, res) => {
 
         // Se NÃO tiver perfil Master/Gerente/Recepcionista, só vê os próprios
         const temAcessoTotal = perfisUsuario.some((p) =>
-            ["Master", "Gerente", "Recepcao", "Recepção", "recepcao"].includes(p)
+            ["Master", "Gerente", "Recepcao", "Recepção", "recepcao"].includes(
+                p
+            )
         );
 
         if (!temAcessoTotal) {
@@ -787,7 +790,7 @@ app.get("/api/agendamentos", async (req, res) => {
             fim_atendimento: a.fim_atendimento,
             tempo: Math.round(
                 (new Date(a.fim_atendimento) - new Date(a.inicio_atendimento)) /
-                60000
+                    60000
             ),
             observacao: a.observacao_cliente || "-",
             em_andamento: !!a.em_andamento,
